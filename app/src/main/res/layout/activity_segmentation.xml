@@ -23,12 +23,35 @@
         android:layout_centerVertical="true"
         />
 
-    <Button
-        android:id="@+id/button_start_segmentation"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:text="@string/start_process"/>
+        android:layout_below="@id/view_segmentation_image">
+
+
+        <Button
+            android:id="@+id/button_start_segmentation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_process"/>
+        <TextView
+            android:id="@+id/priemerna"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="Priemerna farba: "
+            android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/rozptyl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/priemerna"
+            android:textColor="@color/white"
+            android:text="Rozptyl: "
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+
 
 </RelativeLayout>
