@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">MyApplication</string>
+    <string name="app_name">Diplomovka</string>
+    <string name="app_version">Verzia aplikacie: 1.0</string>
+
+    <string name="select_image">Načítaj odtlačok</string>
+    <string name="title_segmentation">Segmentacia</string>
+
+    <string name="start_process">Štart</string>
 </resources>
