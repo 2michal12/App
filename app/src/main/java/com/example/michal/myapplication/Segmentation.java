@@ -17,8 +17,8 @@ import org.opencv.imgproc.Imgproc;
 public class Segmentation extends AppCompatActivity {
 
     private static Bitmap imageAftefSegmentation;
-    private static double treshold = 0;
-    private static double variance = 0;
+    private static double treshold = 0.0;
+    private static double variance = 0.0;
 
     private static ImageView mSegmentationImage;
     private static Button mStartSegmentation;
@@ -74,12 +74,17 @@ public class Segmentation extends AppCompatActivity {
 
     private double grayVariance(Mat image, double treshold){
         double[] data;
+        double a, b;
         for(int i = 0; i < image.height(); i++) {
             for (int j = 0; j < image.width(); j++) {
                 data = image.get(i, j);
-                variance += ((data[0]/255.0) - (treshold/255.0)) * ((data[0]/255.0) - (treshold/255.0));
+                a = data[0]/255.0;
+                b = treshold/255.0;
+                variance += (a-b)*(a-b);
+                //variance += ((data[0]/255.0) - (treshold/255.0)) * ((data[0]/255.0) - (treshold/255.0));
             }
         }
+
         return (double)Math.round( variance/(image.width()*image.height()) *100)/100;
     }
 
