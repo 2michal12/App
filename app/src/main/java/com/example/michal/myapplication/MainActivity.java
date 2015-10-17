@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String IMAGE_PATH = "/sdcard/Fingerprints/obrazok.jpg";
+    private static final String IMAGE_PATH = "/sdcard/Fingerprints/obrazok.bmp";
     private static Button mSelectImage;
 
     static{
