@@ -1,57 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="com.example.michal.myapplication.Segmentation"
-    android:background="@color/main_background"
-    android:padding="10dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_segmentation"
-        android:textColor="@color/white"
-        android:textSize="20dp"
-        android:layout_centerHorizontal="true"/>
 
-    <ImageView
-        android:id="@+id/view_segmentation_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        />
-
-    <RelativeLayout
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:background="@color/toolbar_background" />
 
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+          <ImageView
+            android:id="@+id/view_segmentation_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
 
         <Button
-            android:id="@+id/button_start_segmentation"
+            android:id="@+id/start_segmentation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="@string/start_process"/>
-        <TextView
-            android:id="@+id/priemerna"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Priemerna farba: "
-            android:layout_centerHorizontal="true"/>
-        <TextView
-            android:id="@+id/rozptyl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/priemerna"
-            android:textColor="@color/white"
-            android:text="Rozptyl: "
-            android:layout_centerHorizontal="true"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
-
-
-</RelativeLayout>
+</LinearLayout>

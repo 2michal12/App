@@ -1,22 +1,22 @@
 package com.example.michal.myapplication;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import org.opencv.android.OpenCVLoader;
 
-import java.io.ByteArrayOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String IMAGE_PATH = "/sdcard/Fingerprints/obrazok.bmp";
     private static Button mSelectImage;
+    private static Toolbar toolbar;
 
     static{
         if(!OpenCVLoader.initDebug()){
@@ -31,23 +31,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSelectImage = (Button) findViewById(R.id.button_select_image);
-        mSelectImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bitmap image = BitmapFactory.decodeFile(IMAGE_PATH);
-                initSegmentation(image);
-            }
-        });
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(toolbar);
     }
 
-    private void initSegmentation(Bitmap image){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-
-        Intent i = new Intent(this, Segmentation.class);
-        i.putExtra("BitmapImage",byteArray);
-        startActivity(i);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.home :
+                break;
+            case R.id.load_image :
+                Intent i = new Intent(this, LoadImage.class);
+                startActivity(i);
+                break;
+            case R.id.preprocessing :
+                break;
+            case R.id.extraction:
+                break;
+            case R.id.information:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }
