@@ -17,7 +17,7 @@
         </activity>
         <activity android:name=".Segmentation" />
         <activity
-            android:name=".LoadImage"
+            android:name=".Preview"
             android:label="@string/title_activity_load_image"
             android:theme="@style/AppTheme"></activity>
     </application>

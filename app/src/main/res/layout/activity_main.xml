@@ -1,33 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_background" />
+        android:background="@color/toolbar_background"
+        app:titleTextColor="@color/white"
+        android:elevation="5dp"/>
+
+    <Button
+        android:id="@+id/load_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:padding="10dp"
+        android:text="@string/load_image"
+        android:drawableLeft="@mipmap/ic_menu_upload"
+        android:textSize="14dp"
+        android:background="@color/button_color_medium"
+        android:elevation="5dp"
+        android:translationZ="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:text="@string/app_version"
+        android:textSize="9dp"/>
 
 
-    <LinearLayout
-        android:id="@+id/content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:background="@drawable/bc_fingerprint">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="@string/app_version"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

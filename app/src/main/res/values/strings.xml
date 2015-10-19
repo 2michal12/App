@@ -3,6 +3,7 @@
     <string name="app_version">Verzia aplikacie: 1.0</string>
 
     <string name="home">Domov</string>
+    <string name="preview">Náhľad</string>
     <string name="load_image">Načítaj odtlačok</string>
     <string name="preprocessing">Predspracovanie</string>
     <string name="extraction">Extrakcia</string>

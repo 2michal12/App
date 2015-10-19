@@ -81,14 +81,8 @@ public class Segmentation extends AppCompatActivity{
                 startActivity(i);
                 break;
             case R.id.load_image :
-                i = new Intent(this, LoadImage.class);
+                i = new Intent(this, Preview.class);
                 startActivity(i);
-                break;
-            case R.id.preprocessing :
-                System.out.println("predspracovanie");
-                break;
-            case R.id.extraction:
-                System.out.println("extrakcia");
                 break;
             case R.id.information:
                 System.out.println("informacie");
@@ -102,9 +96,6 @@ public class Segmentation extends AppCompatActivity{
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
         treshold = grayscaleTreshold(image, 0, 0, image.width(), image.height());
         variance = grayVariance(image, treshold);
-
-        //priemer.setText("Priemerna farba: "+treshold);
-        //rozptyl.setText("Rozptyl: "+variance);
 
         int blocksWidth = (int)Math.floor(image.width()/SEGMENTATION_SIZE);
         int blocksHeight = (int)Math.floor(image.height()/SEGMENTATION_SIZE);
