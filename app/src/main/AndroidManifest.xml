@@ -19,6 +19,10 @@
         <activity
             android:name=".Preview"
             android:label="@string/title_activity_load_image"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Normalisation"
+            android:label="@string/title_activity_normalisation"
             android:theme="@style/AppTheme"></activity>
     </application>
 

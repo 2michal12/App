@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,17 +20,21 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
+
 public class Segmentation extends AppCompatActivity{
 
     private static Toolbar toolbar;
     private static Bitmap imageAftefSegmentation;
     private static double treshold = 0.0;
     private static double variance = 0.0;
-    private static final Integer SEGMENTATION_SIZE = 10;
+    private static int SEGMENTATION_SIZE;
     private static final Integer SEGMENTATION_CLEANING = 10;
 
     private static ImageView mSegmentationImage;
+    private static EditText mSegmentationBlockSize;
     private static Button mStartSegmentation;
+    private static Button mNextProcess;
     private static TextView priemer;  //docasne
     private static TextView rozptyl;  //docasne
 
@@ -49,17 +54,31 @@ public class Segmentation extends AppCompatActivity{
         mSegmentationImage = (ImageView) findViewById(R.id.view_segmentation_image);
         mSegmentationImage.setImageBitmap(image);
 
-//        priemer = (TextView) findViewById(R.id.priemerna);
-//        rozptyl = (TextView) findViewById(R.id.rozptyl);
+        mSegmentationBlockSize = (EditText) findViewById(R.id.segmentation_block_size_edittext);
+        mSegmentationBlockSize.setText("10");
 
         mStartSegmentation = (Button) findViewById(R.id.start_segmentation);
         mStartSegmentation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SEGMENTATION_SIZE = Integer.parseInt(mSegmentationBlockSize.getText().toString());
+                if( SEGMENTATION_SIZE <= 0 || SEGMENTATION_SIZE > 50 ){
+                    SEGMENTATION_SIZE = 10;
+                }
                 startSegmentation(bitmap2mat(image));
                 mSegmentationImage.setImageBitmap(imageAftefSegmentation);
+
+                mNextProcess = (Button) findViewById(R.id.next);
+                mNextProcess.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startPreprocessing(imageAftefSegmentation);
+                    }
+                });
             }
         });
+
+
 
     }
 
@@ -90,6 +109,18 @@ public class Segmentation extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startPreprocessing(Bitmap image) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        Intent i = new Intent(this, Normalisation.class);
+        i.putExtra("BitmapImage", byteArray);
+        i.putExtra("Treshold",treshold);
+        i.putExtra("Variance",variance);
+        startActivity(i);
     }
 
     private void startSegmentation(Mat image){

@@ -10,7 +10,12 @@
     <string name="information">Informácie</string>
 
     <string name="segmentation">Segmentácia</string>
+    <string name="segmentation_block">Veľkosť bloku: </string>
+    <string name="normalisation">Normalizácia</string>
+    <string name="normalisation_contrast">Zvýšenie kontrastu: </string>
 
     <string name="start_process">Štart</string>
+    <string name="next_process">Ďalej</string>
     <string name="title_activity_load_image">LoadImage</string>
+    <string name="title_activity_normalisation">Normalisation</string>
 </resources>

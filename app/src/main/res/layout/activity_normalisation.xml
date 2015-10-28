@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_background"
-    tools:context="com.example.michal.myapplication.Segmentation"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.example.michal.myapplication.Normalisation">
 
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,41 +15,40 @@
         android:background="@color/toolbar_background" />
 
     <ImageView
-        android:id="@+id/view_segmentation_image"
+        android:id="@+id/view_normalisation_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:background="@mipmap/ic_menu_report_image"/>
-
+        android:background="@mipmap/ic_menu_report_image" />
 
     <LinearLayout
         android:id="@+id/content"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:gravity="center"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/input"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/segmentation_block_size_textview"
+                android:id="@+id/normalisation_contrast_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15dp"
-                android:text="@string/segmentation_block"/>
+                android:text="@string/segmentation_block"
+                android:textSize="15dp" />
 
             <EditText
-                android:id="@+id/segmentation_block_size_edittext"
+                android:id="@+id/normalisation_contrast_edittext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number">
-            </EditText>
+                android:inputType="number"></EditText>
 
         </LinearLayout>
 
@@ -57,30 +56,31 @@
             android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/start_segmentation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:textSize="14dp"
-            android:background="@color/button_color_light"
-            android:text="@string/start_process"/>
 
-        <Button
-            android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:drawableRight="@mipmap/ic_menu_forward"
-            android:textSize="14dp"
-            android:background="@color/button_color_light"
-            android:text="@string/next_process"/>
+            <Button
+                android:id="@+id/start_normalisation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/button_color_light"
+                android:padding="5dp"
+                android:text="@string/start_process"
+                android:textSize="14dp" />
+
+            <Button
+                android:id="@+id/next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/button_color_light"
+                android:drawableRight="@mipmap/ic_menu_forward"
+                android:padding="5dp"
+                android:text="@string/next_process"
+                android:textSize="14dp" />
 
         </LinearLayout>
-
     </LinearLayout>
+
 
 </RelativeLayout>
