@@ -69,6 +69,7 @@ public class Segmentation extends AppCompatActivity{
                 mSegmentationImage.setImageBitmap(imageAftefSegmentation);
 
                 mNextProcess = (Button) findViewById(R.id.next);
+                mNextProcess.setEnabled(true);
                 mNextProcess.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -77,9 +78,6 @@ public class Segmentation extends AppCompatActivity{
                 });
             }
         });
-
-
-
     }
 
     @Override

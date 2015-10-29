@@ -35,20 +35,25 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/black50"
+            android:layout_marginBottom="4dp">
 
             <TextView
                 android:id="@+id/normalisation_contrast_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/normalisation_contrast"
-                android:textSize="15dp" />
+                android:textSize="15dp"
+                android:textColor="@color/white"
+                android:text="@string/normalisation_contrast" />
 
             <EditText
                 android:id="@+id/normalisation_contrast_edittext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="number"></EditText>
+                android:textColor="@color/white"
+                android:inputType="number">
+            </EditText>
 
         </LinearLayout>
 
@@ -77,6 +82,7 @@
                 android:padding="5dp"
                 android:layout_marginLeft="2dp"
                 android:drawableRight="@mipmap/ic_menu_forward"
+                android:enabled="false"
                 android:text="@string/next_process"/>
 
 

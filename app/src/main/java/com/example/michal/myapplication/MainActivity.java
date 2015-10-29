@@ -1,5 +1,6 @@
 package com.example.michal.myapplication;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -100,9 +101,6 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.home:
                 break;
-            case R.id.preview:
-                Intent i = new Intent(this, Preview.class);
-                startActivity(i);
             case R.id.information:
                 break;
         }

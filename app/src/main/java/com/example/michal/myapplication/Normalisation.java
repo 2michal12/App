@@ -21,11 +21,14 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
+
 public class Normalisation extends AppCompatActivity {
     private static Toolbar toolbar;
     private static ImageView mNormalisationImage;
     private static EditText mNormalisationContrast;
     private static Button mStartNormalisation;
+    private static Button mNextProcess;
     private static Bitmap imageAftefNormalisation;
 
     private static double treshold = 0.0;
@@ -43,7 +46,6 @@ public class Normalisation extends AppCompatActivity {
 
         variance = getIntent().getDoubleExtra("Variance",variance);
         treshold = getIntent().getDoubleExtra("Treshold",treshold);
-        System.out.println(variance+"   "+treshold);
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -60,17 +62,22 @@ public class Normalisation extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 NORMALISATION_CONTRAST = Integer.parseInt(mNormalisationContrast.getText().toString());
-                if( NORMALISATION_CONTRAST <= 0 || NORMALISATION_CONTRAST > 10 ){
+                if (NORMALISATION_CONTRAST <= 0 || NORMALISATION_CONTRAST > 10) {
                     NORMALISATION_CONTRAST = 1;
                 }
                 startNormalisation(bitmap2mat(image));
                 mNormalisationImage.setImageBitmap(imageAftefNormalisation);
+
+                mNextProcess = (Button) findViewById(R.id.next);
+                mNextProcess.setEnabled(true);
+                mNextProcess.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startPreprocessing(imageAftefNormalisation);
+                    }
+                });
             }
         });
-
-        mNormalisationImage.setImageBitmap(image);
-
-
     }
 
     @Override
@@ -90,16 +97,22 @@ public class Normalisation extends AppCompatActivity {
                 i = new Intent(this, MainActivity.class);
                 startActivity(i);
                 break;
-            case R.id.load_image :
-                i = new Intent(this, Preview.class);
-                startActivity(i);
-                break;
             case R.id.information:
                 System.out.println("informacie");
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startPreprocessing(Bitmap image) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        Intent i = new Intent(this, Filtering.class);
+        i.putExtra("BitmapImage", byteArray);
+        startActivity(i);
     }
 
     private void startNormalisation(Mat image){

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.michal.myapplication">
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -24,7 +25,12 @@
         <activity
             android:name=".Normalisation"
             android:label="@string/title_activity_normalisation"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".filtering"
+            android:label="@string/title_activity_filtering"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".Filtering"></activity>
     </application>
 
 </manifest>

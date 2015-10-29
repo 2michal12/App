@@ -1,5 +1,6 @@
 package com.example.michal.myapplication;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -70,8 +71,6 @@ public class Preview extends AppCompatActivity {
                 Intent i = new Intent(this, MainActivity.class);
                 startActivity(i);
                 break;
-            case R.id.load_image :
-                break;
             case R.id.information:
                 break;
         }
@@ -86,6 +85,7 @@ public class Preview extends AppCompatActivity {
 
         Intent i = new Intent(this, Segmentation.class);
         i.putExtra("BitmapImage", byteArray);
-        startActivity(i);
+        Bundle nextAnimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.left_in, R.anim.right_out).toBundle();
+        startActivity(i, nextAnimation);
     }
 }
