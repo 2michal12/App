@@ -35,19 +35,23 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:background="@color/black50"
+            android:layout_marginBottom="4dp">
 
             <TextView
                 android:id="@+id/segmentation_block_size_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15dp"
+                android:textColor="@color/white"
                 android:text="@string/segmentation_block"/>
 
             <EditText
                 android:id="@+id/segmentation_block_size_edittext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:inputType="number">
             </EditText>
 
@@ -58,25 +62,26 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
             android:gravity="center">
 
         <Button
             android:id="@+id/start_segmentation"
-            android:layout_width="wrap_content"
+            style="@style/button"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:textSize="14dp"
-            android:background="@color/button_color_light"
+            android:layout_marginRight="2dp"
             android:text="@string/start_process"/>
 
         <Button
             android:id="@+id/next"
-            android:layout_width="wrap_content"
+            style="@style/button"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:padding="5dp"
+            android:layout_marginLeft="2dp"
             android:drawableRight="@mipmap/ic_menu_forward"
-            android:textSize="14dp"
-            android:background="@color/button_color_light"
             android:text="@string/next_process"/>
 
         </LinearLayout>

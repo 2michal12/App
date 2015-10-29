@@ -41,7 +41,7 @@
                 android:id="@+id/normalisation_contrast_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/segmentation_block"
+                android:text="@string/normalisation_contrast"
                 android:textSize="15dp" />
 
             <EditText
@@ -56,28 +56,29 @@
             android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:gravity="center">
 
             <Button
                 android:id="@+id/start_normalisation"
-                android:layout_width="wrap_content"
+                style="@style/button"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:background="@color/button_color_light"
                 android:padding="5dp"
-                android:text="@string/start_process"
-                android:textSize="14dp" />
+                android:layout_marginRight="2dp"
+                android:text="@string/start_process"/>
 
             <Button
                 android:id="@+id/next"
-                android:layout_width="wrap_content"
+                style="@style/button"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:background="@color/button_color_light"
-                android:drawableRight="@mipmap/ic_menu_forward"
                 android:padding="5dp"
-                android:text="@string/next_process"
-                android:textSize="14dp" />
+                android:layout_marginLeft="2dp"
+                android:drawableRight="@mipmap/ic_menu_forward"
+                android:text="@string/next_process"/>
+
 
         </LinearLayout>
     </LinearLayout>

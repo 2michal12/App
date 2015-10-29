@@ -38,6 +38,7 @@ public class Preview extends AppCompatActivity {
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if(byteArray != null) {
+
             mImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             mLoadedImage.setImageBitmap(mImage);
 
@@ -47,6 +48,8 @@ public class Preview extends AppCompatActivity {
                     startPreprocessing(mImage);
                 }
             });
+        }else{
+            mLoadedImage.setImageResource(R.mipmap.ic_menu_report_image);
         }
 
     }

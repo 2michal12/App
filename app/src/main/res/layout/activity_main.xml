@@ -13,22 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/toolbar_background"
-        app:titleTextColor="@color/white"
-        android:elevation="5dp"/>
+        app:titleTextColor="@color/white"/>
 
     <Button
         android:id="@+id/load_image"
-        android:layout_width="wrap_content"
+        style="@style/button"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:padding="10dp"
+        android:padding="5dp"
         android:text="@string/load_image"
-        android:drawableLeft="@mipmap/ic_menu_upload"
-        android:textSize="14dp"
-        android:background="@color/button_color_medium"
-        android:elevation="5dp"
-        android:translationZ="5dp"/>
+        android:drawableLeft="@mipmap/ic_menu_upload"/>
 
     <TextView
         android:layout_width="wrap_content"

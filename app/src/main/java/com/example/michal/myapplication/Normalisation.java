@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 public class Normalisation extends AppCompatActivity {
     private static Toolbar toolbar;
@@ -102,7 +103,9 @@ public class Normalisation extends AppCompatActivity {
     }
 
     private void startNormalisation(Mat image){
-        variance = variance + (variance * NORMALISATION_CONTRAST);
+        Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+        double variance_local = variance + (variance * NORMALISATION_CONTRAST);
+
         double[] data = new double[1];
         double[] data_zero = new double[1];
         data_zero[0] = 0;
@@ -116,23 +119,21 @@ public class Normalisation extends AppCompatActivity {
                 data = image.get(j, i);
                 if( data[0] > treshold )
                 {
-                    if((treshold + (Math.sqrt((variance * (Math.pow((data[0] - treshold), 2))) / variance)))>255 ) {
+                    if((treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance)))>255 ) {
                         image.put(j, i, data_full);
                     }
                     else{
-                        data_new[0] = treshold + (Math.sqrt((variance * (Math.pow((data[0] - treshold), 2))) / variance));
-                        data_new[0] = 0;
+                        data_new[0] = treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
                         image.put(j, i, data_new);
                     }
                 }
                 else
                 {
-                    if((treshold - (Math.sqrt((variance * (Math.pow((data[0] - treshold), 2))) / variance)))<0 ) {
+                    if((treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance)))<0 ) {
                         image.put(j, i, data_zero);
                     }
                     else {
-                        data_new[0] = treshold - (Math.sqrt((variance * (Math.pow((data[0] - treshold), 2))) / variance));
-                        data_new[0] = 0;
+                        data_new[0] = treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
                         image.put(j, i, data_new);
                     }
                 }
