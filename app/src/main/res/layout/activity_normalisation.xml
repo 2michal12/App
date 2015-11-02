@@ -14,13 +14,23 @@
         android:layout_height="wrap_content"
         android:background="@color/toolbar_background" />
 
-    <ImageView
-        android:id="@+id/view_normalisation_image"
+    <LinearLayout
+        android:id="@+id/content_image"
+        android:layout_below="@+id/toolbar"
+        android:layout_above="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:gravity="center">
+
+    <ImageView
+        android:id="@+id/view_normalisation_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@mipmap/ic_menu_report_image" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/content"
@@ -33,7 +43,7 @@
         <LinearLayout
             android:id="@+id/input"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:background="@color/black50"

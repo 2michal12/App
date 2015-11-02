@@ -53,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
         mLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // image = BitmapFactory.decodeFile(IMAGE_PATH);
-               // startPreview(image);
-                Intent intent = new Intent();
+                image = BitmapFactory.decodeFile(IMAGE_PATH);
+                startPreview(image, 1);
+               /* Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);
+                startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);*/
             }
         });
 

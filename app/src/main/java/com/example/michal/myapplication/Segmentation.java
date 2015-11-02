@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import org.opencv.android.Utils;
@@ -47,37 +48,43 @@ public class Segmentation extends AppCompatActivity{
         toolbar.setTitle(R.string.segmentation);
         setSupportActionBar(toolbar);
 
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
-        final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        imageAftefSegmentation = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
-
         mSegmentationImage = (ImageView) findViewById(R.id.view_segmentation_image);
-        mSegmentationImage.setImageBitmap(image);
 
-        mSegmentationBlockSize = (EditText) findViewById(R.id.segmentation_block_size_edittext);
-        mSegmentationBlockSize.setText("10");
+        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        if(byteArray != null) {
 
-        mStartSegmentation = (Button) findViewById(R.id.start_segmentation);
-        mStartSegmentation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SEGMENTATION_SIZE = Integer.parseInt(mSegmentationBlockSize.getText().toString());
-                if( SEGMENTATION_SIZE <= 0 || SEGMENTATION_SIZE > 50 ){
-                    SEGMENTATION_SIZE = 10;
-                }
-                startSegmentation(bitmap2mat(image));
-                mSegmentationImage.setImageBitmap(imageAftefSegmentation);
+            final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            imageAftefSegmentation = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
 
-                mNextProcess = (Button) findViewById(R.id.next);
-                mNextProcess.setEnabled(true);
-                mNextProcess.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startPreprocessing(imageAftefSegmentation);
+            mSegmentationImage.setImageBitmap(image);
+
+            mSegmentationBlockSize = (EditText) findViewById(R.id.segmentation_block_size_edittext);
+            mSegmentationBlockSize.setText("10");
+
+            mStartSegmentation = (Button) findViewById(R.id.start_segmentation);
+            mStartSegmentation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SEGMENTATION_SIZE = Integer.parseInt(mSegmentationBlockSize.getText().toString());
+                    if (SEGMENTATION_SIZE <= 0 || SEGMENTATION_SIZE > 50) {
+                        SEGMENTATION_SIZE = 10;
                     }
-                });
-            }
-        });
+                    startSegmentation(bitmap2mat(image));
+                    mSegmentationImage.setImageBitmap(imageAftefSegmentation);
+
+                    mNextProcess = (Button) findViewById(R.id.next);
+                    mNextProcess.setEnabled(true);
+                    mNextProcess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startPreprocessing(imageAftefSegmentation);
+                        }
+                    });
+                }
+            });
+        }else{
+            mSegmentationImage.setImageResource(R.mipmap.ic_menu_report_image);
+        }
     }
 
     @Override

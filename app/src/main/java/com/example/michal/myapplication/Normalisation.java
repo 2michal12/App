@@ -44,40 +44,46 @@ public class Normalisation extends AppCompatActivity {
         toolbar.setTitle(R.string.normalisation);
         setSupportActionBar(toolbar);
 
+        mNormalisationImage = (ImageView) findViewById(R.id.view_normalisation_image);
+
         variance = getIntent().getDoubleExtra("Variance",variance);
         treshold = getIntent().getDoubleExtra("Treshold",treshold);
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
-        final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        imageAftefNormalisation = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+        if(byteArray != null) {
 
-        mNormalisationContrast = (EditText) findViewById(R.id.normalisation_contrast_edittext);
-        mNormalisationContrast.setText("1");
+            final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            imageAftefNormalisation = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
 
-        mNormalisationImage = (ImageView) findViewById(R.id.view_normalisation_image);
-        mNormalisationImage.setImageBitmap(image);
+            mNormalisationContrast = (EditText) findViewById(R.id.normalisation_contrast_edittext);
+            mNormalisationContrast.setText("10");
 
-        mStartNormalisation = (Button) findViewById(R.id.start_normalisation);
-        mStartNormalisation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NORMALISATION_CONTRAST = Integer.parseInt(mNormalisationContrast.getText().toString());
-                if (NORMALISATION_CONTRAST <= 0 || NORMALISATION_CONTRAST > 10) {
-                    NORMALISATION_CONTRAST = 1;
-                }
-                startNormalisation(bitmap2mat(image));
-                mNormalisationImage.setImageBitmap(imageAftefNormalisation);
+            mNormalisationImage.setImageBitmap(image);
 
-                mNextProcess = (Button) findViewById(R.id.next);
-                mNextProcess.setEnabled(true);
-                mNextProcess.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startPreprocessing(imageAftefNormalisation);
+            mStartNormalisation = (Button) findViewById(R.id.start_normalisation);
+            mStartNormalisation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NORMALISATION_CONTRAST = Integer.parseInt(mNormalisationContrast.getText().toString());
+                    if (NORMALISATION_CONTRAST <= 0 || NORMALISATION_CONTRAST > 10) {
+                        NORMALISATION_CONTRAST = 1;
                     }
-                });
-            }
-        });
+                    startNormalisation(bitmap2mat(image));
+                    mNormalisationImage.setImageBitmap(imageAftefNormalisation);
+
+                    mNextProcess = (Button) findViewById(R.id.next);
+                    mNextProcess.setEnabled(true);
+                    mNextProcess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startPreprocessing(imageAftefNormalisation);
+                        }
+                    });
+                }
+            });
+        }else{
+            mNormalisationImage.setImageResource(R.mipmap.ic_menu_report_image);
+        }
     }
 
     @Override
@@ -161,4 +167,4 @@ public class Normalisation extends AppCompatActivity {
         return dest;
     }
 
-    }
+}
