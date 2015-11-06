@@ -118,6 +118,7 @@ public class Normalisation extends AppCompatActivity {
 
         Intent i = new Intent(this, Filtering.class);
         i.putExtra("BitmapImage", byteArray);
+        i.putExtra("Treshold",treshold);
         startActivity(i);
     }
 

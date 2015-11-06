@@ -14,6 +14,9 @@
     <string name="normalisation">Normalizácia</string>
     <string name="normalisation_contrast">Zvýšenie kontrastu: </string>
     <string name="filtering">Filtrovanie</string>
+    <string name="filtering_block">Veľkosť: </string>
+    <string name="binarisation">Binarizácia</string>
+    <string name="binarisation_block">Veľkosť bloku: </string>
 
     <string name="start_process">Štart</string>
     <string name="next_process">Ďalej</string>

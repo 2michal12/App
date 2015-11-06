@@ -53,15 +53,16 @@
                 android:id="@+id/filtering_contrast_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/filtering"
+                android:text="@string/filtering_block"
                 android:textColor="@color/white"
                 android:textSize="15dp" />
 
             <EditText
-                android:id="@+id/filtering_contrast_edittext"
+                android:id="@+id/filtering_block_edittext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:textSize="10dp"
                 android:textColor="@color/white"></EditText>
 
         </LinearLayout>

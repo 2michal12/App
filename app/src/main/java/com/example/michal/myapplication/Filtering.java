@@ -11,7 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -22,12 +24,19 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
+
 public class Filtering extends AppCompatActivity {
     private static Toolbar toolbar;
     private static Bitmap imageAftefFiltering;
     private static ImageView mFilteringImage;
     private static Button mNextProcess;
     private static Button mStartFiltering;
+    private static EditText mFilteringBlock;
+
+    private static double treshold = 0.0;
+
+    private static int FILTERING_BLOCK;
 
     Mat theta, orientation;
 
@@ -42,11 +51,16 @@ public class Filtering extends AppCompatActivity {
 
         mFilteringImage = (ImageView) findViewById(R.id.view_filtering_image);
 
+        treshold = getIntent().getDoubleExtra("Treshold",treshold);
+
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if (byteArray != null) {
 
             final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefFiltering = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+
+            mFilteringBlock = (EditText) findViewById(R.id.filtering_block_edittext);
+            mFilteringBlock.setText("15");
 
             mFilteringImage.setImageBitmap(image);
 
@@ -54,11 +68,18 @@ public class Filtering extends AppCompatActivity {
             mStartFiltering.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    FILTERING_BLOCK = Integer.parseInt(mFilteringBlock.getText().toString());
                     startFiltering(bitmap2mat(image));
                     mFilteringImage.setImageBitmap(imageAftefFiltering);
 
                     mNextProcess = (Button) findViewById(R.id.next);
                     mNextProcess.setEnabled(true);
+                    mNextProcess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startPreprocessing(imageAftefFiltering);
+                        }
+                    });
                 }
             });
         } else {
@@ -92,20 +113,31 @@ public class Filtering extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void startPreprocessing(Bitmap image) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        Intent i = new Intent(this, Binarisation.class);
+        i.putExtra("BitmapImage", byteArray);
+        i.putExtra("Treshold",treshold);
+        startActivity(i);
+    }
+
     private void startFiltering(Mat image) {
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-        orientationMap(image, 5);
+        orientationMap(image, FILTERING_BLOCK);
 
-        Utils.matToBitmap(image, imageAftefFiltering);
+        Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
     }
 
     private void orientationMap(Mat image, int block){
-        orientation = new Mat(image.cols(), image.rows(), CvType.CV_8UC1);
-        theta = new Mat(image.cols(), image.rows(), CvType.CV_64F);
-        Mat gradientX = new Mat(image.cols(), image.rows(), CvType.CV_8UC1);
-        Mat gradientY = new Mat(image.cols(), image.rows(), CvType.CV_8UC1);
-        Mat tempImage = new Mat(image.cols(), image.rows(), CvType.CV_8UC1);
+        orientation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+        theta = new Mat(image.rows(), image.cols(), CvType.CV_64F);
+        Mat gradientX = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+        Mat gradientY = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+        Mat tempImage = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
         image.copyTo(tempImage);
 
         Imgproc.Sobel(tempImage, gradientX, CvType.CV_64FC1, 1, 0, 3, 1, 0, 0); //CV_16S
@@ -114,9 +146,11 @@ public class Filtering extends AppCompatActivity {
         double gauss_x, gauss_y;
         double[] data_x, data_y;
         double[] data_input = new double[1];
+        int rows = image.rows() - block / 2;
+        int cols = image.cols() - block / 2;
 
-        for(int x = block / 2; x < tempImage.rows() - block / 2; x++){
-            for(int y=block / 2; y < tempImage.cols() - block / 2; y++){
+        for(int x = block / 2; x < rows - block / 2; x += block){
+            for(int y=block / 2; y < cols - block / 2; y += block){
                 gauss_x = -1;
                 gauss_y = -1;
 
@@ -137,24 +171,24 @@ public class Filtering extends AppCompatActivity {
                     }
                 }
             }
-            System.out.println((float)x/((tempImage.rows() - block/2)-1)*100);
+            System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
         }
 
         //mapExtermination(block);
 
         for (int i = 0; i<orientation.rows() / block; i++){
             for (int j = 0; j<orientation.cols() / block; j++){
-                data_input = theta.get(i*block, j*block); //angle
-                printLine(image, block, j, i, data_input[0]);
+                data_input = theta.get(i*block+block/2, j*block+block/2); //angle
+                printLine(orientation, block, j, i, data_input[0]);
             }
         }
     }
 
     public void mapExtermination(int block){ //pracujem s globalnou Mat theta
-        Mat sinComponent = new Mat(theta.cols(), theta.rows(), CvType.CV_64F);
-        Mat cosComponent = new Mat(theta.cols(), theta.rows(), CvType.CV_64F);
-        Mat sinOutput = new Mat(theta.cols(), theta.rows(), CvType.CV_64F);
-        Mat cosOutput = new Mat(theta.cols(), theta.rows(), CvType.CV_64F);
+        Mat sinComponent = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
+        Mat cosComponent = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
+        Mat sinOutput = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
+        Mat cosOutput = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
 
         double[] data = new double[1];
         double[] cos = new double[1];
