@@ -26,12 +26,12 @@ import java.io.ByteArrayOutputStream;
 public class Binarisation extends AppCompatActivity {
     private static Toolbar toolbar;
     private static ImageView mBinarisationImage;
-    private static EditText mBinarisationBlock;
     private static Button mStartBinarisation;
     private static Button mNextProcess;
     private static Bitmap imageAftefBinarisation;
 
     private static double treshold = 0.0;
+    private static int[][] mask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,15 @@ public class Binarisation extends AppCompatActivity {
         mBinarisationImage = (ImageView) findViewById(R.id.view_binarisation_image);
 
         treshold = getIntent().getDoubleExtra("Treshold",treshold);
-        System.out.println(treshold);
+
+        mask = null;
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        if(objectArray != null){
+            mask = new int[objectArray.length][];
+            for(int i = 0; i < objectArray.length; i++){
+                mask[i] = (int[]) objectArray[i];
+            }
+        }
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if(byteArray != null) {
@@ -67,7 +75,7 @@ public class Binarisation extends AppCompatActivity {
                     mNextProcess.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //startPreprocessing(imageAftefBinarisation);
+                            startPreprocessing(imageAftefBinarisation);
                         }
                     });
                 }
@@ -107,8 +115,12 @@ public class Binarisation extends AppCompatActivity {
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
-        Intent i = new Intent(this, Binarisation.class);
+        Bundle mBundle = new Bundle();
+        mBundle.putSerializable("Mask", mask);
+
+        Intent i = new Intent(this, Thinning.class);
         i.putExtra("BitmapImage", byteArray);
+        i.putExtras(mBundle);
         startActivity(i);
     }
 

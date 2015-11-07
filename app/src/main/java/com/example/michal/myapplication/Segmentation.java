@@ -39,6 +39,8 @@ public class Segmentation extends AppCompatActivity{
     private static TextView priemer;  //docasne
     private static TextView rozptyl;  //docasne
 
+    private static int mask[][];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,10 +123,15 @@ public class Segmentation extends AppCompatActivity{
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
+        Bundle mBundle = new Bundle();
+        mBundle.putSerializable("Mask", mask);
+
         Intent i = new Intent(this, Normalisation.class);
         i.putExtra("BitmapImage", byteArray);
         i.putExtra("Treshold",treshold);
         i.putExtra("Variance",variance);
+        i.putExtras(mBundle);
+
         startActivity(i);
     }
 
@@ -135,7 +142,7 @@ public class Segmentation extends AppCompatActivity{
 
         int blocksWidth = (int)Math.floor(image.width()/SEGMENTATION_SIZE);
         int blocksHeight = (int)Math.floor(image.height()/SEGMENTATION_SIZE);
-        int mask[][] = new int[blocksWidth][blocksHeight];
+        mask = new int[blocksWidth][blocksHeight];
 
         int padding_x = image.width() - (blocksWidth*SEGMENTATION_SIZE); //padding of image
         int padding_y = image.height() - (blocksHeight*SEGMENTATION_SIZE);

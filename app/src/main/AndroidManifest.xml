@@ -31,7 +31,8 @@
             android:label="@string/title_activity_filtering"
             android:theme="@style/AppTheme" />
         <activity android:name=".Filtering" />
-        <activity android:name=".Binarisation"></activity>
+        <activity android:name=".Binarisation" />
+        <activity android:name=".Thinning"></activity>
     </application>
 
 </manifest>

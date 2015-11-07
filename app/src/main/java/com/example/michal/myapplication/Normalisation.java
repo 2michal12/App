@@ -34,6 +34,7 @@ public class Normalisation extends AppCompatActivity {
     private static double treshold = 0.0;
     private static double variance = 0.0;
     private static int NORMALISATION_CONTRAST;
+    private static int[][] mask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,15 @@ public class Normalisation extends AppCompatActivity {
 
         variance = getIntent().getDoubleExtra("Variance",variance);
         treshold = getIntent().getDoubleExtra("Treshold",treshold);
+
+        mask = null;
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        if(objectArray != null){
+            mask = new int[objectArray.length][];
+            for(int i = 0; i < objectArray.length; i++){
+                mask[i] = (int[]) objectArray[i];
+            }
+        }
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if(byteArray != null) {
@@ -116,9 +126,13 @@ public class Normalisation extends AppCompatActivity {
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
+        Bundle mBundle = new Bundle();
+        mBundle.putSerializable("Mask", mask);
+
         Intent i = new Intent(this, Filtering.class);
         i.putExtra("BitmapImage", byteArray);
         i.putExtra("Treshold",treshold);
+        i.putExtras(mBundle);
         startActivity(i);
     }
 
