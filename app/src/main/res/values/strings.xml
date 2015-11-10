@@ -4,6 +4,7 @@
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
+    <string name="export_image">Uložiť obrázok</string>
     <string name="load_image">Načítaj odtlačok</string>
     <string name="preprocessing">Predspracovanie</string>
     <string name="extraction">Extrakcia</string>

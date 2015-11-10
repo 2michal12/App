@@ -10,6 +10,10 @@
         android:title="@string/preview"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/export_image"
+        android:title="@string/export_image"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/information"
         android:title="@string/information"
         app:showAsAction="never"/>

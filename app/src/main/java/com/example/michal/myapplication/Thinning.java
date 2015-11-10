@@ -3,6 +3,9 @@ package com.example.michal.myapplication;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,8 +25,14 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class Thinning extends AppCompatActivity {
+
+    private static Help help;
     private static Toolbar toolbar;
     private static ImageView mThinningImage;
     private static Button mStartThinning;
@@ -32,11 +41,14 @@ public class Thinning extends AppCompatActivity {
 
     private static int[][] mask;
     private static int BLOCK_SIZE = 10;
+    int blocksWidth, blocksHeight;
+    double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thinning);
+        help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.thinning);
@@ -65,7 +77,7 @@ public class Thinning extends AppCompatActivity {
             mStartThinning.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startThinning(bitmap2mat(image));
+                    startThinning(help.bitmap2mat(image));
                     mThinningImage.setImageBitmap(imageAftefThinning);
 
                     mNextProcess = (Button) findViewById(R.id.next);
@@ -100,6 +112,9 @@ public class Thinning extends AppCompatActivity {
                 i = new Intent(this, MainActivity.class);
                 startActivity(i);
                 break;
+            case R.id.export_image:
+                help.saveImageToExternalStorage(imageAftefThinning, "thinning");
+                break;
             case R.id.information:
                 System.out.println("informacie");
                 break;
@@ -121,8 +136,10 @@ public class Thinning extends AppCompatActivity {
     private void startThinning(Mat image){
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-        Core.divide(image, Scalar.all(255.0), image);
+        blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
+        blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
 
+        Core.divide(image, Scalar.all(255.0), image);
         Mat prev = Mat.zeros(image.size(), CvType.CV_8UC1);
         Mat diff = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
 
@@ -134,29 +151,27 @@ public class Thinning extends AppCompatActivity {
         }while(Core.countNonZero(diff) > 0);
         Core.multiply(image, Scalar.all(255.0), image);
 
+        //repare skeleton
+        //System.out.println("single point removing start");
+        removeSinglePoint(image);
+        //System.out.println("finish");
+
+
         Utils.matToBitmap(image, imageAftefThinning);
     }
 
     public void thinningIteration(Mat image, int iter){
         Mat marker = Mat.zeros(image.size(), CvType.CV_8UC1);
 
-        double[] p2, p3, p4, p5, p6, p7, p8, p9;
         double[] data_input = new double[1];
         data_input[0] = 1;
         int A = 0, B, m1, m2;
 
-        int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
-        int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
-
-        for(int i = 0; i < blocksHeight-1; i++)
-        {
-            for(int j = 0; j < blocksWidth-1; j++)
-            {
+        for(int i = 0; i < blocksHeight-1; i++){
+            for(int j = 0; j < blocksWidth-1; j++){
                 if(mask[j][i] == 1)
-                    for(int k = i*BLOCK_SIZE; k < i*BLOCK_SIZE+BLOCK_SIZE; k++)
-                    {
-                        for(int l = j*BLOCK_SIZE; l < j*BLOCK_SIZE+BLOCK_SIZE; l++)
-                        {
+                    for(int k = i*BLOCK_SIZE; k < i*BLOCK_SIZE+BLOCK_SIZE; k++){
+                        for(int l = j*BLOCK_SIZE; l < j*BLOCK_SIZE+BLOCK_SIZE; l++){
 
                             p2 = image.get(k-1, l);
                             p3 = image.get(k-1, l+1);
@@ -211,10 +226,32 @@ public class Thinning extends AppCompatActivity {
         Core.bitwise_and(image, marker, image);
     }
 
-    public Mat bitmap2mat(Bitmap src){
-        Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);
-        Utils.bitmapToMat(src, dest);
-        return dest;
-    }
+    public void removeSinglePoint(Mat image){
+        double[] data_input = new double[1];
+        data_input[0] = 0;
 
+        for(int i = 0; i < blocksHeight-1; i++){
+            for (int j = 0; j < blocksWidth - 1; j++) {
+                if (mask[j][i] == 1) {
+                    for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                        for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+                            pC = image.get(k, l);
+                            p2 = image.get(k-1, l);
+                            p3 = image.get(k-1, l+1);
+                            p4 = image.get(k, l+1);
+                            p5 = image.get(k+1, l+1);
+                            p6 = image.get(k+1, l);
+                            p7 = image.get(k+1, l-1);
+                            p8 = image.get(k, l-1);
+                            p9 = image.get(k-1, l-1);
+
+                            if( pC[0] == 1 && p2[0] == 0 &&  p3[0] == 0 &&  p4[0] == 0 &&  p5[0] == 0 &&  p6[0] == 0 &&  p7[0] == 0 &&  p8[0] == 0 &&  p9[0] == 0 ){
+                                image.put(k, l, data_input);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

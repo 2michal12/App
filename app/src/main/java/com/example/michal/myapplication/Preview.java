@@ -4,9 +4,13 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,9 +19,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class Preview extends AppCompatActivity {
 
+    private static Help help;
     private static Toolbar toolbar;
 
     private static ImageView mLoadedImage;
@@ -28,6 +36,7 @@ public class Preview extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+        help = new Help(this);
 
         mLoadedImage = (ImageView) findViewById(R.id.view_loaded_image);
         mPreprocessing = (Button) findViewById(R.id.preprocessing);
@@ -35,7 +44,10 @@ public class Preview extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.preview);
+
         setSupportActionBar(toolbar);
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //getSupportActionBar().setIcon(R.drawable.button_background_selector);
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if(byteArray != null) {
@@ -70,6 +82,9 @@ public class Preview extends AppCompatActivity {
             case R.id.home :
                 Intent i = new Intent(this, MainActivity.class);
                 startActivity(i);
+                break;
+            case R.id.export_image:
+                help.saveImageToExternalStorage(mImage, "preview");
                 break;
             case R.id.information:
                 break;

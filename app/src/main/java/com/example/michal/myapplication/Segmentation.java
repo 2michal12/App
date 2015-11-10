@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 
 public class Segmentation extends AppCompatActivity{
 
+    private static Help help;
     private static Toolbar toolbar;
     private static Bitmap imageAftefSegmentation;
     private static double treshold = 0.0;
@@ -45,6 +46,7 @@ public class Segmentation extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_segmentation);
+        help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.segmentation);
@@ -71,7 +73,7 @@ public class Segmentation extends AppCompatActivity{
                     if (SEGMENTATION_SIZE <= 0 || SEGMENTATION_SIZE > 50) {
                         SEGMENTATION_SIZE = 10;
                     }
-                    startSegmentation(bitmap2mat(image));
+                    startSegmentation(help.bitmap2mat(image));
                     mSegmentationImage.setImageBitmap(imageAftefSegmentation);
 
                     mNextProcess = (Button) findViewById(R.id.next);
@@ -106,9 +108,8 @@ public class Segmentation extends AppCompatActivity{
                 i = new Intent(this, MainActivity.class);
                 startActivity(i);
                 break;
-            case R.id.load_image :
-                i = new Intent(this, Preview.class);
-                startActivity(i);
+            case R.id.export_image:
+                help.saveImageToExternalStorage(imageAftefSegmentation, "segmentation");
                 break;
             case R.id.information:
                 System.out.println("informacie");
@@ -267,12 +268,6 @@ public class Segmentation extends AppCompatActivity{
                 image.put(i, j, data);
             }
         }
-    }
-
-    public Mat bitmap2mat(Bitmap src){
-        Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);
-        Utils.bitmapToMat(src, dest);
-        return dest;
     }
 
 }

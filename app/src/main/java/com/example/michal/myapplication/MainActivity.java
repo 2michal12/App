@@ -101,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.home:
                 break;
+            case R.id.load_image:
+                break;
+            case R.id.export_image:
+                break;
             case R.id.information:
                 break;
         }

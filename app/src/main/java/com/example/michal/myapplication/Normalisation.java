@@ -24,6 +24,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 
 public class Normalisation extends AppCompatActivity {
+
+    private static Help help;
     private static Toolbar toolbar;
     private static ImageView mNormalisationImage;
     private static EditText mNormalisationContrast;
@@ -40,6 +42,7 @@ public class Normalisation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normalisation);
+        help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.normalisation);
@@ -78,7 +81,7 @@ public class Normalisation extends AppCompatActivity {
                     if (NORMALISATION_CONTRAST <= 0 || NORMALISATION_CONTRAST > 10) {
                         NORMALISATION_CONTRAST = 1;
                     }
-                    startNormalisation(bitmap2mat(image));
+                    startNormalisation(help.bitmap2mat(image));
                     mNormalisationImage.setImageBitmap(imageAftefNormalisation);
 
                     mNextProcess = (Button) findViewById(R.id.next);
@@ -112,6 +115,9 @@ public class Normalisation extends AppCompatActivity {
             case R.id.home :
                 i = new Intent(this, MainActivity.class);
                 startActivity(i);
+                break;
+            case R.id.export_image:
+                help.saveImageToExternalStorage(imageAftefNormalisation, "normalisation");
                 break;
             case R.id.information:
                 System.out.println("informacie");
@@ -174,12 +180,6 @@ public class Normalisation extends AppCompatActivity {
             }
 
         Utils.matToBitmap(image, imageAftefNormalisation);
-    }
-
-    public Mat bitmap2mat(Bitmap src){
-        Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);
-        Utils.bitmapToMat(src, dest);
-        return dest;
     }
 
 }

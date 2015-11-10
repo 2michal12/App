@@ -24,6 +24,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 
 public class Binarisation extends AppCompatActivity {
+
+    private static Help help;
     private static Toolbar toolbar;
     private static ImageView mBinarisationImage;
     private static Button mStartBinarisation;
@@ -37,6 +39,7 @@ public class Binarisation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_binarisation);
+        help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.binarisation);
@@ -67,7 +70,7 @@ public class Binarisation extends AppCompatActivity {
             mStartBinarisation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startBinarisation(bitmap2mat(image));
+                    startBinarisation(help.bitmap2mat(image));
                     mBinarisationImage.setImageBitmap(imageAftefBinarisation);
 
                     mNextProcess = (Button) findViewById(R.id.next);
@@ -101,6 +104,9 @@ public class Binarisation extends AppCompatActivity {
             case R.id.home :
                 i = new Intent(this, MainActivity.class);
                 startActivity(i);
+                break;
+            case R.id.export_image:
+                help.saveImageToExternalStorage(imageAftefBinarisation, "binarisation");
                 break;
             case R.id.information:
                 System.out.println("informacie");
@@ -144,11 +150,4 @@ public class Binarisation extends AppCompatActivity {
 
         Utils.matToBitmap(image, imageAftefBinarisation);
     }
-
-    public Mat bitmap2mat(Bitmap src){
-        Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);
-        Utils.bitmapToMat(src, dest);
-        return dest;
-    }
-
 }

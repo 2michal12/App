@@ -18,6 +18,7 @@ import android.widget.TextView;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Point;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.CvType;
@@ -27,6 +28,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 
 public class Filtering extends AppCompatActivity {
+
+    private static Help help;
     private static Toolbar toolbar;
     private static Bitmap imageAftefFiltering;
     private static ImageView mFilteringImage;
@@ -39,12 +42,13 @@ public class Filtering extends AppCompatActivity {
 
     private static int FILTERING_BLOCK;
 
-    Mat theta, orientation;
+    Mat orientation_angle, orientation_gui, frequence;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtering);
+        help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.filtering);
@@ -79,7 +83,7 @@ public class Filtering extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     FILTERING_BLOCK = Integer.parseInt(mFilteringBlock.getText().toString());
-                    startFiltering(bitmap2mat(image));
+                    startFiltering(help.bitmap2mat(image));
                     mFilteringImage.setImageBitmap(imageAftefFiltering);
 
                     mNextProcess = (Button) findViewById(R.id.next);
@@ -115,6 +119,9 @@ public class Filtering extends AppCompatActivity {
                 i = new Intent(this, MainActivity.class);
                 startActivity(i);
                 break;
+            case R.id.export_image:
+                help.saveImageToExternalStorage(imageAftefFiltering, "filtering");
+                break;
             case R.id.information:
                 System.out.println("informacie");
                 break;
@@ -142,13 +149,16 @@ public class Filtering extends AppCompatActivity {
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
         //orientationMap(image, FILTERING_BLOCK);
+        //System.out.println("start frekvencia");
+        //frequenceMap(image, FILTERING_BLOCK);
+        //System.out.println("stop frekvencia");
 
         Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
     }
 
     private void orientationMap(Mat image, int block){
-        orientation = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-        theta = new Mat(image.rows(), image.cols(), CvType.CV_64F);
+        orientation_gui = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+        orientation_angle = new Mat(image.rows(), image.cols(), CvType.CV_64F);
         Mat gradientX = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
         Mat gradientY = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
         Mat tempImage = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
@@ -177,10 +187,10 @@ public class Filtering extends AppCompatActivity {
 
                         if(gauss_y != -1 && gauss_x != -1){
                             data_input[0] = 0.5*Math.atan2(gauss_y, gauss_x) + Math.PI/2; //uhol v radianoch
-                            theta.put(i, j, data_input);
+                            orientation_angle.put(i, j, data_input);
                         }else {
                             data_input[0] = 0;
-                            theta.put(x, y, data_input);
+                            orientation_angle.put(x, y, data_input);
                         }
                     }
                 }
@@ -190,26 +200,52 @@ public class Filtering extends AppCompatActivity {
 
         //mapExtermination(block);
 
-        for (int i = 0; i<orientation.rows() / block; i++){
-            for (int j = 0; j<orientation.cols() / block; j++){
-                data_input = theta.get(i*block+block/2, j*block+block/2); //angle
-                printLine(orientation, block, j, i, data_input[0]);
+        for (int i = 0; i<orientation_gui.rows() / block; i++){
+            for (int j = 0; j<orientation_gui.cols() / block; j++){
+                data_input = orientation_angle.get(i*block+block/2, j*block+block/2); //angle
+                printLine(orientation_gui, block, j, i, data_input[0]);
             }
         }
     }
 
-    public void mapExtermination(int block){ //pracujem s globalnou Mat theta
-        Mat sinComponent = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
-        Mat cosComponent = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
-        Mat sinOutput = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
-        Mat cosOutput = new Mat(theta.rows(), theta.cols(), CvType.CV_64F);
+    public void frequenceMap(Mat image, int block){
+        Point center;
+        double angle;
+        double[] data;
+        Size kernel;
+        RotatedRect rRect;
+        Mat M = new Mat(image.rows(), image.cols(), CvType.CV_64F);
+        Mat rotate = new Mat(image.rows(), image.cols(), CvType.CV_64F);
+        Mat crop = new Mat(image.rows(), image.cols(), CvType.CV_64F);
+
+        for(int i = 0; i < image.rows() / block; i++){ //x
+            for(int j = 0; j < image.cols() / block; j++) { //y
+                center = new Point(j*block+block/2, i*block+block/2);
+                data = orientation_angle.get(i*block, j*block);
+                angle = ( data[0] + Math.PI/2 ) * 180/Math.PI; //uhol do stupnov
+
+                kernel = new Size(3*block, 2*block);
+                rRect = new RotatedRect(center, kernel, angle);
+                M = Imgproc.getRotationMatrix2D(rRect.center, angle, 1.0); //otocenie
+                Imgproc.warpAffine(image, rotate, M, image.size(), Imgproc.INTER_CUBIC); //rotacia na 0 stupnov
+                Imgproc.getRectSubPix(rotate, rRect.size, rRect.center, crop); //vyber ROI
+            }
+        }
+
+    }
+
+    public void mapExtermination(int block){ // vyhladenie smerovej mapy
+        Mat sinComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+        Mat cosComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+        Mat sinOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+        Mat cosOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
 
         double[] data = new double[1];
         double[] cos = new double[1];
         double[] sin = new double[1];;
-        for (int i = 0; i < theta.rows(); i++){
-            for (int j = 0; j < theta.cols(); j++){
-                data = theta.get(i, j);
+        for (int i = 0; i < orientation_angle.rows(); i++){
+            for (int j = 0; j < orientation_angle.cols(); j++){
+                data = orientation_angle.get(i, j);
                 cos[0] = Math.cos(2 * data[0]);
                 cosComponent.put(i, j, cos);
                 sin[0] = Math.sin(2 * data[0]);
@@ -227,7 +263,7 @@ public class Filtering extends AppCompatActivity {
                 sin = sinOutput.get(i, j);
                 cos = cosOutput.get(i, j);
                 data[0] = 1 / 2.0 * ( Math.atan2(sin[0], cos[0]) );
-                theta.put(i-1, j-1, data);
+                orientation_angle.put(i-1, j-1, data);
             }
         }
     }
@@ -247,9 +283,4 @@ public class Filtering extends AppCompatActivity {
         Imgproc.line(image, static_point, calculate, sc, 2, 4, 0); //farba, hrubka, typ, shift
     }
 
-    public Mat bitmap2mat(Bitmap src) {
-        Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);
-        Utils.bitmapToMat(src, dest);
-        return dest;
-    }
 }
