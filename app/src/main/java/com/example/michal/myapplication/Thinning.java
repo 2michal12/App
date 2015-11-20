@@ -148,13 +148,12 @@ public class Thinning extends AppCompatActivity {
             thinningIteration(image, 1);
             Core.absdiff(image, prev, diff);
             image.copyTo(prev);
+            System.out.println(Core.countNonZero(diff));
         }while(Core.countNonZero(diff) > 0);
         Core.multiply(image, Scalar.all(255.0), image);
 
         //repare skeleton
-        //System.out.println("single point removing start");
         removeSinglePoint(image);
-        //System.out.println("finish");
 
 
         Utils.matToBitmap(image, imageAftefThinning);
@@ -245,13 +244,14 @@ public class Thinning extends AppCompatActivity {
                             p8 = image.get(k, l-1);
                             p9 = image.get(k-1, l-1);
 
-                            if( pC[0] == 1 && p2[0] == 0 &&  p3[0] == 0 &&  p4[0] == 0 &&  p5[0] == 0 &&  p6[0] == 0 &&  p7[0] == 0 &&  p8[0] == 0 &&  p9[0] == 0 ){
+                            if( pC[0] == 255.0 && p2[0] == 0.0 &&  p3[0] == 0.0 &&  p4[0] == 0.0 &&  p5[0] == 0.0 &&  p6[0] == 0.0 &&  p7[0] == 0.0 &&  p8[0] == 0.0 &&  p9[0] == 0.0 ){
                                 image.put(k, l, data_input);
                             }
                         }
                     }
                 }
             }
+
         }
     }
 }

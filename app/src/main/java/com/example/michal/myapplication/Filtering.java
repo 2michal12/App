@@ -26,6 +26,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Vector;
 
 public class Filtering extends AppCompatActivity {
 
@@ -148,10 +149,10 @@ public class Filtering extends AppCompatActivity {
     private void startFiltering(Mat image) {
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-        //orientationMap(image, FILTERING_BLOCK);
-        //System.out.println("start frekvencia");
-        //frequenceMap(image, FILTERING_BLOCK);
-        //System.out.println("stop frekvencia");
+        orientationMap(image, FILTERING_BLOCK);
+        System.out.println("start frekvencia");
+        frequenceMap(image, FILTERING_BLOCK);
+        System.out.println("stop frekvencia");
 
         Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
     }
@@ -220,6 +221,7 @@ public class Filtering extends AppCompatActivity {
 
         for(int i = 0; i < image.rows() / block; i++){ //x
             for(int j = 0; j < image.cols() / block; j++) { //y
+
                 center = new Point(j*block+block/2, i*block+block/2);
                 data = orientation_angle.get(i*block, j*block);
                 angle = ( data[0] + Math.PI/2 ) * 180/Math.PI; //uhol do stupnov
@@ -229,7 +231,25 @@ public class Filtering extends AppCompatActivity {
                 M = Imgproc.getRotationMatrix2D(rRect.center, angle, 1.0); //otocenie
                 Imgproc.warpAffine(image, rotate, M, image.size(), Imgproc.INTER_CUBIC); //rotacia na 0 stupnov
                 Imgproc.getRectSubPix(rotate, rRect.size, rRect.center, crop); //vyber ROI
+
+                Vector xSignature = new Vector();
+                for (int k = 0; k < crop.cols(); k++){
+                    int sum = 0;
+                    for (int d = 0; d < crop.rows(); d++){
+                        data = crop.get(d, k);
+                        sum = sum + (int)data[0];
+                    }
+                    xSignature.add((float)sum/block);
+                }
+
+                Vector xSignature2 = new Vector(); //xSignatura pre vypocet sigmy v Gaborovom filtri
+                for(int index = 0; index < xSignature.size(); index++){
+                    xSignature2.add( Math.abs( (float)xSignature.get(index) - 255.0) );
+                }
+
+
             }
+            System.out.println( (float)i/((image.rows() / block)-1)*100 ) ;
         }
 
     }
