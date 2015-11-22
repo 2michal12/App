@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +35,9 @@ public class Binarisation extends AppCompatActivity {
 
     private static double treshold = 0.0;
     private static int[][] mask;
+
+    private static int GAUSS_SIZE = 3;
+    private static int GAUSS_STRENGTH = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +152,26 @@ public class Binarisation extends AppCompatActivity {
             }
         }
 
+        gaussianFilter(image);
+
+        for(int i = 0; i < image.rows(); i++){
+            for(int j = 0; j < image.cols(); j++) {
+                data = image.get(i, j);
+                if(data[0] < treshold){
+                    data[0] = 0;
+                    image.put(i, j, data);
+                }else{
+                    data[0] = 255;
+                    image.put(i, j, data);
+                }
+            }
+        }
+
         Utils.matToBitmap(image, imageAftefBinarisation);
+    }
+
+    private void gaussianFilter(Mat image){
+        Size kernel = new Size(GAUSS_SIZE, GAUSS_SIZE);
+        Imgproc.GaussianBlur(image, image, kernel, GAUSS_STRENGTH, GAUSS_STRENGTH);
     }
 }

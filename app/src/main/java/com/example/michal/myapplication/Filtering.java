@@ -26,6 +26,8 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 
 public class Filtering extends AppCompatActivity {
@@ -42,6 +44,8 @@ public class Filtering extends AppCompatActivity {
     private static int[][] mask;
 
     private static int FILTERING_BLOCK;
+    private static int GAUSS_SIZE = 5;
+    private static int GAUSS_STRENGTH = 10;
 
     Mat orientation_angle, orientation_gui, frequence;
 
@@ -75,7 +79,7 @@ public class Filtering extends AppCompatActivity {
             imageAftefFiltering = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
 
             mFilteringBlock = (EditText) findViewById(R.id.filtering_block_edittext);
-            mFilteringBlock.setText("15");
+            mFilteringBlock.setText("9");
 
             mFilteringImage.setImageBitmap(image);
 
@@ -149,10 +153,9 @@ public class Filtering extends AppCompatActivity {
     private void startFiltering(Mat image) {
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-        orientationMap(image, FILTERING_BLOCK);
-        System.out.println("start frekvencia");
-        frequenceMap(image, FILTERING_BLOCK);
-        System.out.println("stop frekvencia");
+        //orientationMap(image, FILTERING_BLOCK);
+        //frequenceMap(image, FILTERING_BLOCK);
+        //gaussianFilter(image);
 
         Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
     }
@@ -209,10 +212,12 @@ public class Filtering extends AppCompatActivity {
         }
     }
 
-    public void frequenceMap(Mat image, int block){
+    private void frequenceMap(Mat image, int block){
         Point center;
         double angle;
         double[] data;
+        double[] min_max;
+        double[] data_input = new double[1];
         Size kernel;
         RotatedRect rRect;
         Mat M = new Mat(image.rows(), image.cols(), CvType.CV_64F);
@@ -247,6 +252,18 @@ public class Filtering extends AppCompatActivity {
                     xSignature2.add( Math.abs( (float)xSignature.get(index) - 255.0) );
                 }
 
+                min_max = localMinMax(xSignature2);
+
+                //System.out.println(min_max[0]+" * "+min_max[1]);
+
+                for(int k = 0; k < block; k++){
+                    for(int l = 0; l < block; l++){
+                        //this->sigma.at<double>(i*velkost_bloku+k,j*velkost_bloku+l) = vysledok_min; // hodnota urcena pre sigma v Gabore
+                        //this->frekvencnaMat.at<double>(i*velkost_bloku+k,j*velkost_bloku+l) = 2*vysledok; //frekvencncia
+                        data_input[0] = 10 * min_max[1];
+                        image.put(i*block+k, j*block+l, data_input);
+                    }
+                }
 
             }
             System.out.println( (float)i/((image.rows() / block)-1)*100 ) ;
@@ -254,7 +271,12 @@ public class Filtering extends AppCompatActivity {
 
     }
 
-    public void mapExtermination(int block){ // vyhladenie smerovej mapy
+    private void gaussianFilter(Mat image){
+        Size kernel = new Size(GAUSS_SIZE, GAUSS_SIZE);
+        Imgproc.GaussianBlur(image, image, kernel, GAUSS_STRENGTH, GAUSS_STRENGTH);
+    }
+
+    private void mapExtermination(int block){ // vyhladenie smerovej mapy
         Mat sinComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
         Mat cosComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
         Mat sinOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
@@ -289,7 +311,7 @@ public class Filtering extends AppCompatActivity {
     }
 
     //ZMENIT SYNTAX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public void printLine(Mat image, int block, int i, int j, double angle){
+    private void printLine(Mat image, int block, int i, int j, double angle){
         double x1, y1, x2, y2;
         x1 = block / 2.0 + (i*block);
         y1 = block / 2.0 + (j*block);
@@ -301,6 +323,83 @@ public class Filtering extends AppCompatActivity {
 
         Scalar sc = new Scalar(255, 255, 255);
         Imgproc.line(image, static_point, calculate, sc, 2, 4, 0); //farba, hrubka, typ, shift
+    }
+
+    private double[] localMinMax(Vector<Double> vec){
+
+        double array[] = new double[vec.size()];
+        Double vectorValues;
+        for(int i = 0; i != vec.size(); i++){
+            vectorValues = (Double)vec.elementAt(i);
+            array[i] = vectorValues.doubleValue();
+        }
+
+        ArrayList<Integer> mins = new ArrayList<Integer>();
+        ArrayList<Integer> maxs = new ArrayList<Integer>();
+
+        double prevDiff = array[0] - array[1];
+        int i=1;
+        while(i<array.length-1){
+            double currDiff = 0;
+            int zeroCount = 0;
+            while(currDiff == 0 && i<array.length-1){
+                zeroCount++;
+                i++;
+                currDiff = array[i-1] - array[i];
+            }
+
+            int signCurrDiff = Integer.signum((int)currDiff);
+            int signPrevDiff = Integer.signum((int)prevDiff);
+            if( signPrevDiff != signCurrDiff && signCurrDiff != 0){ //signSubDiff==0, the case when prev while ended bcoz of last elem
+                int index = i-1-(zeroCount)/2;
+                if(signPrevDiff == 1){
+                    mins.add( index );
+                }else{
+                    maxs.add( index );
+                }
+            }
+            prevDiff = currDiff;
+        }
+
+        double[] maxs_values = new double[maxs.size()];
+        double[] mins_values = new double[mins.size()];
+
+        int ind2 = 0;
+        for(Integer ind : maxs){
+            maxs_values[ind2++] = array[ind];
+        }
+        ind2 = 0;
+        for(Integer ind : mins){
+            mins_values[ind2++] = array[ind];
+        }
+
+        Arrays.sort(maxs_values);
+        Arrays.sort(mins_values);
+
+        //AZ TU PREBIEHA VYPOCET
+        double sum = 0;
+        for(int j = 0; j < maxs_values.length; j++){//priemerny pocet pixlov medzi dvoma maximami v xSignature
+            if(j != (maxs_values.length - 1)){
+                sum += maxs_values[j+1] - maxs_values[j] - 1;
+            }
+        }
+        double vysledok = sum/maxs_values.length; //zmen na double
+        if(vysledok<0){
+            vysledok = 0;
+        }
+        sum = 0;
+        for(int j = 0; j<mins_values.length; j++){
+            if(j != (mins_values.length-1)){
+                sum += mins_values[j+1] - mins_values[j] - 1;
+            }
+        }
+        double vysledok_min = sum/mins_values.length; //zmen na double
+        if(vysledok_min<0){
+            vysledok_min = 0;
+        }
+
+        double[] min_max = new double[]{vysledok_min, vysledok};
+        return min_max;
     }
 
 }
