@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">Diplomovka</string>
-    <string name="app_version">Verzia aplikacie: 1.0</string>
+    <string name="app_version">Verzia aplikacie: 1.1 Scan</string>
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
     <string name="export_image">Uložiť obrázok</string>
     <string name="load_image">Načítaj odtlačok</string>
+    <string name="scan_image">Skenuj odtlačok</string>
     <string name="preprocessing">Predspracovanie</string>
     <string name="extraction">Extrakcia</string>
     <string name="information">Informácie</string>

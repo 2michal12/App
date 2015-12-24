@@ -53,6 +53,7 @@ public class Preview extends AppCompatActivity {
         if(byteArray != null) {
 
             mImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            //mImage.recycle();
             mLoadedImage.setImageBitmap(mImage);
 
             mPreprocessing.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +101,8 @@ public class Preview extends AppCompatActivity {
 
         Intent i = new Intent(this, Segmentation.class);
         i.putExtra("BitmapImage", byteArray);
-        Bundle nextAnimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.left_in, R.anim.right_out).toBundle();
-        startActivity(i, nextAnimation);
+        //Bundle nextAnimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.left_in, R.anim.right_out).toBundle();
+        //startActivity(i, nextAnimation);
+        startActivity(i);
     }
 }

@@ -1,6 +1,5 @@
 package com.example.michal.myapplication;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.michal.myapplication.ftrScan.FtrScanDemoUsbHostActivity;
+
 import org.opencv.android.OpenCVLoader;
 
 import java.io.ByteArrayOutputStream;
@@ -25,10 +26,12 @@ import java.io.ByteArrayOutputStream;
 public class MainActivity extends AppCompatActivity {
 
     private static final String IMAGE_PATH = "/sdcard/Fingerprints/obrazok.bmp";
+
     private static final int SELECT_PICTURE = 1;
 
     private static Toolbar toolbar;
     private static Button mLoadImage;
+    private static Button mScanImage;
     private static Bitmap image;
     private String selectedImagePath;
 
@@ -53,12 +56,22 @@ public class MainActivity extends AppCompatActivity {
         mLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                image = BitmapFactory.decodeFile(IMAGE_PATH);
-                startPreview(image, 1);
-               /* Intent intent = new Intent();
+                //image = BitmapFactory.decodeFile(IMAGE_PATH);
+                //startPreview(image, 1);
+                Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), SELECT_PICTURE);*/
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+            }
+        });
+
+        mScanImage = (Button) findViewById(R.id.scan_image);
+
+        mScanImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent scan = new Intent(MainActivity.this, FtrScanDemoUsbHostActivity.class);
+                startActivity(scan);
             }
         });
 

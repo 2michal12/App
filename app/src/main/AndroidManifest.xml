@@ -4,17 +4,18 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
+
+    <uses-feature android:name="android.hardware.usb.host" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -31,9 +32,19 @@
             android:name=".filtering"
             android:label="@string/title_activity_filtering"
             android:theme="@style/AppTheme" />
+
         <activity android:name=".Filtering" />
         <activity android:name=".Binarisation" />
         <activity android:name=".Thinning"></activity>
+
+        <activity
+            android:name=".ftrScan.FtrScanDemoUsbHostActivity"
+            android:label="FtrScanDemoUsbHostActivity" />
+
+        <activity
+            android:name=".ftrScan.SelectFileFormatActivity"
+            android:label="SelectFileFormatActivity" />
+
     </application>
 
 </manifest>

@@ -1,2 +1,4 @@
 include ':app'
+include ':ftrScanApiAndroidHelperUsbHost'
+include ':ftrWsqAndroidHelper'
 include ':libs:opencv'

@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MyApplication.iml" filepath="$PROJECT_DIR$/MyApplication.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ftrScanApiAndroidHelperUsbHost/ftrScanApiAndroidHelperUsbHost.iml" filepath="$PROJECT_DIR$/ftrScanApiAndroidHelperUsbHost/ftrScanApiAndroidHelperUsbHost.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ftrWsqAndroidHelper/ftrWsqAndroidHelper.iml" filepath="$PROJECT_DIR$/ftrWsqAndroidHelper/ftrWsqAndroidHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/opencv/opencv.iml" filepath="$PROJECT_DIR$/libs/opencv/opencv.iml" />
     </modules>

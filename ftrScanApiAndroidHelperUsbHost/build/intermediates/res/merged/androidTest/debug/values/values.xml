@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/C:/Users/Michal/AndroidStudioProjects/MyApplication/ftrScanApiAndroidHelperUsbHost/build/intermediates/bundles/debug/res/values/values.xml -->
+    <eat-comment/>
+    <string name="app_name">ftrScanApiAndroidHelper</string>
+    <string name="hello">Hello World!</string>
+</resources>
