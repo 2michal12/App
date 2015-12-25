@@ -88,7 +88,7 @@ public class Binarisation extends AppCompatActivity {
                 }
             });
         }else{
-            mBinarisationImage.setImageResource(R.mipmap.ic_menu_report_image);
+            mBinarisationImage.setImageResource(R.drawable.ic_menu_report_image);
         }
     }
 

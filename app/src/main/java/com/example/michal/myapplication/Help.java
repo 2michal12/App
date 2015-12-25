@@ -6,6 +6,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
@@ -35,7 +36,7 @@ public class Help {
 
     public void saveImageToExternalStorage(Bitmap finalBitmap, String name) {
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root + "/DIPLOMOVKA_OUTPUT");
+        File myDir = new File(root + "/DIPLOMOVKA/Output");
         myDir.mkdirs();
 
         File file = new File(myDir, name+".jpg");
@@ -59,5 +60,6 @@ public class Help {
                     }
                 });
 
+        Toast.makeText(context.getApplicationContext(), R.string.image_saved, Toast.LENGTH_SHORT).show();
     }
 }

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,7 @@ import com.example.michal.myapplication.ftrScan.FtrScanDemoUsbHostActivity;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
+        File extPrivateStorageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES); //private directory is erased after uninstall
+        final File mDir = new File(extPrivateStorageDirectory, "Fingerprints");
+
         mLoadImage = (Button) findViewById(R.id.load_image);
         mLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), SELECT_PICTURE);
             }
         });
 

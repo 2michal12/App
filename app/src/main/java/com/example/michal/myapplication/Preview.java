@@ -63,7 +63,7 @@ public class Preview extends AppCompatActivity {
                 }
             });
         }else{
-            mLoadedImage.setImageResource(R.mipmap.ic_menu_report_image);
+            mLoadedImage.setImageResource(R.drawable.ic_menu_report_image);
         }
 
     }

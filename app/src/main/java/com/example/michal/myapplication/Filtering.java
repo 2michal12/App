@@ -102,7 +102,7 @@ public class Filtering extends AppCompatActivity {
                 }
             });
         } else {
-            mFilteringImage.setImageResource(R.mipmap.ic_menu_report_image);
+            mFilteringImage.setImageResource(R.drawable.ic_menu_report_image);
         }
 
     }

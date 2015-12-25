@@ -95,7 +95,7 @@ public class Normalisation extends AppCompatActivity {
                 }
             });
         }else{
-            mNormalisationImage.setImageResource(R.mipmap.ic_menu_report_image);
+            mNormalisationImage.setImageResource(R.drawable.ic_menu_report_image);
         }
     }
 

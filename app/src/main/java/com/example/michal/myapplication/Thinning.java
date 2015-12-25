@@ -91,7 +91,7 @@ public class Thinning extends AppCompatActivity {
                 }
             });
         } else {
-            mThinningImage.setImageResource(R.mipmap.ic_menu_report_image);
+            mThinningImage.setImageResource(R.drawable.ic_menu_report_image);
         }
     }
 

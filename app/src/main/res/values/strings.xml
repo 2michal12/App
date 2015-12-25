@@ -1,12 +1,13 @@
 <resources>
     <string name="app_name">Diplomovka</string>
-    <string name="app_version">Verzia aplikacie: 1.1 Scan</string>
+    <string name="app_version">Verzia aplikacie: 1.2 Save</string>
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
     <string name="export_image">Uložiť obrázok</string>
     <string name="load_image">Načítaj odtlačok</string>
     <string name="scan_image">Skenuj odtlačok</string>
+    <string name="select_image">Vyber odtlačok</string>
     <string name="preprocessing">Predspracovanie</string>
     <string name="extraction">Extrakcia</string>
     <string name="information">Informácie</string>
@@ -26,4 +27,15 @@
     <string name="title_activity_load_image">LoadImage</string>
     <string name="title_activity_normalisation">Normalisation</string>
     <string name="title_activity_filtering">filtering</string>
+
+    <!-- Futronic scanner -->
+    <string name="futronic_title">Futronic FS80</string>
+    <string name="scan">Skenovať</string>
+    <string name="stop">Zastaviť</string>
+    <string name="save">Uložiť</string>
+    <string name="file_name">Názov odtlačku:</string>
+    <string name="scanner_unplag">Zariadenie Futronic FS80 nie je pripojené.</string>
+    <string name="image_saved">Odtlačok bol uložený.</string>
+    <string name="scanner_plug">Zariadenie Futronic FS80 je pripojené.</string>
+
 </resources>

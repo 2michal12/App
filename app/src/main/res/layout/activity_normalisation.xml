@@ -28,7 +28,7 @@
         android:id="@+id/view_normalisation_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@mipmap/ic_menu_report_image" />
+        android:background="@drawable/ic_menu_report_image" />
 
     </LinearLayout>
 
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:layout_marginLeft="2dp"
-                android:drawableRight="@mipmap/ic_menu_forward"
+                android:drawableRight="@drawable/ic_menu_forward"
                 android:enabled="false"
                 android:text="@string/next_process"/>
 

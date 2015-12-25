@@ -87,7 +87,7 @@ public class Segmentation extends AppCompatActivity{
                 }
             });
         }else{
-            mSegmentationImage.setImageResource(R.mipmap.ic_menu_report_image);
+            mSegmentationImage.setImageResource(R.drawable.ic_menu_report_image);
         }
     }
 

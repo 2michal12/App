@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:layout_marginLeft="2dp"
-            android:drawableRight="@mipmap/ic_menu_forward"
+            android:drawableRight="@drawable/ic_menu_forward"
             android:enabled="false"
             android:text="@string/next_process"/>
 

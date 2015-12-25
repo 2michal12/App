@@ -9,14 +9,22 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.michal.myapplication.Help;
 import com.example.michal.myapplication.R;
 import com.futronictech.Scanner;
 import com.futronictech.UsbDeviceDataExchangeImpl;
@@ -58,6 +66,8 @@ public class FtrScanDemoUsbHostActivity extends Activity {
     private static final int REQUEST_FILE_FORMAT = 1;
     private UsbDeviceDataExchangeImpl usb_host_ctx = null;
 
+	private static Toolbar toolbar;
+
 	public static void InitFingerPictureParameters(int wight, int height)
     {
     	 mImageWidth = wight;
@@ -82,6 +92,9 @@ public class FtrScanDemoUsbHostActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ftr_activity_main);
 
+		toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.setTitle(R.string.futronic_title);
+
         mUsbHostMode = true;
     	mButtonScan = (Button) findViewById(R.id.btnScan);
         mButtonStop = (Button) findViewById(R.id.btnStop);
@@ -95,25 +108,21 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 				if (mFPScan != null) {
 					mStop = true;
 					mFPScan.stop();
-
 				}
 
 				mStop = false;
 				if (mUsbHostMode) {
-					System.out.println("pred closedevice");
 					usb_host_ctx.CloseDevice();
-					System.out.println("za closedevice");
 					if (usb_host_ctx.OpenDevice(0, true)) {
-						System.out.println("run");
 						if (StartScan()) {
 							mButtonScan.setEnabled(false);
 							mButtonSave.setEnabled(false);
 							mButtonStop.setEnabled(true);
 						}
-						System.out.println("za startscan");
+					}else{
+						Toast.makeText(getApplicationContext(), R.string.scanner_unplag, Toast.LENGTH_SHORT).show();
 					}
 				}
-
 			}
 		});
         
@@ -216,6 +225,17 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 		} catch (Exception e) {
 			//mMessage.setText("Exception in saving file");
 		}
+
+		// Tell the media scanner about the new file so that it is immediately available to the user.
+		MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
+				new MediaScannerConnection.OnScanCompletedListener() {
+					public void onScanCompleted(String path, Uri uri) {
+						Log.i("ExternalStorage", "Scanned " + path + ":");
+						Log.i("ExternalStorage", "-> uri=" + uri);
+					}
+				});
+
+		Toast.makeText(getApplicationContext(), R.string.image_saved, Toast.LENGTH_SHORT).show();
 	}
     
     // The Handler that gets information back from the FPScan
@@ -291,5 +311,5 @@ public class FtrScanDemoUsbHostActivity extends Activity {
              break;            
         }
     }
-    
+
 }
