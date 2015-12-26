@@ -120,7 +120,7 @@ public class Normalisation extends AppCompatActivity {
                 help.saveImageToExternalStorage(imageAftefNormalisation, "normalisation");
                 break;
             case R.id.information:
-                System.out.println("informacie");
+                help.informationDialog();
                 break;
         }
 

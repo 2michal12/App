@@ -88,6 +88,7 @@ public class Preview extends AppCompatActivity {
                 help.saveImageToExternalStorage(mImage, "preview");
                 break;
             case R.id.information:
+                help.informationDialog();
                 break;
         }
 

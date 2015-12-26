@@ -128,7 +128,7 @@ public class Filtering extends AppCompatActivity {
                 help.saveImageToExternalStorage(imageAftefFiltering, "filtering");
                 break;
             case R.id.information:
-                System.out.println("informacie");
+                help.informationDialog();
                 break;
         }
 

@@ -1,11 +1,17 @@
 package com.example.michal.myapplication;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.Utils;
@@ -61,5 +67,21 @@ public class Help {
                 });
 
         Toast.makeText(context.getApplicationContext(), R.string.image_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    public void informationDialog(){
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.popup_info);
+        dialog.setTitle(R.string.information);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 }

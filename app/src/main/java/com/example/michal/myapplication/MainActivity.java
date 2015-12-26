@@ -1,5 +1,8 @@
 package com.example.michal.myapplication;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.michal.myapplication.ftrScan.FtrScanDemoUsbHostActivity;
 
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int SELECT_PICTURE = 1;
 
+    private static Help help;
     private static Toolbar toolbar;
     private static Button mLoadImage;
     private static Button mScanImage;
@@ -53,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
+
+        help = new Help(this);
 
         File extPrivateStorageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES); //private directory is erased after uninstall
         final File mDir = new File(extPrivateStorageDirectory, "Fingerprints");
@@ -124,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.export_image:
                 break;
             case R.id.information:
+                help.informationDialog();
                 break;
         }
 

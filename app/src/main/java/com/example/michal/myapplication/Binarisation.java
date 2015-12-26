@@ -113,7 +113,7 @@ public class Binarisation extends AppCompatActivity {
                 help.saveImageToExternalStorage(imageAftefBinarisation, "binarisation");
                 break;
             case R.id.information:
-                System.out.println("informacie");
+                help.informationDialog();
                 break;
         }
 

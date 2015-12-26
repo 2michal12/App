@@ -35,7 +35,7 @@
 
         <activity android:name=".Filtering" />
         <activity android:name=".Binarisation" />
-        <activity android:name=".Thinning"></activity>
+        <activity android:name=".Thinning" />
 
         <activity
             android:name=".ftrScan.FtrScanDemoUsbHostActivity"
@@ -44,6 +44,7 @@
         <activity
             android:name=".ftrScan.SelectFileFormatActivity"
             android:label="SelectFileFormatActivity" />
+
 
     </application>
 

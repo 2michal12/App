@@ -112,7 +112,7 @@ public class Segmentation extends AppCompatActivity{
                 help.saveImageToExternalStorage(imageAftefSegmentation, "segmentation");
                 break;
             case R.id.information:
-                System.out.println("informacie");
+                help.informationDialog();
                 break;
         }
 
