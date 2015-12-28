@@ -306,7 +306,19 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 				 String fileFormat = extraString[0];
 				 String fileName = extraString[1];
 				 SaveImageByFileFormat(fileFormat, fileName);
-             }
+             }else if(resultCode == Activity.RESULT_FIRST_USER){
+				 // Get the file format
+				 String[] extraString = data.getExtras().getStringArray(SelectFileFormatActivity.EXTRA_FILE_FORMAT);
+				 String fileFormat = extraString[0];
+				 String fileName = extraString[1];
+				 SaveImageByFileFormat(fileFormat, fileName);
+
+				 Intent intent = new Intent();
+				 // Set result and finish this Activity
+				 intent.putExtra("fileName", fileName);
+				 setResult(Activity.RESULT_FIRST_USER, intent);
+				 finish();
+			 }
 				 //mMessage.setText("Cancelled!");
              break;            
         }

@@ -1,5 +1,6 @@
 package com.example.michal.myapplication;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -21,8 +22,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.michal.myapplication.ftrScan.FtrScanDemoUsbHostActivity;
+import com.example.michal.myapplication.ftrScan.SelectFileFormatActivity;
 
 import org.opencv.android.OpenCVLoader;
 
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent scan = new Intent(MainActivity.this, FtrScanDemoUsbHostActivity.class);
-                startActivity(scan);
+                startActivityForResult(scan, Activity.RESULT_FIRST_USER);
             }
         });
 
@@ -102,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
                     startPreview(image, 1); // 0 = .png
                 }
             }
+        }
+        if (resultCode == Activity.RESULT_FIRST_USER){
+            selectedImagePath =  data.getExtras().getString("fileName");
+            image = BitmapFactory.decodeFile(selectedImagePath);
+            startPreview(image, 1);
         }
     }
 

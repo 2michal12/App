@@ -24,6 +24,7 @@ import java.io.File;
 public class SelectFileFormatActivity extends Activity {
 
 	private Button mButtonOK;
+    private Button mButtonOKRun;
 	private RadioGroup mRadioGroup;
 	private RadioButton mRadioBitmap;
 	private RadioButton mRadioWSQ;
@@ -46,6 +47,8 @@ public class SelectFileFormatActivity extends Activity {
         toolbar.setTitle(R.string.futronic_title);
 
         mButtonOK = (Button) findViewById(R.id.btnSaveScan);
+        mButtonOKRun = (Button) findViewById(R.id.btnSaveScanAndRun);
+
         //mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup1);
         //mRadioBitmap = (RadioButton) findViewById(R.id.radioBitmap);
         //mRadioWSQ = (RadioButton) findViewById(R.id.radioWSQ);
@@ -79,7 +82,28 @@ public class SelectFileFormatActivity extends Activity {
             	else 
             		mFileName = mFileName + ".wsq";
             	
-            	CheckFileName();
+            	CheckFileName(Activity.RESULT_OK);
+            }
+        });
+
+        mButtonOKRun.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFileName = mEditFileName.getText().toString();
+                if( mFileName.trim().isEmpty() )
+                {
+                    ShowAlertDialog();
+                    return;
+                }
+                if( !isImageFolder() )
+                    return;
+
+                if(mFileFormat.compareTo("BITMAP") == 0 )
+                    mFileName = mFileName + ".bmp";
+                else
+                    mFileName = mFileName + ".wsq";
+
+                CheckFileName(Activity.RESULT_FIRST_USER);
             }
         });
     }
@@ -97,7 +121,7 @@ public class SelectFileFormatActivity extends Activity {
         .show();
     }
     
-    private void SetFileName()
+    private void SetFileName(int resultCode)
     {    	
     	String[] extraString = new String[2];
     	extraString[0] = mFileFormat;
@@ -105,11 +129,11 @@ public class SelectFileFormatActivity extends Activity {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_FILE_FORMAT, extraString);
         // Set result and finish this Activity
-        setResult(Activity.RESULT_OK, intent);
+        setResult(resultCode, intent);
         finish();
     }
     
-    private void CheckFileName()
+    private void CheckFileName(final int resultCode)
     {    	
     	File f = new File(mDir, mFileName);
     	if( f.exists() )
@@ -119,7 +143,7 @@ public class SelectFileFormatActivity extends Activity {
             .setMessage("File already exists. Do you want replace it?") 
             .setPositiveButton("Yes", new DialogInterface.OnClickListener() { 
                  public void onClick(DialogInterface dialog, int whichButton) { 
-                	 SetFileName();              	
+                	 SetFileName(resultCode);
                  } 
             }) 
             .setNegativeButton("No", new DialogInterface.OnClickListener() { 
@@ -131,7 +155,7 @@ public class SelectFileFormatActivity extends Activity {
             .show();
         }
     	else
-    		SetFileName();
+    		SetFileName(resultCode);
     }
     
     public boolean isImageFolder()
