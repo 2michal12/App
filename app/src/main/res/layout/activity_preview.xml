@@ -3,31 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
-    tools:context="com.example.michal.myapplication.Segmentation"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.example.michal.myapplication.Segmentation">
 
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        app:titleTextAppearance="@style/ToolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_background" />
+        app:title="@string/preview"  />
 
     <LinearLayout
         android:id="@+id/content_image"
-        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:gravity="center">
 
-    <ImageView
-        android:id="@+id/view_loaded_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/view_loaded_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -36,10 +39,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="34dp"
         android:layout_marginBottom="5dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:layout_marginTop="0dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
 
         <Button
@@ -47,11 +50,11 @@
             style="@style/button"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:drawableRight="@drawable/ic_menu_forward"
             android:padding="5dp"
-            android:text="@string/preprocessing"
-            android:drawableRight="@drawable/ic_menu_forward" />
+            android:text="@string/preprocessing" />
 
 
     </LinearLayout>

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!--  Pressed state-->
-    <item android:state_pressed="true" android:drawable="@color/button_color_light" />
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/button_color_light" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
     <!--  default -->
-    <item android:drawable="@color/button_color_medium"/>
+    <item>
+        <shape>
+            <solid android:color="@color/button_color_medium" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
 </selector>

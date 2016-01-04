@@ -44,7 +44,6 @@ public class SelectFileFormatActivity extends Activity {
         setContentView(R.layout.ftr_activity_save);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.futronic_title);
 
         mButtonOK = (Button) findViewById(R.id.btnSaveScan);
         mButtonOKRun = (Button) findViewById(R.id.btnSaveScanAndRun);

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
     android:orientation="vertical"
     tools:context="com.example.michal.myapplication.Binarisation">
@@ -10,25 +11,26 @@
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        app:titleTextAppearance="@style/ToolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_background" />
+        app:title="@string/binarisation" />
 
     <LinearLayout
         android:id="@+id/content_image"
-        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:gravity="center">
 
         <ImageView
             android:id="@+id/view_binarisation_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_menu_report_image" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -44,11 +46,10 @@
             android:id="@+id/input"
             android:layout_width="fill_parent"
             android:layout_height="30dp"
-            android:gravity="center"
-            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
             android:background="@color/black50"
-            android:layout_marginBottom="4dp">
-
+            android:gravity="center"
+            android:orientation="horizontal">
 
 
         </LinearLayout>
@@ -57,29 +58,29 @@
             android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginBottom="5dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/start_binarisation"
                 style="@style/button"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
                 android:layout_marginRight="2dp"
-                android:text="@string/start_process"/>
+                android:padding="5dp"
+                android:text="@string/start_process" />
 
             <Button
                 android:id="@+id/next"
                 style="@style/button"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
                 android:layout_marginLeft="2dp"
                 android:drawableRight="@drawable/ic_menu_forward"
                 android:enabled="false"
-                android:text="@string/next_process"/>
+                android:padding="5dp"
+                android:text="@string/next_process" />
 
 
         </LinearLayout>

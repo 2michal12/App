@@ -56,7 +56,6 @@ public class Filtering extends AppCompatActivity {
         help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.filtering);
         setSupportActionBar(toolbar);
 
         mFilteringImage = (ImageView) findViewById(R.id.view_filtering_image);

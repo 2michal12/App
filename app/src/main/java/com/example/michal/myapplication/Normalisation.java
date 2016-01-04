@@ -45,7 +45,6 @@ public class Normalisation extends AppCompatActivity {
         help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.normalisation);
         setSupportActionBar(toolbar);
 
         mNormalisationImage = (ImageView) findViewById(R.id.view_normalisation_image);

@@ -13,36 +13,53 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Segmentation" />
+        <activity
+            android:name=".Segmentation"
+            android:label="@string/title_activity_segmentation"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Preview"
             android:label="@string/title_activity_load_image"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".Normalisation"
             android:label="@string/title_activity_normalisation"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".filtering"
+            android:name=".Filtering"
             android:label="@string/title_activity_filtering"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
-        <activity android:name=".Filtering" />
-        <activity android:name=".Binarisation" />
-        <activity android:name=".Thinning" />
+        <activity
+            android:name=".Binarisation"
+            android:label="@string/title_activity_binarisation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Thinning"
+            android:label="@string/title_activity_thinning"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".ftrScan.FtrScanDemoUsbHostActivity"
+            android:screenOrientation="portrait"
             android:label="FtrScanDemoUsbHostActivity" />
 
         <activity
             android:name=".ftrScan.SelectFileFormatActivity"
+            android:screenOrientation="portrait"
             android:label="SelectFileFormatActivity" />
 
 

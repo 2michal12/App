@@ -46,7 +46,6 @@ public class Binarisation extends AppCompatActivity {
         help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.binarisation);
         setSupportActionBar(toolbar);
 
         mBinarisationImage = (ImageView) findViewById(R.id.view_binarisation_image);

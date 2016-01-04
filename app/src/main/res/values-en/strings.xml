@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Thesis</string>
-    <string name="app_version">Vesrion 1.5 Language mutations</string>
+    <string name="app_version">Vesrion 1.6 Design</string>
 
     <string name="home">Home</string>
     <string name="preview">Preview</string>
@@ -11,7 +11,7 @@
     <string name="preprocessing">Preprocessing</string>
     <string name="extraction">Extraction</string>
     <string name="information">Information</string>
-    <string name="info_text">Aplikacia Diplomovka (v.1.5 Language mutations) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.1.6 Design) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
 
     <string name="segmentation">Segmentation</string>
     <string name="segmentation_block">Segmentation block: </string>
@@ -27,8 +27,11 @@
     <string name="next_process">Next</string>
     <string name="ok">OK</string>
     <string name="title_activity_load_image">LoadImage</string>
+    <string name="title_activity_segmentation">Segmentation</string>
     <string name="title_activity_normalisation">Normalisation</string>
     <string name="title_activity_filtering">filtering</string>
+    <string name="title_activity_thinning">thinning</string>
+    <string name="title_activity_binarisation">binarisation</string>
 
     <!-- Futronic scanner -->
     <string name="futronic_title">Futronic FS80</string>
@@ -36,7 +39,7 @@
     <string name="stop">Stop</string>
     <string name="save">Save</string>
     <string name="save_and_run">Save and Run</string>
-    <string name="file_name">Image name:</string>
+    <string name="file_name">Image name</string>
     <string name="scanner_unplag">Device Futronic FS80 is not connected.</string>
     <string name="image_saved">Fingerprint is saved.</string>
     <string name="scanner_plug">Device Futronic FS80 is connected.</string>

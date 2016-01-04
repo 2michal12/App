@@ -49,7 +49,6 @@ public class Segmentation extends AppCompatActivity{
         help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.segmentation);
         setSupportActionBar(toolbar);
 
         mSegmentationImage = (ImageView) findViewById(R.id.view_segmentation_image);

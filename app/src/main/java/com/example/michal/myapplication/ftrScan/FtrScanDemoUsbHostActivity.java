@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -93,7 +94,6 @@ public class FtrScanDemoUsbHostActivity extends Activity {
         setContentView(R.layout.ftr_activity_main);
 
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
-		toolbar.setTitle(R.string.futronic_title);
 
         mUsbHostMode = true;
     	mButtonScan = (Button) findViewById(R.id.btnScan);

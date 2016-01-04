@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Diplomovka</string>
-    <string name="app_version">Verzia 1.5 Jazykové mutácie</string>
+    <string name="app_version">Verzia 1.6 Dizajn</string>
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
@@ -11,7 +11,7 @@
     <string name="preprocessing">Predspracovanie</string>
     <string name="extraction">Extrakcia</string>
     <string name="information">Informácie</string>
-    <string name="info_text">Aplikacia Diplomovka (v.1.4 Jazykové mutácie) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.1.6 Dizajn) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
 
     <string name="segmentation">Segmentácia</string>
     <string name="segmentation_block">Veľkosť bloku: </string>
@@ -27,8 +27,13 @@
     <string name="next_process">Ďalej</string>
     <string name="ok">OK</string>
     <string name="title_activity_load_image">LoadImage</string>
+    <string name="title_activity_segmentation">Segmentation</string>
+
     <string name="title_activity_normalisation">Normalisation</string>
     <string name="title_activity_filtering">filtering</string>
+    <string name="title_activity_thinning">thinning</string>
+    <string name="title_activity_binarisation">binarisation</string>
+
 
     <!-- Futronic scanner -->
     <string name="futronic_title">Futronic FS80</string>
@@ -36,7 +41,7 @@
     <string name="stop">Zastaviť</string>
     <string name="save">Uložiť</string>
     <string name="save_and_run">Uložiť a použiť</string>
-    <string name="file_name">Názov odtlačku:</string>
+    <string name="file_name">Názov odtlačku</string>
     <string name="scanner_unplag">Zariadenie Futronic FS80 nie je pripojené.</string>
     <string name="image_saved">Odtlačok bol uložený.</string>
     <string name="scanner_plug">Zariadenie Futronic FS80 je pripojené.</string>

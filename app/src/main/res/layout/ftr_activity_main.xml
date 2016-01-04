@@ -2,20 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
     android:orientation="vertical">
 
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        app:titleTextAppearance="@style/ToolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_background" />
+        app:title="@string/futronic_title" />
 
     <LinearLayout
         android:id="@+id/content_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/content"
         android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
@@ -24,20 +27,19 @@
 
         <ImageView
             android:id="@+id/imageFinger"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="FingerImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:src="@drawable/logo" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/content"
-        android:layout_width="fill_parent"
+        style="@style/BottomPanel"
+        android:padding="5dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="34dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -47,18 +49,15 @@
             style="@style/button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:padding="5dp"
+            android:layout_margin="1dp"
             android:text="@string/scan"/>
-
 
         <Button
             android:id="@+id/btnStop"
             style="@style/button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:padding="5dp"
+            android:layout_margin="1dp"
             android:text="@string/stop"/>
 
         <Button
@@ -66,8 +65,7 @@
             style="@style/button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:padding="5dp"
+            android:layout_margin="1dp"
             android:text="@string/save"/>
 
     </LinearLayout>

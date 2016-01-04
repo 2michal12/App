@@ -51,7 +51,6 @@ public class Thinning extends AppCompatActivity {
         help = new Help(this);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.thinning);
         setSupportActionBar(toolbar);
 
         mThinningImage = (ImageView) findViewById(R.id.view_thinning_image);

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
     android:orientation="vertical"
     tools:context="com.example.michal.myapplication.Filtering">
@@ -10,14 +11,16 @@
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
+        style="@style/Toolbar"
+        app:titleTextAppearance="@style/ToolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar_background" />
+        app:title="@string/filtering" />
 
     <LinearLayout
         android:id="@+id/content_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/content"
         android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
@@ -26,9 +29,8 @@
 
         <ImageView
             android:id="@+id/view_filtering_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_menu_report_image" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -62,8 +64,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:textSize="10dp"
-                android:textColor="@color/white"></EditText>
+                android:textColor="@color/white"
+                android:textSize="10dp"></EditText>
 
         </LinearLayout>
 

@@ -43,8 +43,6 @@ public class Preview extends AppCompatActivity {
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.preview);
-
         setSupportActionBar(toolbar);
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
         //getSupportActionBar().setIcon(R.drawable.button_background_selector);
