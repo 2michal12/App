@@ -30,7 +30,11 @@ public class Preview extends AppCompatActivity {
 
     private static ImageView mLoadedImage;
     private static Bitmap mImage;
-    private static Button mPreprocessing;
+    private static Button mPreprocessingAutomatic;
+    private static Button mPreprocessingManual;
+
+    private static String AUTOMATIC = "automatic";
+    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,8 @@ public class Preview extends AppCompatActivity {
         help = new Help(this);
 
         mLoadedImage = (ImageView) findViewById(R.id.view_loaded_image);
-        mPreprocessing = (Button) findViewById(R.id.preprocessing);
+        mPreprocessingAutomatic = (Button) findViewById(R.id.preprocessing_automatic);
+        mPreprocessingManual = (Button) findViewById(R.id.preprocessing_manual);
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -51,13 +56,18 @@ public class Preview extends AppCompatActivity {
         if(byteArray != null) {
 
             mImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            //mImage.recycle();
             mLoadedImage.setImageBitmap(mImage);
 
-            mPreprocessing.setOnClickListener(new View.OnClickListener() {
+            mPreprocessingAutomatic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startPreprocessing(mImage);
+                    startPreprocessing(mImage, AUTOMATIC);
+                }
+            });
+            mPreprocessingManual.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startPreprocessing(mImage, MANUAL);
                 }
             });
         }else{
@@ -93,15 +103,14 @@ public class Preview extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void startPreprocessing(Bitmap image) {
+    private void startPreprocessing(Bitmap image, String type) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
         Intent i = new Intent(this, Segmentation.class);
         i.putExtra("BitmapImage", byteArray);
-        //Bundle nextAnimation = ActivityOptions.makeCustomAnimation(getApplicationContext(), R.anim.left_in, R.anim.right_out).toBundle();
-        //startActivity(i, nextAnimation);
+        i.putExtra("Type", type);
         startActivity(i);
     }
 }

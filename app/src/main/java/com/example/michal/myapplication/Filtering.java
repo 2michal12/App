@@ -1,8 +1,10 @@
 package com.example.michal.myapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +15,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.opencv.android.Utils;
@@ -37,17 +41,29 @@ public class Filtering extends AppCompatActivity {
     private static Bitmap imageAftefFiltering;
     private static ImageView mFilteringImage;
     private static Button mNextProcess;
-    private static Button mStartFiltering;
     private static EditText mFilteringBlock;
 
     private static double treshold = 0.0;
     private static int[][] mask;
 
-    private static int FILTERING_BLOCK;
+    private static int FILTERING_BLOCK = 10;
     private static int GAUSS_SIZE = 5;
     private static int GAUSS_STRENGTH = 10;
 
     Mat orientation_angle, orientation_gui, frequence;
+
+    private static RelativeLayout mProgresBarLayout;
+    private static ProgressBar pb;
+    private static Bitmap imageBitmap ;
+    private static String type;
+    private static Button dialogButton;
+    private static Button mSettings;
+    private static TextView mProgressBarText;
+    private static TextView mEdittextTitle;
+    private static TextView mSettingTitleText;
+
+    private static String AUTOMATIC = "automatic";
+    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +74,15 @@ public class Filtering extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
+        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
+        mNextProcess = (Button) findViewById(R.id.next);
+        mNextProcess.setEnabled(false);
+        mSettings = (Button) findViewById(R.id.settings);
         mFilteringImage = (ImageView) findViewById(R.id.view_filtering_image);
 
+        type = getIntent().getStringExtra("Type");
         treshold = getIntent().getDoubleExtra("Treshold",treshold);
 
         mask = null;
@@ -74,32 +97,25 @@ public class Filtering extends AppCompatActivity {
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if (byteArray != null) {
 
-            final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            imageAftefFiltering = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+            imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            imageAftefFiltering = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            mFilteringImage.setImageBitmap(imageBitmap);
 
-            mFilteringBlock = (EditText) findViewById(R.id.filtering_block_edittext);
-            mFilteringBlock.setText("9");
+            if( type.equals(AUTOMATIC) ) {
+                //FILTERING_BLOCK = 10; dorobit vypocet automatickeho zvysenia
 
-            mFilteringImage.setImageBitmap(image);
-
-            mStartFiltering = (Button) findViewById(R.id.start_filtering);
-            mStartFiltering.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FILTERING_BLOCK = Integer.parseInt(mFilteringBlock.getText().toString());
-                    startFiltering(help.bitmap2mat(image));
-                    mFilteringImage.setImageBitmap(imageAftefFiltering);
-
-                    mNextProcess = (Button) findViewById(R.id.next);
-                    mNextProcess.setEnabled(true);
-                    mNextProcess.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startPreprocessing(imageAftefFiltering);
-                        }
-                    });
-                }
-            });
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else{
+                mSettings.setVisibility(View.VISIBLE);
+                mSettings.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        settingsDialog();
+                    }
+                });
+            }
         } else {
             mFilteringImage.setImageResource(R.drawable.ic_menu_report_image);
         }
@@ -144,19 +160,10 @@ public class Filtering extends AppCompatActivity {
 
         Intent i = new Intent(this, Binarisation.class);
         i.putExtra("BitmapImage", byteArray);
-        i.putExtra("Treshold",treshold);
+        i.putExtra("Treshold", treshold);
+        i.putExtra("Type", type);
         i.putExtras(mBundle);
         startActivity(i);
-    }
-
-    private void startFiltering(Mat image) {
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
-
-        //orientationMap(image, FILTERING_BLOCK);
-        //frequenceMap(image, FILTERING_BLOCK);
-        //gaussianFilter(image);
-
-        Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
     }
 
     private void orientationMap(Mat image, int block){
@@ -399,6 +406,104 @@ public class Filtering extends AppCompatActivity {
 
         double[] min_max = new double[]{vysledok_min, vysledok};
         return min_max;
+    }
+
+
+    class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            onProgressUpdate(0);
+            mProgressBarText.setText(R.string.filtering_running);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            //heavy work docasne
+            for(int i = 0; i < 100; i++){
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(i);
+            }
+
+            Mat image = help.bitmap2mat(imageBitmap);
+
+            Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+
+            //orientationMap(image, FILTERING_BLOCK);
+            publishProgress( 33 );
+
+            //frequenceMap(image, FILTERING_BLOCK);
+            publishProgress(66);
+
+            //gaussianFilter(image);
+            publishProgress(100);
+
+            Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
+
+            return "filtering_finished";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            pb.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            mProgressBarText.setText(R.string.filtering_finished);
+            mFilteringImage.setImageBitmap(imageAftefFiltering);
+
+            mProgresBarLayout.setVisibility(View.GONE);
+
+            mNextProcess.setEnabled(true);
+            mNextProcess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startPreprocessing(imageAftefFiltering);
+                }
+            });
+        }
+
+    }
+
+
+    public void settingsDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.popup_settings);
+        dialog.setTitle(R.string.settings);
+
+        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        mSettingTitleText.setText(R.string.filtering_settings_title);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle.setText(R.string.filtering_block);
+        mFilteringBlock = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mFilteringBlock.setText(String.valueOf(FILTERING_BLOCK));
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if( !mFilteringBlock.getText().toString().isEmpty() )
+                    FILTERING_BLOCK = Integer.valueOf(mFilteringBlock.getText().toString());
+
+                if( FILTERING_BLOCK > 0 && FILTERING_BLOCK < 100 ){
+                    dialog.dismiss();
+
+                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                    new AsyncTaskSegmentation().execute();
+                }
+
+            }
+        });
+
+        dialog.show();
     }
 
 }

@@ -14,6 +14,7 @@
 
     <style name="Toolbar">
         <item name="android:background">@color/toolbar_background</item>
+        <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <style name="ToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
@@ -33,9 +34,25 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="BottomPanel">
-        <item name="android:background">@color/button_color_medium</item>
+    <style name="PopUpTextTitle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="BottomPanel">
+        <item name="android:background">@color/main_background</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="ProgressBarText">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="SettingsItem">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
 
 </resources>

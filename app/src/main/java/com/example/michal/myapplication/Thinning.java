@@ -1,10 +1,12 @@
 package com.example.michal.myapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +18,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -35,14 +40,27 @@ public class Thinning extends AppCompatActivity {
     private static Help help;
     private static Toolbar toolbar;
     private static ImageView mThinningImage;
-    private static Button mStartThinning;
     private static Button mNextProcess;
     private static Bitmap imageAftefThinning;
+    private static EditText mThinningBlock;
 
     private static int[][] mask;
     private static int BLOCK_SIZE = 10;
     int blocksWidth, blocksHeight;
     double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
+
+    private static RelativeLayout mProgresBarLayout;
+    private static ProgressBar pb;
+    private static Bitmap imageBitmap ;
+    private static String type;
+    private static Button dialogButton;
+    private static Button mSettings;
+    private static TextView mProgressBarText;
+    private static TextView mEdittextTitle;
+    private static TextView mSettingTitleText;
+
+    private static String AUTOMATIC = "automatic";
+    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +71,15 @@ public class Thinning extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
+        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
+        mNextProcess = (Button) findViewById(R.id.next);
+        mNextProcess.setEnabled(false);
+        mSettings = (Button) findViewById(R.id.settings);
         mThinningImage = (ImageView) findViewById(R.id.view_thinning_image);
+
+        type = getIntent().getStringExtra("Type");
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
@@ -67,28 +93,25 @@ public class Thinning extends AppCompatActivity {
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if (byteArray != null) {
 
-            final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            imageAftefThinning = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+            imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            imageAftefThinning = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            mThinningImage.setImageBitmap(imageBitmap);
 
-            mThinningImage.setImageBitmap(image);
+            if( type.equals(AUTOMATIC) ) {
+                //BLOCK_SIZE = 10; dorobit vypocet automaticky
 
-            mStartThinning = (Button) findViewById(R.id.start_thinning);
-            mStartThinning.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startThinning(help.bitmap2mat(image));
-                    mThinningImage.setImageBitmap(imageAftefThinning);
-
-                    mNextProcess = (Button) findViewById(R.id.next);
-                    mNextProcess.setEnabled(true);
-                    mNextProcess.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //startPreprocessing(imageAftefBinarisation);
-                        }
-                    });
-                }
-            });
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else{
+                mSettings.setVisibility(View.VISIBLE);
+                mSettings.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        settingsDialog();
+                    }
+                });
+            }
         } else {
             mThinningImage.setImageResource(R.drawable.ic_menu_report_image);
         }
@@ -123,39 +146,13 @@ public class Thinning extends AppCompatActivity {
     }
 
     private void startPreprocessing(Bitmap image) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        /*ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
         Intent i = new Intent(this, Thinning.class);
         i.putExtra("BitmapImage", byteArray);
-        startActivity(i);
-    }
-
-    private void startThinning(Mat image){
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
-
-        blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
-        blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
-
-        Core.divide(image, Scalar.all(255.0), image);
-        Mat prev = Mat.zeros(image.size(), CvType.CV_8UC1);
-        Mat diff = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-
-        do{
-            thinningIteration(image, 0);
-            thinningIteration(image, 1);
-            Core.absdiff(image, prev, diff);
-            image.copyTo(prev);
-            System.out.println(Core.countNonZero(diff));
-        }while(Core.countNonZero(diff) > 0);
-        Core.multiply(image, Scalar.all(255.0), image);
-
-        //repare skeleton
-        removeSinglePoint(image);
-
-
-        Utils.matToBitmap(image, imageAftefThinning);
+        startActivity(i);*/
     }
 
     public void thinningIteration(Mat image, int iter){
@@ -252,5 +249,109 @@ public class Thinning extends AppCompatActivity {
             }
 
         }
+    }
+
+    class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            onProgressUpdate(0);
+            mProgressBarText.setText(R.string.thinning_running);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Mat image = help.bitmap2mat(imageBitmap);
+            int progress = 0;
+
+            Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+
+            blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
+            blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
+
+            Core.divide(image, Scalar.all(255.0), image);
+            Mat prev = Mat.zeros(image.size(), CvType.CV_8UC1);
+            Mat diff = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+
+            do{
+                thinningIteration(image, 0);
+                thinningIteration(image, 1);
+                Core.absdiff(image, prev, diff);
+                image.copyTo(prev);
+
+                if( progress >= 100)
+                    progress = 90;
+                progress += 10;
+                publishProgress( progress );
+
+            }while(Core.countNonZero(diff) > 0);
+            Core.multiply(image, Scalar.all(255.0), image);
+
+            //repare skeleton
+            removeSinglePoint(image);
+            publishProgress(100);
+
+            Utils.matToBitmap(image, imageAftefThinning);
+
+            return "thinning_finished";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            pb.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            mProgressBarText.setText(R.string.thinning_finished);
+            mThinningImage.setImageBitmap(imageAftefThinning);
+
+            mProgresBarLayout.setVisibility(View.GONE);
+
+            mNextProcess.setEnabled(true);
+            mNextProcess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startPreprocessing(imageAftefThinning);
+                }
+            });
+        }
+
+    }
+
+
+    public void settingsDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.popup_settings);
+        dialog.setTitle(R.string.settings);
+
+        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        mSettingTitleText.setText(R.string.thinning_settings_title);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle.setText(R.string.thinning_block);
+        mThinningBlock = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mThinningBlock.setText(String.valueOf(BLOCK_SIZE));
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if( !mThinningBlock.getText().toString().isEmpty() )
+                    BLOCK_SIZE = Integer.valueOf(mThinningBlock.getText().toString());
+
+                if( BLOCK_SIZE > 0 && BLOCK_SIZE < 100 ){
+                    dialog.dismiss();
+
+                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                    new AsyncTaskSegmentation().execute();
+                }
+
+            }
+        });
+
+        dialog.show();
     }
 }

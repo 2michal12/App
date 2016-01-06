@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/popUpSettingTextTitle"
+        style="@style/PopUpTextTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:gravity="center"
+        />
+
+    <LinearLayout
+        android:id="@+id/popup_settings"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/popUpSettingTextTitle"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:id="@+id/text_for_edittext"
+            style="@style/SettingsItem"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"/>
+
+
+        <EditText
+            android:id="@+id/settings_edittext"
+            android:background="@drawable/edittext_style"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="10dp"
+            android:ellipsize="start"
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/popUpOK"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/popup_settings"
+        android:layout_margin="5dp"
+        android:text="@string/ok"/>
+
+</RelativeLayout>

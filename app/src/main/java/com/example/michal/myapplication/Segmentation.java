@@ -1,8 +1,10 @@
 package com.example.michal.myapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,12 +16,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 
@@ -30,17 +36,26 @@ public class Segmentation extends AppCompatActivity{
     private static Bitmap imageAftefSegmentation;
     private static double treshold = 0.0;
     private static double variance = 0.0;
-    private static int SEGMENTATION_SIZE;
+    private static int SEGMENTATION_SIZE = 10;
     private static final Integer SEGMENTATION_CLEANING = 10;
 
     private static ImageView mSegmentationImage;
     private static EditText mSegmentationBlockSize;
-    private static Button mStartSegmentation;
     private static Button mNextProcess;
-    private static TextView priemer;  //docasne
-    private static TextView rozptyl;  //docasne
+    private static Button mSettings;
+    private static TextView mProgressBarText;
 
     private static int mask[][];
+    private static RelativeLayout mProgresBarLayout;
+    private static ProgressBar pb;
+    private static Bitmap imageBitmap ;
+    private static String type;
+    private static Button dialogButton;
+    private static TextView mSettingTitleText;
+    private static TextView mEdittextTitle;
+
+    private static String AUTOMATIC = "automatic";
+    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,40 +66,38 @@ public class Segmentation extends AppCompatActivity{
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
+        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
+        mNextProcess = (Button) findViewById(R.id.next);
+        mNextProcess.setEnabled(false);
+        mSettings = (Button) findViewById(R.id.settings);
         mSegmentationImage = (ImageView) findViewById(R.id.view_segmentation_image);
 
+        type = getIntent().getStringExtra("Type");
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if(byteArray != null) {
 
-            final Bitmap image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            imageAftefSegmentation = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+            imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            imageAftefSegmentation = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            mSegmentationImage.setImageBitmap(imageBitmap);
 
-            mSegmentationImage.setImageBitmap(image);
+            if( type.equals(AUTOMATIC) ) {
+                //SEGMENTATION_SIZE = 10; dorobit vypocet automatickej velkosti bloku
 
-            mSegmentationBlockSize = (EditText) findViewById(R.id.segmentation_block_size_edittext);
-            mSegmentationBlockSize.setText("10");
-
-            mStartSegmentation = (Button) findViewById(R.id.start_segmentation);
-            mStartSegmentation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SEGMENTATION_SIZE = Integer.parseInt(mSegmentationBlockSize.getText().toString());
-                    if (SEGMENTATION_SIZE <= 0 || SEGMENTATION_SIZE > 50) {
-                        SEGMENTATION_SIZE = 10;
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else{
+                mSettings.setVisibility(View.VISIBLE);
+                mSettings.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        settingsDialog();
                     }
-                    startSegmentation(help.bitmap2mat(image));
-                    mSegmentationImage.setImageBitmap(imageAftefSegmentation);
+                });
 
-                    mNextProcess = (Button) findViewById(R.id.next);
-                    mNextProcess.setEnabled(true);
-                    mNextProcess.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startPreprocessing(imageAftefSegmentation);
-                        }
-                    });
-                }
-            });
+            }
         }else{
             mSegmentationImage.setImageResource(R.drawable.ic_menu_report_image);
         }
@@ -130,63 +143,10 @@ public class Segmentation extends AppCompatActivity{
         i.putExtra("BitmapImage", byteArray);
         i.putExtra("Treshold",treshold);
         i.putExtra("Variance",variance);
+        i.putExtra("Type",type);
         i.putExtras(mBundle);
 
         startActivity(i);
-    }
-
-    private void startSegmentation(Mat image){
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
-        treshold = grayscaleTreshold(image, 0, 0, image.width(), image.height());
-        variance = grayVariance(image, treshold);
-
-        int blocksWidth = (int)Math.floor(image.width()/SEGMENTATION_SIZE);
-        int blocksHeight = (int)Math.floor(image.height()/SEGMENTATION_SIZE);
-        mask = new int[blocksWidth][blocksHeight];
-
-        int padding_x = image.width() - (blocksWidth*SEGMENTATION_SIZE); //padding of image
-        int padding_y = image.height() - (blocksHeight*SEGMENTATION_SIZE);
-
-        //calculate mask
-        for(int i = 0; i < blocksWidth; i++)
-        {
-            for(int j = 0; j < blocksHeight; j++)
-            {
-                if(treshold < grayscaleTreshold(image, i * SEGMENTATION_SIZE, j * SEGMENTATION_SIZE, i * SEGMENTATION_SIZE + SEGMENTATION_SIZE, j * SEGMENTATION_SIZE+SEGMENTATION_SIZE)) {
-                    mask[i][j] = 0;
-                }
-                else {
-                    mask[i][j] = 1;
-                }
-            }
-        }
-
-        //clean mask
-        for(int i = 0; i < SEGMENTATION_CLEANING; i++)
-            cleanMask(mask, blocksWidth, blocksHeight);
-
-        //apply mask
-        double[] data = new double[1];
-        data[0] = 0;
-        for(int i = 0; i < blocksHeight; i++)
-        {
-            for(int j = 0; j < blocksWidth; j++)
-            {
-                if(mask[j][i] == 0)
-                    for(int k = i*SEGMENTATION_SIZE; k < i*SEGMENTATION_SIZE+SEGMENTATION_SIZE; k++)
-                    {
-                        for(int l = j*SEGMENTATION_SIZE; l < j*SEGMENTATION_SIZE+SEGMENTATION_SIZE; l++)
-                        {
-                            image.put(k, l, data);
-
-                        }
-                    }
-            }
-        }
-
-        clearPadding(image, padding_x, padding_y);
-
-        Utils.matToBitmap(image, imageAftefSegmentation);
     }
 
     private double grayscaleTreshold(Mat image, int startX, int startY, int endX, int endY){
@@ -267,6 +227,136 @@ public class Segmentation extends AppCompatActivity{
                 image.put(i, j, data);
             }
         }
+    }
+
+    class AsyncTaskSegmentation extends AsyncTask<String, Integer, String>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            onProgressUpdate(0);
+            mProgressBarText.setText(R.string.segmentation_running);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            Mat image = help.bitmap2mat(imageBitmap);
+
+            Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+            treshold = grayscaleTreshold(image, 0, 0, image.width(), image.height());
+            variance = grayVariance(image, treshold);
+
+            int blocksWidth = (int)Math.floor(image.width()/SEGMENTATION_SIZE);
+            int blocksHeight = (int)Math.floor(image.height()/SEGMENTATION_SIZE);
+            mask = new int[blocksWidth][blocksHeight];
+
+            int padding_x = image.width() - (blocksWidth*SEGMENTATION_SIZE); //padding of image
+            int padding_y = image.height() - (blocksHeight*SEGMENTATION_SIZE);
+
+            //calculate mask
+            for(int i = 0; i < blocksWidth; i++)
+            {
+                for(int j = 0; j < blocksHeight; j++)
+                {
+                    if(treshold < grayscaleTreshold(image, i * SEGMENTATION_SIZE, j * SEGMENTATION_SIZE, i * SEGMENTATION_SIZE + SEGMENTATION_SIZE, j * SEGMENTATION_SIZE+SEGMENTATION_SIZE)) {
+                        mask[i][j] = 0;
+                    }
+                    else {
+                        mask[i][j] = 1;
+                    }
+                }
+            }
+            publishProgress(33);
+
+            //clean mask
+            for(int i = 0; i < SEGMENTATION_CLEANING; i++)
+                cleanMask(mask, blocksWidth, blocksHeight);
+
+            publishProgress(66);
+
+            //apply mask
+            double[] data = new double[1];
+            data[0] = 0;
+            for(int i = 0; i < blocksHeight; i++)
+            {
+                for(int j = 0; j < blocksWidth; j++)
+                {
+                    if(mask[j][i] == 0)
+                        for(int k = i*SEGMENTATION_SIZE; k < i*SEGMENTATION_SIZE+SEGMENTATION_SIZE; k++)
+                        {
+                            for(int l = j*SEGMENTATION_SIZE; l < j*SEGMENTATION_SIZE+SEGMENTATION_SIZE; l++)
+                            {
+                                image.put(k, l, data);
+
+                            }
+                        }
+                }
+            }
+
+            clearPadding(image, padding_x, padding_y);
+
+            Utils.matToBitmap(image, imageAftefSegmentation);
+
+            publishProgress(100);
+            return "segmentation_finished";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            pb.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            mProgressBarText.setText(R.string.segmentation_finished);
+            mSegmentationImage.setImageBitmap(imageAftefSegmentation);
+
+            mProgresBarLayout.setVisibility(View.GONE);
+
+            mNextProcess.setEnabled(true);
+            mNextProcess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startPreprocessing(imageAftefSegmentation);
+                }
+            });
+        }
+
+    }
+
+
+    public void settingsDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.popup_settings);
+        dialog.setTitle(R.string.settings);
+
+        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        mSettingTitleText.setText(R.string.segmentation_settings_title);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle.setText(R.string.segmentation_block);
+        mSegmentationBlockSize = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mSegmentationBlockSize.setText(String.valueOf(SEGMENTATION_SIZE));
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if( !mSegmentationBlockSize.getText().toString().isEmpty() )
+                    SEGMENTATION_SIZE = Integer.valueOf(mSegmentationBlockSize.getText().toString());
+
+                if( SEGMENTATION_SIZE > 0 && SEGMENTATION_SIZE < 100 ){
+                    dialog.dismiss();
+
+                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                    new AsyncTaskSegmentation().execute();
+                }
+
+            }
+        });
+
+        dialog.show();
     }
 
 }

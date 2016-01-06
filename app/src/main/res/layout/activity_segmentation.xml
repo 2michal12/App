@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
     android:orientation="vertical"
     tools:context="com.example.michal.myapplication.Segmentation">
@@ -11,10 +11,10 @@
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         style="@style/Toolbar"
-        app:titleTextAppearance="@style/ToolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/segmentation"  />
+        app:title="@string/segmentation"
+        app:titleTextAppearance="@style/ToolbarTitle" />
 
     <LinearLayout
         android:id="@+id/content_image"
@@ -33,70 +33,64 @@
 
     </LinearLayout>
 
+
     <LinearLayout
         android:id="@+id/content"
-        android:layout_width="fill_parent"
+        style="@style/BottomPanel"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/input"
-            android:layout_width="fill_parent"
-            android:layout_height="30dp"
-            android:layout_marginBottom="4dp"
-            android:background="@color/black50"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/segmentation_block_size_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/segmentation_block"
-                android:textColor="@color/white"
-                android:textSize="12dp" />
-
-            <EditText
-                android:id="@+id/segmentation_block_size_edittext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:textColor="@color/white"
-                android:textSize="10dp"></EditText>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/buttons"
-            android:layout_width="fill_parent"
+        <Button
+            android:id="@+id/settings"
+            style="@style/button"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_margin="1dp"
+            android:text="@string/settings"
+            android:visibility="gone" />
 
-            <Button
-                android:id="@+id/start_segmentation"
-                style="@style/button"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="2dp"
-                android:padding="5dp"
-                android:text="@string/start_process" />
+        <Button
+            android:id="@+id/next"
+            style="@style/button"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="@string/next_process" />
 
-            <Button
-                android:id="@+id/next"
-                style="@style/button"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:drawableRight="@drawable/ic_menu_forward"
-                android:enabled="false"
-                android:padding="5dp"
-                android:text="@string/next_process" />
-
-        </LinearLayout>
 
     </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/progress_bar_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@color/black90"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:layout_height="20dp"
+            android:indeterminate="false"
+            android:progressDrawable="@drawable/progress_bar"/>
+
+        <TextView
+            android:id="@+id/progress_bar_text"
+            style="@style/ProgressBarText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>
