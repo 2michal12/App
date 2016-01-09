@@ -1,6 +1,7 @@
 package com.example.michal.myapplication;
 
 import android.app.ActivityOptions;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,7 +17,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,7 +38,17 @@ public class Preview extends AppCompatActivity {
     private static Button mPreprocessingAutomatic;
     private static Button mPreprocessingManual;
 
+    private static Button dialogButton;
+    private static TextView mSettingTitleText;
+    private static TextView mEdittextTitle;
+    private static EditText mEditText;
+    private static RadioButton radioButton1;
+    private static RadioButton radioButton2;
+    private static RadioGroup radioGroup;
+    private static String radioButton = "";
+
     private static String AUTOMATIC = "automatic";
+    private static String AUTOMATIC_FULL = "automatic_full";
     private static String MANUAL = "manual";
 
     @Override
@@ -49,8 +64,6 @@ public class Preview extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-        //getSupportActionBar().setIcon(R.drawable.button_background_selector);
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if(byteArray != null) {
@@ -61,7 +74,7 @@ public class Preview extends AppCompatActivity {
             mPreprocessingAutomatic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startPreprocessing(mImage, AUTOMATIC);
+                    settingsDialog();
                 }
             });
             mPreprocessingManual.setOnClickListener(new View.OnClickListener() {
@@ -113,4 +126,38 @@ public class Preview extends AppCompatActivity {
         i.putExtra("Type", type);
         startActivity(i);
     }
+
+    public void settingsDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.popup_settings);
+        dialog.setTitle(R.string.settings);
+
+        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        mSettingTitleText.setVisibility(View.GONE);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle.setVisibility(View.GONE);
+        mEditText = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mEditText.setVisibility(View.GONE);
+        radioButton1 = (RadioButton) dialog.findViewById(R.id.radioButton1);
+        radioButton2 = (RadioButton) dialog.findViewById(R.id.radioButton2);
+        radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
+        radioGroup.setVisibility(View.VISIBLE);
+
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if( radioButton1.isChecked() ) {
+                    startPreprocessing(mImage, AUTOMATIC);
+                }else if( radioButton2.isChecked() ){
+                    startPreprocessing(mImage, AUTOMATIC_FULL);
+                }else{
+
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
 }

@@ -10,6 +10,8 @@
     <string name="select_image">Vyber odtlačok</string>
     <string name="preprocessing">Predspracovanie</string>
     <string name="automatic_preprocessing">Automatické predspracovanie</string>
+    <string name="automatic_preprocessing_steps">Po krokoch</string>
+    <string name="automatic_preprocessing_full">Automaticky</string>
     <string name="manual_preprocessing">Manuálne predspracovanie</string>
     <string name="extraction">Extrakcia</string>
     <string name="information">Informácie</string>
@@ -32,7 +34,8 @@
 
     <!-- Filtering -->
     <string name="filtering">Filtrovanie</string>
-    <string name="filtering_block">Veľkosť bloku: </string>
+    <string name="filtering_block">Veľkosť Gaussovho filtra: </string>
+    <string name="filtering_strength">Sila Gaussovho filtra: </string>
     <string name="filtering_running">Prebieha filtrovanie …</string>
     <string name="filtering_finished">Filtrovanie dokončené</string>
     <string name="filtering_settings_title">Vstupné parametre pre filtrovanie</string>

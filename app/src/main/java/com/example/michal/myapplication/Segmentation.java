@@ -55,6 +55,7 @@ public class Segmentation extends AppCompatActivity{
     private static TextView mEdittextTitle;
 
     private static String AUTOMATIC = "automatic";
+    private static String AUTOMATIC_FULL = "automatic_full";
     private static String MANUAL = "manual";
 
     @Override
@@ -85,6 +86,10 @@ public class Segmentation extends AppCompatActivity{
             if( type.equals(AUTOMATIC) ) {
                 //SEGMENTATION_SIZE = 10; dorobit vypocet automatickej velkosti bloku
 
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else if( type.equals(AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -141,6 +146,7 @@ public class Segmentation extends AppCompatActivity{
 
         Intent i = new Intent(this, Normalisation.class);
         i.putExtra("BitmapImage", byteArray);
+        i.putExtra("SegmentationBlock", SEGMENTATION_SIZE);
         i.putExtra("Treshold",treshold);
         i.putExtra("Variance",variance);
         i.putExtra("Type",type);
@@ -166,10 +172,10 @@ public class Segmentation extends AppCompatActivity{
         for(int i = 0; i < image.height(); i++) {
             for (int j = 0; j < image.width(); j++) {
                 data = image.get(i, j);
-                variance += ( data[0]/255.0-treshold/255.0)*( data[0]/255.0-treshold/255.0);
+                variance += ( data[0]-treshold)*( data[0]-treshold);
             }
         }
-        return (double)Math.round( variance/(image.width()*image.height()) *100)/10;
+        return (double)Math.round( variance/(image.width()*image.height()));
     }
 
     private int[][] cleanMask(int[][] mask, int blocksWidth, int blocksHeight){
@@ -220,7 +226,7 @@ public class Segmentation extends AppCompatActivity{
             }
         }
 
-        for(int i = image.height(); i >= image.height() - 20; i--) //doplnene kvoli zlemu snimacu
+        for(int i = image.height(); i >= image.height() - 40; i--) //doplnene kvoli zlemu snimacu
         {
             for(int j = 0; j < image.width(); j++)
             {
@@ -274,7 +280,7 @@ public class Segmentation extends AppCompatActivity{
 
             publishProgress(66);
 
-            //apply mask
+            //apply mask520184
             double[] data = new double[1];
             data[0] = 0;
             for(int i = 0; i < blocksHeight; i++)
@@ -322,6 +328,10 @@ public class Segmentation extends AppCompatActivity{
                     startPreprocessing(imageAftefSegmentation);
                 }
             });
+
+            if( type.equals(AUTOMATIC_FULL) )
+                startPreprocessing(imageAftefSegmentation);
+
         }
 
     }

@@ -39,6 +39,7 @@ public class Normalisation extends AppCompatActivity {
 
     private static double treshold = 0.0;
     private static double variance = 0.0;
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
     private static int NORMALISATION_CONTRAST = 10;
     private static int[][] mask;
 
@@ -53,6 +54,7 @@ public class Normalisation extends AppCompatActivity {
     private static TextView mSettingTitleText;
 
     private static String AUTOMATIC = "automatic";
+    private static String AUTOMATIC_FULL = "automatic_full";
     private static String MANUAL = "manual";
 
 
@@ -75,8 +77,9 @@ public class Normalisation extends AppCompatActivity {
 
         type = getIntent().getStringExtra("Type");
 
-        variance = getIntent().getDoubleExtra("Variance",variance);
-        treshold = getIntent().getDoubleExtra("Treshold",treshold);
+        variance = getIntent().getDoubleExtra("Variance", variance);
+        treshold = getIntent().getDoubleExtra("Treshold", treshold);
+        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
@@ -97,6 +100,10 @@ public class Normalisation extends AppCompatActivity {
             if( type.equals(AUTOMATIC) ) {
                 //NORMALISATION_CONTRAST = 1; dorobit vypocet automatickeho zvysenia
 
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else if( type.equals(AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -153,6 +160,7 @@ public class Normalisation extends AppCompatActivity {
         Intent i = new Intent(this, Filtering.class);
         i.putExtra("BitmapImage", byteArray);
         i.putExtra("Treshold",treshold);
+        i.putExtra("SegmentationBlock", BLOCK_SIZE);
         i.putExtra("Type", type);
         i.putExtras(mBundle);
         startActivity(i);
@@ -180,32 +188,39 @@ public class Normalisation extends AppCompatActivity {
             double[] data_full = new double[1];
             data_full[0] = 255;
             double[] data_new = new double[1];
-            int mod = image.width() / 100;
-            int progress = 0;
 
-            for(int i = 0; i < image.width(); i++) {
-                for (int j = 0; j < image.height(); j++) {
-                    data = image.get(j, i);
-                    if (data[0] > treshold) {
-                        if ((treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) > 255) {
-                            image.put(j, i, data_full);
-                        } else {
-                            data_new[0] = treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
-                            image.put(j, i, data_new);
-                        }
-                    } else {
-                        if ((treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) < 0) {
-                            image.put(j, i, data_zero);
-                        } else {
-                            data_new[0] = treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
-                            image.put(j, i, data_new);
+            int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
+            int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
+            int progress = 100 / blocksHeight;
+
+            for(int i = 0; i < blocksHeight; i++) {
+                for (int j = 0; j < blocksWidth; j++) {
+                    if (mask[j][i] == 1) {
+                        for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                            for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+                                data = image.get(k, l);
+                                if (data[0] > treshold) {
+                                    //odtlacok1.at<uchar>(i,j)=abs(mean+(sqrt(variance*(pow(d-mean_cely,2))/variancia_cela))-255);
+                                    if ((treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) > 255) {
+                                        image.put(k, l, data_full);
+                                    } else {
+                                        data_new[0] = treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
+                                        image.put(k, l, data_new);
+                                    }
+                                } else {
+                                    //odtlacok1.at<uchar>(i,j)=abs(mean-(sqrt(variance*(pow(d-mean_cely,2))/variancia_cela))-255);
+                                    if ((treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) < 0) {
+                                        image.put(k, l, data_zero);
+                                    } else {
+                                        data_new[0] = treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
+                                        image.put(k, l, data_new);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                if( i % mod == 0 ) {
-                    progress++;
-                }
-                publishProgress( progress );
+                publishProgress( progress * i );
             }
 
             Utils.matToBitmap(image, imageAftefNormalisation);
@@ -234,6 +249,9 @@ public class Normalisation extends AppCompatActivity {
                     startPreprocessing(imageAftefNormalisation);
                 }
             });
+
+            if( type.equals(AUTOMATIC_FULL) )
+                startPreprocessing(imageAftefNormalisation);
         }
 
     }

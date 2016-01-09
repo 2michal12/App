@@ -43,9 +43,9 @@ public class Thinning extends AppCompatActivity {
     private static Button mNextProcess;
     private static Bitmap imageAftefThinning;
     private static EditText mThinningBlock;
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
     private static int[][] mask;
-    private static int BLOCK_SIZE = 10;
     int blocksWidth, blocksHeight;
     double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
 
@@ -60,6 +60,7 @@ public class Thinning extends AppCompatActivity {
     private static TextView mSettingTitleText;
 
     private static String AUTOMATIC = "automatic";
+    private static String AUTOMATIC_FULL = "automatic_full";
     private static String MANUAL = "manual";
 
     @Override
@@ -80,6 +81,7 @@ public class Thinning extends AppCompatActivity {
         mThinningImage = (ImageView) findViewById(R.id.view_thinning_image);
 
         type = getIntent().getStringExtra("Type");
+        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
@@ -98,19 +100,25 @@ public class Thinning extends AppCompatActivity {
             mThinningImage.setImageBitmap(imageBitmap);
 
             if( type.equals(AUTOMATIC) ) {
-                //BLOCK_SIZE = 10; dorobit vypocet automaticky
-
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else if( type.equals(AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
             }else{
-                mSettings.setVisibility(View.VISIBLE);
-                mSettings.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        settingsDialog();
-                    }
-                });
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+// zakomentovane zatial nepotrebne ziadne manualne nastavenia pre binarizaciu
+//                mSettings.setVisibility(View.VISIBLE);
+//                mSettings.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        settingsDialog();
+//                    }
+//                });
             }
         } else {
             mThinningImage.setImageResource(R.drawable.ic_menu_report_image);
@@ -202,6 +210,16 @@ public class Thinning extends AppCompatActivity {
                                 A++;
                             }
 
+                            /* druhy algoritmus - vyzera byt horsi
+                            int C = ( (ivt((int)p2[0]) & ( (int)p3[0] | (int)p4[0] )) + (ivt((int)p4[0]) & ( (int)p5[0] | (int)p6[0] )) + (ivt((int)p6[0]) & ( (int)p7[0] | (int)p8[0] )) + (ivt((int)p8[0]) & ( (int)p9[0] | (int)p2[0] )) );
+                            int N1 = ( ((int)p9[0] | (int)p2[0])  +  ((int)p3[0] | (int)p4[0])  +  ((int)p5[0] | (int)p6[0]) + ((int)p7[0] | (int)p8[0]) );
+                            int N2 = ( ((int)p2[0] | (int)p3[0])  +  ((int)p4[0] | (int)p5[0])  +  ((int)p6[0] | (int)p7[0]) + ((int)p8[0] | (int)p9[0]) );
+                            int N = N1 < N2 ? N1 : N2;
+                            int m = iter == 0 ?  (((int)p6[0] | (int)p7[0] | ivt((int)p9[0])) & (int)p8[0]) : (((int)p2[0] | (int)p3[0] | ivt((int)p5[0])) & (int)p4[0]) ;
+
+                            if(C == 1 && (N >= 2 && N <= 6) && m == 0){
+                                marker.put(k, l, data_input);
+                            }*/
 
                             B = (int)p2[0] + (int)p3[0] + (int)p4[0] + (int)p5[0] + (int)p6[0] + (int)p7[0] + (int)p8[0] + (int)p9[0];
                             m1 = iter == 0 ? ((int)p2[0] * (int)p4[0] * (int)p6[0]) : ((int)p2[0] * (int)p4[0] * (int)p8[0]);
@@ -212,6 +230,7 @@ public class Thinning extends AppCompatActivity {
                             }
                             A = 0;
                             //spadne ked sa dostane na posledny pixel prveho riadku ! (musel som v for cykloch dat -1 na stlpce a -1 na riadky) - upravene minus jeden block
+
                         }
                     }
             }
@@ -219,6 +238,14 @@ public class Thinning extends AppCompatActivity {
 
         Core.bitwise_not(marker, marker);
         Core.bitwise_and(image, marker, image);
+    }
+
+    private int ivt(int x){
+        if( x==1 ){
+            return 0;
+        }else{
+            return 1;
+        }
     }
 
     public void removeSinglePoint(Mat image){
@@ -318,6 +345,9 @@ public class Thinning extends AppCompatActivity {
                     startPreprocessing(imageAftefThinning);
                 }
             });
+
+            if( type.equals(AUTOMATIC_FULL) )
+                startPreprocessing(imageAftefThinning);
         }
 
     }

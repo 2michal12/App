@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,7 +42,10 @@ public class Filtering extends AppCompatActivity {
     private static Bitmap imageAftefFiltering;
     private static ImageView mFilteringImage;
     private static Button mNextProcess;
-    private static EditText mFilteringBlock;
+    private static EditText mFilteringSize;
+    private static EditText mFilteringStrength;
+    private static LinearLayout editText2;
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
     private static double treshold = 0.0;
     private static int[][] mask;
@@ -59,10 +63,11 @@ public class Filtering extends AppCompatActivity {
     private static Button dialogButton;
     private static Button mSettings;
     private static TextView mProgressBarText;
-    private static TextView mEdittextTitle;
+    private static TextView mEdittextTitle,mEdittextTitle2;
     private static TextView mSettingTitleText;
 
     private static String AUTOMATIC = "automatic";
+    private static String AUTOMATIC_FULL = "automatic_full";
     private static String MANUAL = "manual";
 
     @Override
@@ -83,7 +88,8 @@ public class Filtering extends AppCompatActivity {
         mFilteringImage = (ImageView) findViewById(R.id.view_filtering_image);
 
         type = getIntent().getStringExtra("Type");
-        treshold = getIntent().getDoubleExtra("Treshold",treshold);
+        treshold = getIntent().getDoubleExtra("Treshold", treshold);
+        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
@@ -104,6 +110,10 @@ public class Filtering extends AppCompatActivity {
             if( type.equals(AUTOMATIC) ) {
                 //FILTERING_BLOCK = 10; dorobit vypocet automatickeho zvysenia
 
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else if( type.equals(AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -161,10 +171,13 @@ public class Filtering extends AppCompatActivity {
         Intent i = new Intent(this, Binarisation.class);
         i.putExtra("BitmapImage", byteArray);
         i.putExtra("Treshold", treshold);
+        i.putExtra("SegmentationBlock", BLOCK_SIZE);
         i.putExtra("Type", type);
         i.putExtras(mBundle);
         startActivity(i);
     }
+
+    private void GaborFilter(int block, double sigma, double gamma, double psi){}
 
     private void orientationMap(Mat image, int block){
         orientation_gui = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
@@ -205,17 +218,19 @@ public class Filtering extends AppCompatActivity {
                     }
                 }
             }
-            System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
+            //System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
+
         }
 
-        //mapExtermination(block);
+        mapExtermination(block);
 
-        for (int i = 0; i<orientation_gui.rows() / block; i++){
+        //Zapnut len v pripade ze chcem vykreslit smerovu mapu "orientation_gui"
+        /*for (int i = 0; i<orientation_gui.rows() / block; i++){
             for (int j = 0; j<orientation_gui.cols() / block; j++){
                 data_input = orientation_angle.get(i*block+block/2, j*block+block/2); //angle
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
-        }
+        }*/
     }
 
     private void frequenceMap(Mat image, int block){
@@ -272,7 +287,7 @@ public class Filtering extends AppCompatActivity {
                 }
 
             }
-            System.out.println( (float)i/((image.rows() / block)-1)*100 ) ;
+            //System.out.println( (float)i/((image.rows() / block)-1)*100 ) ;
         }
 
     }
@@ -420,30 +435,20 @@ public class Filtering extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
 
-            //heavy work docasne
-            for(int i = 0; i < 100; i++){
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                publishProgress(i);
-            }
-
             Mat image = help.bitmap2mat(imageBitmap);
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
             //orientationMap(image, FILTERING_BLOCK);
-            publishProgress( 33 );
+            //publishProgress(33);
 
             //frequenceMap(image, FILTERING_BLOCK);
-            publishProgress(66);
+            //publishProgress(66);
 
-            //gaussianFilter(image);
+            gaussianFilter(image);
             publishProgress(100);
 
-            Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation"
+            Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation_gui"
 
             return "filtering_finished";
         }
@@ -469,6 +474,9 @@ public class Filtering extends AppCompatActivity {
                     startPreprocessing(imageAftefFiltering);
                 }
             });
+
+            if( type.equals(AUTOMATIC_FULL) )
+                startPreprocessing(imageAftefFiltering);
         }
 
     }
@@ -482,18 +490,31 @@ public class Filtering extends AppCompatActivity {
         dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
         mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
         mSettingTitleText.setText(R.string.filtering_settings_title);
+
         mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
         mEdittextTitle.setText(R.string.filtering_block);
-        mFilteringBlock = (EditText) dialog.findViewById(R.id.settings_edittext);
-        mFilteringBlock.setText(String.valueOf(FILTERING_BLOCK));
+        mFilteringSize = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mFilteringSize.setText(String.valueOf(GAUSS_SIZE));
+
+        editText2 = (LinearLayout) dialog.findViewById(R.id.edittext2);
+        editText2.setVisibility(View.VISIBLE);
+
+        mEdittextTitle2 = (TextView) dialog.findViewById(R.id.text_for_edittext2);
+        mEdittextTitle2.setText(R.string.filtering_strength);
+        mFilteringStrength = (EditText) dialog.findViewById(R.id.settings_edittext2);
+        mFilteringStrength.setText(String.valueOf(GAUSS_STRENGTH));
+
+
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( !mFilteringBlock.getText().toString().isEmpty() )
-                    FILTERING_BLOCK = Integer.valueOf(mFilteringBlock.getText().toString());
+                if (!mFilteringSize.getText().toString().isEmpty() && !mFilteringStrength.getText().toString().isEmpty()) {
+                    GAUSS_SIZE = Integer.valueOf(mFilteringSize.getText().toString());
+                    GAUSS_STRENGTH = Integer.valueOf(mFilteringStrength.getText().toString());
+                }
 
-                if( FILTERING_BLOCK > 0 && FILTERING_BLOCK < 100 ){
+                if (GAUSS_SIZE > 0 && GAUSS_STRENGTH > 0 && (GAUSS_SIZE % 2 != 0) )  {
                     dialog.dismiss();
 
                     mProgresBarLayout.setVisibility(View.VISIBLE);

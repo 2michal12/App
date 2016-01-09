@@ -54,8 +54,10 @@ public class Binarisation extends AppCompatActivity {
     private static TextView mProgressBarText;
     private static TextView mEdittextTitle;
     private static TextView mSettingTitleText;
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
     private static String AUTOMATIC = "automatic";
+    private static String AUTOMATIC_FULL = "automatic_full";
     private static String MANUAL = "manual";
 
     @Override
@@ -77,6 +79,7 @@ public class Binarisation extends AppCompatActivity {
 
         type = getIntent().getStringExtra("Type");
         treshold = getIntent().getDoubleExtra("Treshold",treshold);
+        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
@@ -97,6 +100,10 @@ public class Binarisation extends AppCompatActivity {
             if( type.equals(AUTOMATIC) ) {
                 //BINARISATION_BLOCK = 10; dorobit vypocet automaticky
 
+                mSettings.setVisibility(View.GONE);
+                mProgresBarLayout.setVisibility(View.VISIBLE);
+                new AsyncTaskSegmentation().execute();
+            }else if( type.equals(AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -156,6 +163,7 @@ public class Binarisation extends AppCompatActivity {
 
         Intent i = new Intent(this, Thinning.class);
         i.putExtra("BitmapImage", byteArray);
+        i.putExtra("SegmentationBlock", BLOCK_SIZE);
         i.putExtra("Type", type);
         i.putExtras(mBundle);
         startActivity(i);
@@ -243,6 +251,9 @@ public class Binarisation extends AppCompatActivity {
                     startPreprocessing(imageAftefBinarisation);
                 }
             });
+
+            if( type.equals(AUTOMATIC_FULL) )
+                startPreprocessing(imageAftefBinarisation);
         }
 
     }

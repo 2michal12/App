@@ -8,40 +8,102 @@
         style="@style/PopUpTextTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:gravity="center"
-        />
+        android:padding="16dp" />
 
     <LinearLayout
         android:id="@+id/popup_settings"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/popUpSettingTextTitle"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
         android:gravity="center"
-        >
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp">
 
-        <TextView
-            android:id="@+id/text_for_edittext"
-            style="@style/SettingsItem"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"/>
-
-
-        <EditText
-            android:id="@+id/settings_edittext"
-            android:background="@drawable/edittext_style"
-            android:layout_width="70dp"
+        <LinearLayout
+            android:id="@+id/edittext1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
             android:padding="10dp"
-            android:ellipsize="start"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/text_for_edittext"
+                style="@style/SettingsItem"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content" />
+
+
+            <EditText
+                android:id="@+id/settings_edittext"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edittext2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:gravity="center"
-            android:inputType="number"
-            android:textSize="14sp" />
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/text_for_edittext2"
+                style="@style/SettingsItem"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content" />
+
+
+            <EditText
+                android:id="@+id/settings_edittext2"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/radioButtonGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="gone">
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/automatic_preprocessing_steps" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/automatic_preprocessing_full" />
+
+        </RadioGroup>
 
     </LinearLayout>
 
@@ -50,9 +112,9 @@
         android:id="@+id/popUpOK"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/popup_settings"
+        android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:text="@string/ok"/>
+        android:text="@string/ok" />
 
 </RelativeLayout>

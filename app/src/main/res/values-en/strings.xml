@@ -10,6 +10,8 @@
     <string name="select_image">Select image</string>
     <string name="preprocessing">Preprocessing</string>
     <string name="automatic_preprocessing">Automatic preprocessing</string>
+    <string name="automatic_preprocessing_steps">Steps</string>
+    <string name="automatic_preprocessing_full">Automatic</string>
     <string name="manual_preprocessing">Manual preprocessing</string>
     <string name="extraction">Extraction</string>
     <string name="information">Information</string>
@@ -32,7 +34,8 @@
 
     <!-- Filtering -->
     <string name="filtering">Filtering</string>
-    <string name="filtering_block">Filtering size: </string>
+    <string name="filtering_block">Gaussian filter size: </string>
+    <string name="filtering_strength">Gaussian filter strength: </string>
     <string name="filtering_running">Running filtering …</string>
     <string name="filtering_finished">Filtering finished</string>
     <string name="filtering_settings_title">Input parameters for normalisation</string>
