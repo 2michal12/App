@@ -14,7 +14,7 @@
         style="@style/Toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/thinning"
+        app:title="@string/extraction"
         app:titleTextAppearance="@style/ToolbarTitle" />
 
     <LinearLayout
@@ -28,7 +28,7 @@
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/view_thinning_image"
+            android:id="@+id/view_extraction_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -50,16 +50,15 @@
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
             android:text="@string/settings"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <Button
             android:id="@+id/next"
             style="@style/button"
-            android:layout_width="140dp"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            android:text="@string/go_to_extraction"
-            android:enabled="false" />
+            android:text="@string/extraction_start" />
 
 
     </LinearLayout>

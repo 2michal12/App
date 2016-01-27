@@ -53,6 +53,12 @@
             android:theme="@style/AppTheme" />
 
         <activity
+            android:name=".Extraction"
+            android:label="@string/title_activity_extraction"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+
+        <activity
             android:name=".ftrScan.FtrScanDemoUsbHostActivity"
             android:screenOrientation="portrait"
             android:label="FtrScanDemoUsbHostActivity" />

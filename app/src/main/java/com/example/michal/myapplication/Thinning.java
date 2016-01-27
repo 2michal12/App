@@ -154,13 +154,13 @@ public class Thinning extends AppCompatActivity {
     }
 
     private void startPreprocessing(Bitmap image) {
-        /*ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
-        Intent i = new Intent(this, Thinning.class);
+        Intent i = new Intent(this, Extraction.class);
         i.putExtra("BitmapImage", byteArray);
-        startActivity(i);*/
+        startActivity(i);
     }
 
     public void thinningIteration(Mat image, int iter){

@@ -13,7 +13,6 @@
     <string name="automatic_preprocessing_steps">Steps</string>
     <string name="automatic_preprocessing_full">Automatic</string>
     <string name="manual_preprocessing">Manual preprocessing</string>
-    <string name="extraction">Extraction</string>
     <string name="information">Information</string>
     <string name="info_text">Aplikacia Diplomovka (v.2.0 Redesign) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
     <string name="settings">Settings</string>
@@ -55,7 +54,9 @@
     <string name="thinning_settings_title">Input parameters for thinning</string>
 
     <!-- Extraction -->
+    <string name="extraction">Extraction</string>
     <string name="extraction_start">Start extraction</string>
+    <string name="go_to_extraction">Go to extraction</string>
 
     <string name="start_process">Start</string>
     <string name="next_process">Next</string>
@@ -63,9 +64,9 @@
     <string name="title_activity_load_image">LoadImage</string>
     <string name="title_activity_segmentation">Segmentation</string>
     <string name="title_activity_normalisation">Normalisation</string>
-    <string name="title_activity_filtering">filtering</string>
-    <string name="title_activity_thinning">thinning</string>
-    <string name="title_activity_binarisation">binarisation</string>
+    <string name="title_activity_filtering">Filtering</string>
+    <string name="title_activity_thinning">Thinning</string>
+    <string name="title_activity_binarisation">Binarisation</string>
 
     <!-- Futronic scanner -->
     <string name="futronic_title">Futronic FS80</string>
