@@ -46,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private static Bitmap image;
     private String selectedImagePath;
 
+    //po testovani vymazat
+    private static Button test;
+
     static {
         if (!OpenCVLoader.initDebug()) {
             Log.i("opencv", "opencv failed");
@@ -58,6 +61,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //po stetovani vymazat
+        test = (Button) findViewById(R.id.test_extraction);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                image = BitmapFactory.decodeFile("storage/emulated/0/Pictures/DIPLOMOVKA/FtrScan/skeleton3.bmp");
+                startPreview(image, 2);
+            }
+        });
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -155,7 +168,12 @@ public class MainActivity extends AppCompatActivity {
         }
         byte[] byteArray = stream.toByteArray();
 
-        Intent i = new Intent(this, Preview.class);
+        Intent i;
+        if(format == 2) { // test
+            i = new Intent(this, Extraction.class);
+        }else{
+            i = new Intent(this, Preview.class);
+        }
         i.putExtra("BitmapImage", byteArray);
         startActivity(i);
     }

@@ -21,10 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
@@ -42,9 +39,6 @@ public class Extraction extends AppCompatActivity {
     private static EditText mThinningBlock;
     private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
-    private static int[][] mask;
-    int blocksWidth, blocksHeight;
-    double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
 
     private static RelativeLayout mProgresBarLayout;
     private static ProgressBar pb;
@@ -54,10 +48,6 @@ public class Extraction extends AppCompatActivity {
     private static TextView mProgressBarText;
     private static TextView mEdittextTitle;
     private static TextView mSettingTitleText;
-
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,16 +65,6 @@ public class Extraction extends AppCompatActivity {
         mNextProcess.setEnabled(false);
         mSettings = (Button) findViewById(R.id.settings);
         mExtractionImage = (ImageView) findViewById(R.id.view_extraction_image);
-
-
-        mask = null;
-        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
-        if(objectArray != null){
-            mask = new int[objectArray.length][];
-            for(int i = 0; i < objectArray.length; i++){
-                mask[i] = (int[]) objectArray[i];
-            }
-        }
 
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if (byteArray != null) {
@@ -157,10 +137,27 @@ public class Extraction extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+            Mat image = help.bitmap2mat(imageBitmap);
+            Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
+            double[] data = new double[1];
+            data[0] = 0;
+            int mod = image.width() / 100;
+            int progress = 0;
 
+            for(int i = 1; i < image.rows()-1; i++) {
+                for (int j = 1; j < image.cols()-1; j++) {
+                    image.put(i, j, data);
+                }
+                if( i % mod == 0 ) {
+                    progress++;
+                }
+                publishProgress( progress );
+            }
 
-            return "thinning_finished";
+            Utils.matToBitmap(image, imageAftefExtraction);
+
+            return "extraction_finished";
         }
 
         @Override

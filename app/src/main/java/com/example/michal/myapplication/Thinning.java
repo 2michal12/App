@@ -346,8 +346,8 @@ public class Thinning extends AppCompatActivity {
                 }
             });
 
-            if( type.equals(AUTOMATIC_FULL) )
-                startPreprocessing(imageAftefThinning);
+            //if( type.equals(AUTOMATIC_FULL) )
+            //    startPreprocessing(imageAftefThinning);
         }
 
     }

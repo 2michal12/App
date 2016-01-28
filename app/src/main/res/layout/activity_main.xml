@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/main_background"
     android:orientation="vertical"
     tools:context=".MainActivity">
@@ -11,44 +11,54 @@
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         style="@style/Toolbar"
-        app:titleTextAppearance="@style/ToolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/app_name"
-        />
+        app:titleTextAppearance="@style/ToolbarTitle" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/load_image"
-        style="@style/button"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_margin="5dp"
-        android:text="@string/load_image"/>
+        <Button
+            android:id="@+id/load_image"
+            style="@style/button"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:text="@string/load_image" />
 
-    <Button
-        android:id="@+id/scan_image"
-        style="@style/button"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="@string/scan_image"/>
+        <Button
+            android:id="@+id/scan_image"
+            style="@style/button"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="@string/scan_image" />
+
+        <Button
+            android:id="@+id/test_extraction"
+            style="@style/button"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/red"
+            android:padding="5dp"
+            android:text="Testovanie extrakcie" />
+
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:text="@string/app_version"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:text="@string/app_version"
-        android:textSize="9dp"/>
+        android:textSize="9dp" />
 
 
 </RelativeLayout>

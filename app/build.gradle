@@ -3,6 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
+            keyAlias 'AppDiplomovka'
+            keyPassword 'pass123'
+            storeFile file('/Users/Michal/Documents/Android Studio Projects/App/Key/keystore.jks')
+            storePassword 'pass123'
         }
     }
     compileSdkVersion 23
@@ -18,6 +22,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
