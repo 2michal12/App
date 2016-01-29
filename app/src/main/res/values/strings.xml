@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Diplomovka</string>
-    <string name="app_version">Verzia 2.0 Redizajn</string>
+    <string name="app_version">Verzia 2.1 Extrakcia</string>
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
@@ -14,20 +14,20 @@
     <string name="automatic_preprocessing_full">Automaticky</string>
     <string name="manual_preprocessing">Manuálne predspracovanie</string>
     <string name="information">Informácie</string>
-    <string name="info_text">Aplikacia Diplomovka (v.2.0 Redizajn) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.2.1 Extrakcia) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
     <string name="settings">Nastavenia</string>
 
     <!-- Segmentation -->
     <string name="segmentation">Segmentácia</string>
     <string name="segmentation_block">Veľkosť bloku: </string>
-    <string name="segmentation_running">Prebieha segmentácia …</string>
+    <string name="segmentation_running">Prebieha segmentácia ...</string>
     <string name="segmentation_finished">Segmentácia dokončená</string>
     <string name="segmentation_settings_title">Vstupné parametre pre segmentáciu</string>
 
     <!-- Normalisation -->
     <string name="normalisation">Normalizácia</string>
     <string name="normalisation_contrast">Zvýšenie kontrastu: </string>
-    <string name="normalisation_running">Prebieha normalizácia …</string>
+    <string name="normalisation_running">Prebieha normalizácia ...</string>
     <string name="normalisation_finished">Normalizácia dokončená</string>
     <string name="normalisation_settings_title">Vstupné parametre pre normalizáciu</string>
 
@@ -42,14 +42,14 @@
     <!-- Binarisation -->
     <string name="binarisation">Binarizácia</string>
     <string name="binarisation_block">Veľkosť bloku: </string>
-    <string name="binarisation_running">Prebieha binarizácia …</string>
+    <string name="binarisation_running">Prebieha binarizácia ...</string>
     <string name="binarisation_finished">Binarizácia dokončená</string>
     <string name="binarisation_settings_title">Vstupné parametre pre binarizáciu</string>
 
     <!-- Thinning -->
     <string name="thinning">Vytvorenie kostry odtlačku</string>
     <string name="thinning_block">Veľkosť bloku: </string>
-    <string name="thinning_running">Prebieha zužovanie línií …</string>
+    <string name="thinning_running">Prebieha zužovanie línií ...</string>
     <string name="thinning_finished">Zužovanie dokončené</string>
     <string name="thinning_settings_title">Vstupné parametre pre zužovanie línií</string>
 
@@ -57,6 +57,7 @@
     <string name="extraction">Extrakcia markantov</string>
     <string name="go_to_extraction">Prejsť na extrakciu</string>
     <string name="extraction_start">Spustiť extrakciu</string>
+    <string name="extraction_running">Prebieha extrakcia markantov</string>
 
 
     <string name="start_process">Štart</string>

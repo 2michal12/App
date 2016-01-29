@@ -21,10 +21,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 /**
  * Created by Michal on 27.01.16.
@@ -132,7 +137,7 @@ public class Extraction extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             onProgressUpdate(0);
-            mProgressBarText.setText(R.string.thinning_running);
+            mProgressBarText.setText(R.string.extraction_running);
         }
 
         @Override
@@ -144,15 +149,46 @@ public class Extraction extends AppCompatActivity {
             data[0] = 0;
             int mod = image.width() / 100;
             int progress = 0;
+            int cn = 0;
+            int[][] endings = new int[2][image.rows()*image.cols()];
+            int[][] bifurcation = new int[2][image.rows()*image.cols()];
+            int countBifurcation = 0;
+            int countEndings = 0;
+
 
             for(int i = 1; i < image.rows()-1; i++) {
                 for (int j = 1; j < image.cols()-1; j++) {
-                    image.put(i, j, data);
+                    if(image.get(i,j)[0] == 0) {
+                        cn = (int) Math.abs(image.get(i - 1, j - 1)[0] - image.get(i, j - 1)[0]) +
+                                (int) Math.abs(image.get(i, j - 1)[0] - image.get(i + 1, j - 1)[0]) +
+                                (int) Math.abs(image.get(i + 1, j - 1)[0] - image.get(i + 1, j)[0]) +
+                                (int) Math.abs(image.get(i + 1, j)[0] - image.get(i + 1, j + 1)[0]) +
+                                (int) Math.abs(image.get(i + 1, j + 1)[0] - image.get(i, j + 1)[0]) +
+                                (int) Math.abs(image.get(i, j + 1)[0] - image.get(i - 1, j + 1)[0]) +
+                                (int) Math.abs(image.get(i - 1, j + 1)[0] - image.get(i - 1, j)[0]) +
+                                (int) Math.abs(image.get(i - 1, j)[0] - image.get(i - 1, j - 1)[0]);
+
+                        if (((cn / 255) / 2) == 1) {
+                            endings[0][countEndings] = i;
+                            endings[1][countEndings] = j;
+                            countEndings++;
+                        }else if(((cn / 255) / 2) == 3) {
+                            bifurcation[0][countBifurcation] = i;
+                            bifurcation[1][countBifurcation] = j;
+                            countBifurcation++;
+                        }
+                    }
+
                 }
                 if( i % mod == 0 ) {
                     progress++;
                 }
                 publishProgress( progress );
+            }
+
+            for(int i = 0; i < countBifurcation; i++){
+                Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
+                Imgproc.circle(image, core, 10, new Scalar(200, 0, 0), 2);
             }
 
             Utils.matToBitmap(image, imageAftefExtraction);
