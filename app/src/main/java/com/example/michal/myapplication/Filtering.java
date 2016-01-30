@@ -445,7 +445,7 @@ public class Filtering extends AppCompatActivity {
             //frequenceMap(image, FILTERING_BLOCK);
             //publishProgress(66);
 
-            gaussianFilter(image);
+            //gaussianFilter(image);
             publishProgress(100);
 
             Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation_gui"

@@ -153,13 +153,19 @@ public class Thinning extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void startPreprocessing(Bitmap image) {
+    private void startExtraction(Bitmap image) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
+        Bundle mBundle = new Bundle();
+        mBundle.putSerializable("Mask", mask);
+
         Intent i = new Intent(this, Extraction.class);
         i.putExtra("BitmapImage", byteArray);
+        i.putExtra("SegmentationBlock", BLOCK_SIZE);
+        i.putExtra("Type", type);
+        i.putExtras(mBundle);
         startActivity(i);
     }
 
@@ -342,7 +348,7 @@ public class Thinning extends AppCompatActivity {
             mNextProcess.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startPreprocessing(imageAftefThinning);
+                    startExtraction(imageAftefThinning);
                 }
             });
 

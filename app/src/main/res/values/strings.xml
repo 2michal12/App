@@ -57,7 +57,10 @@
     <string name="extraction">Extrakcia markantov</string>
     <string name="go_to_extraction">Prejsť na extrakciu</string>
     <string name="extraction_start">Spustiť extrakciu</string>
-    <string name="extraction_running">Prebieha extrakcia markantov</string>
+    <string name="extraction_running">Prebieha extrakcia markantov ...</string>
+    <string name="extraction_settings_title">Extrakcia markantov</string>
+    <string name="minutie_ending">Ukončenia</string>
+    <string name="minutie_bifurcation">Rozdvojenia</string>
 
 
     <string name="start_process">Štart</string>

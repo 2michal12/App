@@ -58,6 +58,9 @@
     <string name="extraction_start">Start extraction</string>
     <string name="go_to_extraction">Go to extraction</string>
     <string name="extraction_running">Running minutie extraction ...</string>
+    <string name="extraction_settings_title">Minutie extraction</string>
+    <string name="minutie_ending">Endings</string>
+    <string name="minutie_bifurcation">Bifuractions</string>
 
 
     <string name="start_process">Start</string>

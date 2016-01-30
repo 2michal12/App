@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,6 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -41,9 +44,8 @@ public class Extraction extends AppCompatActivity {
     private static ImageView mExtractionImage;
     private static Button mNextProcess;
     private static Bitmap imageAftefExtraction;
-    private static EditText mThinningBlock;
     private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
-
+    private static String type;
 
     private static RelativeLayout mProgresBarLayout;
     private static ProgressBar pb;
@@ -51,8 +53,11 @@ public class Extraction extends AppCompatActivity {
     private static Button dialogButton;
     private static Button mSettings;
     private static TextView mProgressBarText;
-    private static TextView mEdittextTitle;
-    private static TextView mSettingTitleText;
+    private static int[][] mask;
+
+
+    private RadioGroup radioGroup;
+    private RadioButton radioButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,18 @@ public class Extraction extends AppCompatActivity {
         mSettings = (Button) findViewById(R.id.settings);
         mExtractionImage = (ImageView) findViewById(R.id.view_extraction_image);
 
+        type = getIntent().getStringExtra("Type");
+        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
+
+        mask = null;
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        if(objectArray != null){
+            mask = new int[objectArray.length][];
+            for(int i = 0; i < objectArray.length; i++){
+                mask[i] = (int[]) objectArray[i];
+            }
+        }
+
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
         if (byteArray != null) {
 
@@ -78,9 +95,9 @@ public class Extraction extends AppCompatActivity {
             imageAftefExtraction = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mExtractionImage.setImageBitmap(imageBitmap);
 
-            mSettings.setVisibility(View.GONE);
-            mProgresBarLayout.setVisibility(View.VISIBLE);
-            new AsyncTaskSegmentation().execute();
+            //mSettings.setVisibility(View.GONE);
+            //mProgresBarLayout.setVisibility(View.VISIBLE);
+            //new AsyncTaskSegmentation().execute();
             mSettings.setVisibility(View.VISIBLE);
             mSettings.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -147,7 +164,6 @@ public class Extraction extends AppCompatActivity {
 
             double[] data = new double[1];
             data[0] = 0;
-            int mod = image.width() / 100;
             int progress = 0;
             int cn = 0;
             int[][] endings = new int[2][image.rows()*image.cols()];
@@ -155,41 +171,57 @@ public class Extraction extends AppCompatActivity {
             int countBifurcation = 0;
             int countEndings = 0;
 
+            int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
+            int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
+            int mod = 100/(blocksHeight-1) ;
 
-            for(int i = 1; i < image.rows()-1; i++) {
-                for (int j = 1; j < image.cols()-1; j++) {
-                    if(image.get(i,j)[0] == 0) {
-                        cn = (int) Math.abs(image.get(i - 1, j - 1)[0] - image.get(i, j - 1)[0]) +
-                                (int) Math.abs(image.get(i, j - 1)[0] - image.get(i + 1, j - 1)[0]) +
-                                (int) Math.abs(image.get(i + 1, j - 1)[0] - image.get(i + 1, j)[0]) +
-                                (int) Math.abs(image.get(i + 1, j)[0] - image.get(i + 1, j + 1)[0]) +
-                                (int) Math.abs(image.get(i + 1, j + 1)[0] - image.get(i, j + 1)[0]) +
-                                (int) Math.abs(image.get(i, j + 1)[0] - image.get(i - 1, j + 1)[0]) +
-                                (int) Math.abs(image.get(i - 1, j + 1)[0] - image.get(i - 1, j)[0]) +
-                                (int) Math.abs(image.get(i - 1, j)[0] - image.get(i - 1, j - 1)[0]);
 
-                        if (((cn / 255) / 2) == 1) {
-                            endings[0][countEndings] = i;
-                            endings[1][countEndings] = j;
-                            countEndings++;
-                        }else if(((cn / 255) / 2) == 3) {
-                            bifurcation[0][countBifurcation] = i;
-                            bifurcation[1][countBifurcation] = j;
-                            countBifurcation++;
+            for(int i = 0; i < blocksHeight-1; i++){
+                for(int j = 0; j < blocksWidth-1; j++) {
+                    if (mask[j][i] == 1)
+                        for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                            for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+
+                                if (image.get(k, l)[0] == 255) {
+                                    cn = (int) Math.abs(image.get(k - 1, l - 1)[0] - image.get(k, l - 1)[0]) +
+                                            (int) Math.abs(image.get(k, l - 1)[0] - image.get(k + 1, l - 1)[0]) +
+                                            (int) Math.abs(image.get(k + 1, l - 1)[0] - image.get(k + 1, l)[0]) +
+                                            (int) Math.abs(image.get(k + 1, l)[0] - image.get(k + 1, l + 1)[0]) +
+                                            (int) Math.abs(image.get(k + 1, l + 1)[0] - image.get(k, l + 1)[0]) +
+                                            (int) Math.abs(image.get(k, l + 1)[0] - image.get(k - 1, l + 1)[0]) +
+                                            (int) Math.abs(image.get(k - 1, l + 1)[0] - image.get(k - 1, l)[0]) +
+                                            (int) Math.abs(image.get(k - 1, l)[0] - image.get(k - 1, l - 1)[0]);
+
+                                    if (((cn / 255) / 2) == 1) {
+                                        endings[0][countEndings] = k;
+                                        endings[1][countEndings] = l;
+                                        countEndings++;
+                                    } else if (((cn / 255) / 2) == 3) {
+                                        bifurcation[0][countBifurcation] = k;
+                                        bifurcation[1][countBifurcation] = l;
+                                        countBifurcation++;
+                                    }
+                                }
+
+                            }
                         }
-                    }
-
                 }
-                if( i % mod == 0 ) {
-                    progress++;
-                }
-                publishProgress( progress );
+                progress+=mod;
+                publishProgress(progress+mod);
             }
 
-            for(int i = 0; i < countBifurcation; i++){
-                Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
-                Imgproc.circle(image, core, 10, new Scalar(200, 0, 0), 2);
+            if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
+                for(int i = 0; i < countEndings; i++){
+                    Point core = new Point(endings[1][i], endings[0][i]);
+                    Imgproc.circle(image, core, 8, new Scalar(150, 0, 0), 2);
+                }
+            }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
+                for(int i = 0; i < countBifurcation; i++){
+                    Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
+                    Imgproc.circle(image, core, 8, new Scalar(150, 0, 0), 2);
+                }
             }
+
 
             Utils.matToBitmap(image, imageAftefExtraction);
 
@@ -197,9 +229,9 @@ public class Extraction extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            pb.setProgress(values[0]);
+        protected void onProgressUpdate(Integer... values){
+                    super.onProgressUpdate(values);
+                    pb.setProgress(values[0]);
         }
 
         @Override
@@ -208,15 +240,15 @@ public class Extraction extends AppCompatActivity {
             mProgressBarText.setText(R.string.thinning_finished);
             mExtractionImage.setImageBitmap(imageAftefExtraction);
 
-            mProgresBarLayout.setVisibility(View.GONE);
+                    mProgresBarLayout.setVisibility(View.GONE);
 
-            mNextProcess.setEnabled(true);
-            mNextProcess.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startPreprocessing(imageAftefExtraction);
-                }
-            });
+                    mNextProcess.setEnabled(true);
+                    mNextProcess.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startPreprocessing(imageAftefExtraction);
+                        }
+                    });
 
         }
 
@@ -224,28 +256,28 @@ public class Extraction extends AppCompatActivity {
 
     public void settingsDialog(){
         final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.popup_settings);
+        dialog.setContentView(R.layout.popup_settings_extraction);
         dialog.setTitle(R.string.settings);
 
         dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
-        mSettingTitleText.setText(R.string.thinning_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
-        mEdittextTitle.setText(R.string.thinning_block);
-        mThinningBlock = (EditText) dialog.findViewById(R.id.settings_edittext);
-        mThinningBlock.setText(String.valueOf(BLOCK_SIZE));
+
+        radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( !mThinningBlock.getText().toString().isEmpty() )
-                    BLOCK_SIZE = Integer.valueOf(mThinningBlock.getText().toString());
 
-                if( BLOCK_SIZE > 0 && BLOCK_SIZE < 100 ){
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                radioButton = (RadioButton) dialog.findViewById(selectedId);
+
+                if (radioButton.getText().equals(getResources().getString(R.string.minutie_ending))) {
                     dialog.dismiss();
-
                     mProgresBarLayout.setVisibility(View.VISIBLE);
-                    new AsyncTaskSegmentation().execute();
+                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_ending));
+                } else if (radioButton.getText().equals(getResources().getString(R.string.minutie_bifurcation))) {
+                    dialog.dismiss();
+                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_bifurcation));
                 }
 
             }
@@ -253,4 +285,5 @@ public class Extraction extends AppCompatActivity {
 
         dialog.show();
     }
+
 }
