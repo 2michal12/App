@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Thesis</string>
-    <string name="app_version">Vesrion 2.1 Extraction</string>
+    <string name="app_version">Vesrion 2.3 Load Image</string>
 
     <string name="home">Home</string>
     <string name="preview">Preview</string>
@@ -14,7 +14,7 @@
     <string name="automatic_preprocessing_full">Automatic</string>
     <string name="manual_preprocessing">Manual preprocessing</string>
     <string name="information">Information</string>
-    <string name="info_text">Aplikacia Diplomovka (v.2.1 Extraction) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.2.3 Load Image) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
     <string name="settings">Settings</string>
 
     <!-- Segmentation -->

@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,11 +32,13 @@ import org.opencv.android.OpenCVLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String IMAGE_PATH = "/sdcard/Fingerprints/obrazok.bmp";
+    private static final String JPEG = "jpeg";
+    private static final String PNG = "png";
 
     private static final int SELECT_PICTURE = 1;
 
@@ -44,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private static Button mLoadImage;
     private static Button mScanImage;
     private static Bitmap image;
-    private String selectedImagePath;
 
     //po testovani vymazat
     private static Button test;
@@ -77,15 +79,10 @@ public class MainActivity extends AppCompatActivity {
 
         help = new Help(this);
 
-        File extPrivateStorageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES); //private directory is erased after uninstall
-        final File mDir = new File(extPrivateStorageDirectory, "Fingerprints");
-
         mLoadImage = (Button) findViewById(R.id.load_image);
         mLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //image = BitmapFactory.decodeFile(IMAGE_PATH);
-                //startPreview(image, 1);
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -106,31 +103,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                selectedImagePath = getPath(selectedImageUri);
-                image = BitmapFactory.decodeFile(selectedImagePath);
-                if( selectedImagePath.substring(selectedImagePath.length() - 3).equals("jpg") ) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            Cursor cursor = this.getContentResolver().query(uri,
+                    new String[]{MediaStore.MediaColumns.MIME_TYPE},
+                    null, null, null);
+
+            String strMimeType = null;
+
+            if (cursor != null && cursor.moveToNext())
+            {
+                strMimeType = cursor.getString(0); //format of loaded image
+            }
+
+            try {
+                image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+
+                if( strMimeType.contains(JPEG) ){
                     startPreview(image, 0); // 0 = .jpg
+                }else if( strMimeType.contains(PNG) ){
+                    startPreview(image, 1); // 1 = .png
                 }else{
-                    startPreview(image, 1); // 0 = .png
+                    startPreview(image, 1); // 1 = .png for .bmp too
                 }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        if (resultCode == Activity.RESULT_FIRST_USER){
-            selectedImagePath =  data.getExtras().getString("fileName");
-            image = BitmapFactory.decodeFile(selectedImagePath);
-            startPreview(image, 1);
-        }
-    }
-
-    public String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
     }
 
     @Override
@@ -168,9 +172,11 @@ public class MainActivity extends AppCompatActivity {
         }
         byte[] byteArray = stream.toByteArray();
 
+
+        //docasne kym je tlacidlo test potom len Preview.class
         Intent i;
         if(format == 2) { // test
-            i = new Intent(this, Extraction.class);
+            i = new Intent(this, MaxMin.class);
         }else{
             i = new Intent(this, Preview.class);
         }

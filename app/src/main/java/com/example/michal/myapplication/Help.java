@@ -20,6 +20,7 @@ import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by Michal on 10.11.2015.
@@ -57,6 +58,8 @@ public class Help {
         catch (Exception e) {
             e.printStackTrace();
         }
+
+
         // Tell the media scanner about the new file so that it is immediately available to the user.
         MediaScannerConnection.scanFile(context, new String[]{file.toString()}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {

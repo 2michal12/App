@@ -28,6 +28,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.engine.OpenCVEngineInterface;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
@@ -177,9 +178,64 @@ public class Filtering extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void GaborFilter(int block, double sigma, double gamma, double psi){}
+    private void gaborFilter(Mat src_gray, Mat dest_gray, double[][] smerova_mapa_gauss, double[][] frekvencna_mapa ,int velkost_gabora, double sigmaa, double lambdaa, double gammaa, double psii){
+        Point anchor;
+        double delta, sucet = 0.0;
+        int ddepth, u = 0, v = 0, count = 0;
+        int kernel_size=0;
+        Mat kernel;
+        /// Initialize arguments for the filter
+        anchor = new Point(-1, -1);
+        delta = 0;
+        ddepth = -1;
+        ///Vytvorenie Gaborovho filtra
+        double sigma = sigmaa, // to je ta odchylka - urcuje silu filtra - skus ju menit a uvidis
+                lambda = lambdaa,  // toto znamena ze rozostup linii je cca 10 pixelov a to je pravda
+                gamma = gammaa,  // to je rozmerovy faktor je to pomer dlzka_filtra/sirka_filtra, teraz je viac dlhy ako siroky lebo je 0.25
+                psi = psii; // to je nejake vysunutie filtra v bloku , nechaj ako je
 
-    private void orientationMap(Mat image, int block){
+        Size dim = new Size(velkost_gabora, velkost_gabora);
+
+        //CvSize dim = cvSize(velkost_gabora, velkost_gabora);
+
+        for (int i = (velkost_gabora - 1) / 2; i<src_gray.rows() - (velkost_gabora - 1) / 2; i++){ //prechadzam vsetky body okrem okrajovich aby sa dala pocitat okolo okrajovich matica
+            for (int j = (velkost_gabora - 1) / 2; j<src_gray.cols() - (velkost_gabora - 1) / 2; j++){
+
+                if (smerova_mapa_gauss[i][j] > Math.PI/2){
+                    smerova_mapa_gauss[i][j] -= Math.PI/2;
+                }
+                else{
+                    smerova_mapa_gauss[i][j] += Math.PI/2;
+                }
+                //kernel = getGaborKernel(dim, sigma, smerova_mapa_gauss[i][j], lambdaa, gamma, psi, CvType.CV_64F); //spomalujem vypocet
+                kernel = Imgproc.getGaborKernel(dim, sigma, smerova_mapa_gauss[i][j], lambda, gamma, psi, CvType.CV_64F);
+
+                for (int k = i - (velkost_gabora - 1) / 2; k<i + velkost_gabora - (velkost_gabora - 1) / 2; k++){ //ked mam vypocitany kernel pre dany bod tak urobim okolo neho blok o velkosti gaborovho filtra
+                    for (int l = j - (velkost_gabora - 1) / 2; l<j + velkost_gabora - (velkost_gabora - 1) / 2; l++){
+                        //sucet = sucet + (src_gray.at<uchar>(k, l) / 255)*kernel.at<double>(u, v); //spomalujem vypocet tiez
+                        sucet = sucet + ( (src_gray.get(k, l)[0]/255) * (kernel.get(u, v)[0]) );
+                        v++;
+                    }
+                    v = 0;
+                    u++;
+                }
+                u = 0;
+                //dest_gray.at<uchar>(i, j) = sucet; //ulozim sucet do centralneho bodu
+                if(sucet != 0){
+                    System.out.println(sucet);
+
+                }
+                dest_gray.put(i, j, sucet);
+                //cout << sucet<<endl;
+                sucet = 0.0;
+            }
+            //progressBar(i - (velkost_gabora - 1)/2+1, src_gray.rows - (velkost_gabora - 1), 50);
+        }
+
+    }
+
+    private double[][] orientationMap(Mat image, int block){
+        double[][] orientation_map = new double[image.rows()][image.cols()];
         orientation_gui = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
         orientation_angle = new Mat(image.rows(), image.cols(), CvType.CV_64F);
         Mat gradientX = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
@@ -211,9 +267,11 @@ public class Filtering extends AppCompatActivity {
                         if(gauss_y != -1 && gauss_x != -1){
                             data_input[0] = 0.5*Math.atan2(gauss_y, gauss_x) + Math.PI/2; //uhol v radianoch
                             orientation_angle.put(i, j, data_input);
+                            orientation_map[i][j] = data_input[0];
                         }else {
                             data_input[0] = 0;
                             orientation_angle.put(x, y, data_input);
+                            orientation_map[x][y] = data_input[0];
                         }
                     }
                 }
@@ -231,6 +289,8 @@ public class Filtering extends AppCompatActivity {
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
         }*/
+
+        return orientation_map;
     }
 
     private void frequenceMap(Mat image, int block){
@@ -423,6 +483,50 @@ public class Filtering extends AppCompatActivity {
         return min_max;
     }
 
+    private Mat enhanceImg(Mat myImg){
+        myImg.convertTo(myImg, CvType.CV_32F);
+
+        // prepare the output matrix for filters
+        Mat gabor1 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor2 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor3 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor4 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat enhanced = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
+
+        // predefine parameters for Gabor kernel
+        Size kSize = new Size(31,31);
+
+        double theta1 = 0;
+        double theta2 = 45;
+        double theta3 = 90;
+        double theta4 = 135;
+
+        double lambda = 8;
+        double sigma = 10;
+        double gamma = 0.25;
+        double psi =  0;
+
+        // the filters kernel
+        Mat kernel1 = Imgproc.getGaborKernel(kSize, sigma, theta1, lambda, gamma, psi, CvType.CV_32F);
+        Mat kernel2 = Imgproc.getGaborKernel(kSize, sigma, theta2, lambda, gamma, psi, CvType.CV_32F);
+        Mat kernel3 = Imgproc.getGaborKernel(kSize, sigma, theta3, lambda, gamma, psi, CvType.CV_32F);
+        Mat kernel4 = Imgproc.getGaborKernel(kSize, sigma, theta4, lambda, gamma, psi, CvType.CV_32F);
+
+        // apply filters on my image. The result is stored in gabor1...4
+        Imgproc.filter2D(myImg, gabor1, -1, kernel1);
+        Imgproc.filter2D(myImg, gabor2, -1, kernel2);
+        Imgproc.filter2D(myImg, gabor3, -1, kernel3);
+        Imgproc.filter2D(myImg, gabor4, -1, kernel4);
+
+        // enhanced = gabor1+gabor2+gabor3+gabor4 - something like that
+        Core.addWeighted(gabor1 , 0, gabor1, 1, 0, enhanced);
+        Core.addWeighted(enhanced , 1, gabor2, 1, 0, enhanced);
+        Core.addWeighted(enhanced , 1, gabor3, 1, 0, enhanced);
+        Core.addWeighted(enhanced , 1, gabor4, 1, 0, enhanced);
+
+        enhanced.convertTo(enhanced, CvType.CV_8UC1);
+        return enhanced;
+    }
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
@@ -439,13 +543,23 @@ public class Filtering extends AppCompatActivity {
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-            //orientationMap(image, FILTERING_BLOCK);
+            //image = enhanceImg(image);
+
+            //double[][] or_map = orientationMap(image, FILTERING_BLOCK);
             //publishProgress(33);
 
             //frequenceMap(image, FILTERING_BLOCK);
             //publishProgress(66);
 
             //gaussianFilter(image);
+
+
+            /*int kernel_size = 15;
+            double sigma = 1; //odchylka - sila filtra
+            double lambda = 6; //rozostup linii
+            double gamma = 0.25; //pomer dlzka_filtra/sirka_filtra
+            double psi = 1; //vysunutie filtra v bloku
+            gaborFilter(image, dest, or_map, or_map, kernel_size, sigma, lambda, gamma, psi);*/
             publishProgress(100);
 
             Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation_gui"

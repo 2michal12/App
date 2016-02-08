@@ -49,6 +49,13 @@
             android:padding="5dp"
             android:text="Testovanie extrakcie" />
 
+
+
+        <ImageView
+            android:id="@+id/test_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <TextView

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Diplomovka</string>
-    <string name="app_version">Verzia 2.1 Extrakcia</string>
+    <string name="app_version">Verzia 2.3 Nacitat obrazok</string>
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
@@ -14,7 +14,7 @@
     <string name="automatic_preprocessing_full">Automaticky</string>
     <string name="manual_preprocessing">Manuálne predspracovanie</string>
     <string name="information">Informácie</string>
-    <string name="info_text">Aplikacia Diplomovka (v.2.1 Extrakcia) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.2.3 Nacitat obrazok) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
     <string name="settings">Nastavenia</string>
 
     <!-- Segmentation -->
@@ -38,6 +38,9 @@
     <string name="filtering_running">Prebieha filtrovanie …</string>
     <string name="filtering_finished">Filtrovanie dokončené</string>
     <string name="filtering_settings_title">Vstupné parametre pre filtrovanie</string>
+    <string name="direction_map">Smerová mapa</string>
+    <string name="frequence_map">Frekvenčná mapa</string>
+    <string name="gabor_filter">Gabor filter</string>
 
     <!-- Binarisation -->
     <string name="binarisation">Binarizácia</string>

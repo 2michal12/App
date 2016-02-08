@@ -174,6 +174,33 @@ public class Binarisation extends AppCompatActivity {
         Imgproc.GaussianBlur(image, image, kernel, GAUSS_STRENGTH, GAUSS_STRENGTH);
     }
 
+    private double grayscaleTreshold(Mat image, int startX, int startY, int endX, int endY){
+        double[] data;
+        double actualTreshold = 0;
+
+        for(int i = startY; i < endY; i++) {
+            for (int j = startX; j < endX; j++) {
+                data = image.get(i, j);
+                actualTreshold += data[0];
+            }
+        }
+
+        return Math.round( actualTreshold/((endX-startX) * (endY-startY)) );
+    }
+
+    private double grayVariance(Mat image, double treshold){
+        int variance = 0;
+        double[] data;
+        for(int i = 0; i < image.height(); i++) {
+            for (int j = 0; j < image.width(); j++) {
+                data = image.get(i, j);
+                variance += ( data[0]-treshold)*( data[0]-treshold);
+            }
+        }
+        return (double)Math.round( variance/(image.width()*image.height()));
+    }
+
+
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -193,15 +220,29 @@ public class Binarisation extends AppCompatActivity {
             int mod = image.width() / 100;
             int progress = 0;
 
-            for(int i = 0; i < image.rows(); i++){
-                for(int j = 0; j < image.cols(); j++) {
-                    data = image.get(i, j);
-                    if(data[0] < treshold){
-                        data[0] = 0;
-                        image.put(i, j, data);
-                    }else{
-                        data[0] = 255;
-                        image.put(i, j, data);
+            double treshold = grayscaleTreshold(image, 0, 0, image.width(), image.height());
+
+            int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
+            int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
+
+            for(int i = 0; i < blocksHeight-1; i++){
+                for (int j = 0; j < blocksWidth - 1; j++) {
+                    if (mask[j][i] == 1) {
+                        for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                            for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+
+                                //for(int i = 0; i < image.rows(); i++){
+                                //for(int j = 0; j < image.cols(); j++) {
+                                data = image.get(k, l);
+                                if (data[0] < treshold) {
+                                    data[0] = 0;
+                                    image.put(k, l, data);
+                                } else {
+                                    data[0] = 255;
+                                    image.put(k, l, data);
+                                }
+                            }
+                        }
                     }
                 }
                 if( i % mod == 0 ) {

@@ -36,8 +36,9 @@ public class Segmentation extends AppCompatActivity{
     private static Bitmap imageAftefSegmentation;
     private static double treshold = 0.0;
     private static double variance = 0.0;
-    private static int SEGMENTATION_SIZE = 10;
+    private static int SEGMENTATION_SIZE = 7;
     private static final Integer SEGMENTATION_CLEANING = 10;
+    private static boolean clearOnceEdges = false;
 
     private static ImageView mSegmentationImage;
     private static EditText mSegmentationBlockSize;
@@ -186,7 +187,7 @@ public class Segmentation extends AppCompatActivity{
         {
             for(int j = 1; j < blocksWidth-1; j++)
             {
-                if((mask[j][i] == 0) && ((mask[j-1][i]+mask[j+1][i]+mask[j][i-1]+mask[j][i+1]+mask[j-1][i-1]+mask[j+1][i-1]+mask[j-1][i+1]+mask[j+1][i+1]) > 4))
+                if((mask[j][i] == 0) && ((mask[j-1][i]+mask[j+1][i]+mask[j][i-1]+mask[j][i+1]+mask[j-1][i-1]+mask[j+1][i-1]+mask[j-1][i+1]+mask[j+1][i+1]) > 3))
                 {
                     temp[j][i] = 1;
                 }
@@ -196,6 +197,28 @@ public class Segmentation extends AppCompatActivity{
                 }
             }
         }
+
+        for(int count = 0; count < 2; count++) //erase single point
+            for (int j = 1; j < blocksWidth - 1; j++)
+                for (int i = 1; i < blocksHeight - 1; i++)
+                    if (mask[j][i] == 1 && mask[j - 1][i] == 0 && mask[j + 1][i] == 0 && mask[j][i - 1] == 0 && mask[j][i + 1] == 0 && mask[j - 1][i - 1] == 0 && mask[j + 1][i - 1] == 0 && mask[j - 1][i + 1] == 0 && mask[j + 1][i + 1] == 0)
+                        mask[j][i] = 0;
+
+        if( !clearOnceEdges ) {
+            for (int i = 0; i < blocksWidth; i++)  //erase edges of fingerprint
+                for (int j = 0; j < blocksHeight; j++) {
+                    if (i == 0)
+                        mask[i][j] = 0;
+                    if (i == blocksWidth - 1)
+                        mask[i][j] = 0;
+                    if (j == 0)
+                        mask[i][j] = 0;
+                    if (j == blocksHeight - 1)
+                        mask[i][j] = 0;
+                }
+            clearOnceEdges = true;
+        }
+
 
         for(int i = 1; i < blocksHeight-1; i++) //copy temporary to original mask
         {
@@ -226,7 +249,7 @@ public class Segmentation extends AppCompatActivity{
             }
         }
 
-        for(int i = image.height(); i >= image.height() - 40; i--) //doplnene kvoli zlemu snimacu
+        for(int i = image.height(); i >= image.height() - 40; i--) //doplnene kvoli zlemu snimacu (robil cierny okraj zo spodu)
         {
             for(int j = 0; j < image.width(); j++)
             {
@@ -293,7 +316,6 @@ public class Segmentation extends AppCompatActivity{
                             for(int l = j*SEGMENTATION_SIZE; l < j*SEGMENTATION_SIZE+SEGMENTATION_SIZE; l++)
                             {
                                 image.put(k, l, data);
-
                             }
                         }
                 }
