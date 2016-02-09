@@ -3,19 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/home"
+        android:visible="true"
         android:title="@string/home"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/preview"
-        android:title="@string/preview"
+    <item android:id="@+id/load_image_menu"
+        android:visible="true"
+        android:title="@string/load_image"
         app:showAsAction="never"/>
 
     <item android:id="@+id/export_image"
+        android:visible="true"
         android:title="@string/export_image"
         app:showAsAction="never"/>
 
     <item android:id="@+id/information"
+        android:visible="true"
         android:title="@string/information"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/exit"
+        android:visible="true"
+        android:title="@string/exit"
         app:showAsAction="never"/>
 
 </menu>

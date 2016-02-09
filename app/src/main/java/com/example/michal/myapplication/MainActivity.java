@@ -1,18 +1,17 @@
 package com.example.michal.myapplication;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,17 +20,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.michal.myapplication.ftrScan.FtrScanDemoUsbHostActivity;
-import com.example.michal.myapplication.ftrScan.SelectFileFormatActivity;
 
 import org.opencv.android.OpenCVLoader;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 
@@ -47,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static Button mLoadImage;
     private static Button mScanImage;
     private static Bitmap image;
+    private static TextView version;
 
     //po testovani vymazat
     private static Button test;
@@ -100,7 +96,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Resources res = getResources();
+        String app_version = String.format(res.getString(R.string.app_version_text), BuildConfig.VERSION_NAME);
+        version = (TextView)findViewById(R.id.name_version);
+        version.setText(app_version);
     }
+
+
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -141,25 +143,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        menu.getItem(0).setVisible(false); //home
+        menu.getItem(2).setVisible(false); //export_image
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { //due to finishAffinity(); supported from API 16
+            menu.getItem(4).setVisible(false);  //exit app
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        switch (id) {
-            case R.id.home:
-                break;
-            case R.id.load_image:
-                break;
-            case R.id.export_image:
-                break;
-            case R.id.information:
-                help.informationDialog();
-                break;
-        }
-
+        help.menuItemMainActivity(id);
         return super.onOptionsItemSelected(item);
     }
 
@@ -183,4 +180,29 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra("BitmapImage", byteArray);
         startActivity(i);
     }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle(getResources().getString(R.string.exit_question_title));
+
+        alertDialogBuilder
+                //.setMessage("Click yes to exit!")
+                .setCancelable(false)
+                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        MainActivity.this.finish();
+                    }
+                })
+                .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 }

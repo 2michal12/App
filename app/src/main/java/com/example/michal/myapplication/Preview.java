@@ -1,17 +1,13 @@
 package com.example.michal.myapplication;
 
-import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,9 +20,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class Preview extends AppCompatActivity {
 
@@ -45,7 +38,7 @@ public class Preview extends AppCompatActivity {
     private static RadioButton radioButton1;
     private static RadioButton radioButton2;
     private static RadioGroup radioGroup;
-    private static String radioButton = "";
+    private static Dialog dialog;
 
     private static String AUTOMATIC = "automatic";
     private static String AUTOMATIC_FULL = "automatic_full";
@@ -56,6 +49,7 @@ public class Preview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
         help = new Help(this);
+        dialog = new Dialog(this);
 
         mLoadedImage = (ImageView) findViewById(R.id.view_loaded_image);
         mPreprocessingAutomatic = (Button) findViewById(R.id.preprocessing_automatic);
@@ -90,29 +84,28 @@ public class Preview extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        dialog.cancel();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        menu.getItem(1).setVisible(false);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { //due to finishAffinity(); supported from API 16
+            menu.getItem(4).setVisible(false);  //exit app
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        switch (id){
-            case R.id.home :
-                Intent i = new Intent(this, MainActivity.class);
-                startActivity(i);
-                break;
-            case R.id.export_image:
-                help.saveImageToExternalStorage(mImage, "preview");
-                break;
-            case R.id.information:
-                help.informationDialog();
-                break;
-        }
-
+        help.menuItemOtherActivities(id, mImage, help.PREVIEW);
         return super.onOptionsItemSelected(item);
     }
 
@@ -128,7 +121,7 @@ public class Preview extends AppCompatActivity {
     }
 
     public void settingsDialog(){
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 

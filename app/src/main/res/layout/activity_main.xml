@@ -59,13 +59,15 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/name_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="@string/app_version"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="9dp" />
+        android:textSize="9dp"
+        android:padding="1dp"
+        android:hint="@string/app_version_text"/>
 
 
 </RelativeLayout>

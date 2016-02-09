@@ -4,12 +4,10 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,10 +28,6 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class Thinning extends AppCompatActivity {
 
@@ -129,27 +123,19 @@ public class Thinning extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        menu.getItem(1).setVisible(false);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { //due to finishAffinity(); supported from API 16
+            menu.getItem(4).setVisible(false);  //exit app
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Intent i;
-
-        switch (id) {
-            case R.id.home:
-                i = new Intent(this, MainActivity.class);
-                startActivity(i);
-                break;
-            case R.id.export_image:
-                help.saveImageToExternalStorage(imageAftefThinning, "thinning");
-                break;
-            case R.id.information:
-                System.out.println("informacie");
-                break;
-        }
-
+        help.menuItemOtherActivities(id, imageAftefThinning, help.THINNING);
         return super.onOptionsItemSelected(item);
     }
 

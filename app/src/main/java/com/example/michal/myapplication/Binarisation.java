@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -129,27 +130,19 @@ public class Binarisation extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        menu.getItem(1).setVisible(false);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { //due to finishAffinity(); supported from API 16
+            menu.getItem(4).setVisible(false);  //exit app
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Intent i;
-
-        switch (id){
-            case R.id.home :
-                i = new Intent(this, MainActivity.class);
-                startActivity(i);
-                break;
-            case R.id.export_image:
-                help.saveImageToExternalStorage(imageAftefBinarisation, "binarisation");
-                break;
-            case R.id.information:
-                help.informationDialog();
-                break;
-        }
-
+        help.menuItemOtherActivities(id, imageAftefBinarisation, help.BINARISATION);
         return super.onOptionsItemSelected(item);
     }
 
