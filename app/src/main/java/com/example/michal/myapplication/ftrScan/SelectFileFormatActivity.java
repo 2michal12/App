@@ -42,6 +42,7 @@ public class SelectFileFormatActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ftr_activity_save);
+        toolbar.setTitle(R.string.futronic_title);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 

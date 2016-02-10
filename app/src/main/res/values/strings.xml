@@ -75,7 +75,7 @@
     <string name="start_process">Štart</string>
     <string name="next_process">Ďalej</string>
     <string name="ok">OK</string>
-    <string name="title_activity_load_image">LoadImage</string>
+    <string name="title_activity_load_image">Preview</string>
     <string name="title_activity_segmentation">Segmentation</string>
     <string name="title_activity_normalisation">Normalisation</string>
     <string name="title_activity_filtering">Filtering</string>

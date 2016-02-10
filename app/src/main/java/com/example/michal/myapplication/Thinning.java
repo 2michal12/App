@@ -65,6 +65,8 @@ public class Thinning extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setTitle(R.string.thinning);
 
         pb = (ProgressBar) findViewById(R.id.progressBar);
         mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
@@ -353,9 +355,9 @@ public class Thinning extends AppCompatActivity {
         dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
         mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
         mSettingTitleText.setText(R.string.thinning_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.thinning_block);
-        mThinningBlock = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mThinningBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mThinningBlock.setText(String.valueOf(BLOCK_SIZE));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {

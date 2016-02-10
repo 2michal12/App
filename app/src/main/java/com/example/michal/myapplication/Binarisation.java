@@ -7,8 +7,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -23,7 +21,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -69,6 +66,8 @@ public class Binarisation extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setTitle(R.string.binarisation);
 
         pb = (ProgressBar) findViewById(R.id.progressBar);
         mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
@@ -301,9 +300,9 @@ public class Binarisation extends AppCompatActivity {
         dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
         mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
         mSettingTitleText.setText(R.string.binarisation_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.binarisation_block);
-        mBinarisationBlock = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mBinarisationBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mBinarisationBlock.setText(String.valueOf(BINARISATION_BLOCK));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {

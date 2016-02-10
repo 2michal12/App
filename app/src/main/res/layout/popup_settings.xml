@@ -29,14 +29,14 @@
             android:gravity="center">
 
             <TextView
-                android:id="@+id/text_for_edittext"
+                android:id="@+id/textForEdittext"
                 style="@style/SettingsItem"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content" />
 
 
             <EditText
-                android:id="@+id/settings_edittext"
+                android:id="@+id/settingsEdittext"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"

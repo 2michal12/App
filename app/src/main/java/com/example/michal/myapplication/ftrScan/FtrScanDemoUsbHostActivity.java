@@ -9,11 +9,9 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.Toolbar;
@@ -22,10 +20,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.michal.myapplication.Help;
 import com.example.michal.myapplication.R;
 import com.futronictech.Scanner;
 import com.futronictech.UsbDeviceDataExchangeImpl;
@@ -92,10 +88,10 @@ public class FtrScanDemoUsbHostActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ftr_activity_main);
-
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.setTitle(R.string.futronic_title);
 
-        mUsbHostMode = true;
+		mUsbHostMode = true;
     	mButtonScan = (Button) findViewById(R.id.btnScan);
         mButtonStop = (Button) findViewById(R.id.btnStop);
         mButtonSave = (Button) findViewById(R.id.btnSave);

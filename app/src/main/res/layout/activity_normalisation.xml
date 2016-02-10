@@ -8,14 +8,7 @@
     android:orientation="vertical"
     tools:context="com.example.michal.myapplication.Normalisation">
 
-
-    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar"
-        style="@style/Toolbar"
-        app:titleTextAppearance="@style/ToolbarTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title="@string/normalisation"  />
+    <include layout="@layout/toolbar" />
 
     <LinearLayout
         android:id="@+id/content_image"

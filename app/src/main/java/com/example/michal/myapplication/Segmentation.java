@@ -64,6 +64,8 @@ public class Segmentation extends AppCompatActivity{
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setTitle(R.string.segmentation);
 
         pb = (ProgressBar) findViewById(R.id.progressBar);
         mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
@@ -356,9 +358,9 @@ public class Segmentation extends AppCompatActivity{
         dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
         mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
         mSettingTitleText.setText(R.string.segmentation_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
+        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.segmentation_block);
-        mSegmentationBlockSize = (EditText) dialog.findViewById(R.id.settings_edittext);
+        mSegmentationBlockSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mSegmentationBlockSize.setText(String.valueOf(SEGMENTATION_SIZE));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {

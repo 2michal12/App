@@ -21,45 +21,34 @@ import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class Preview extends AppCompatActivity {
 
     private static Help help;
-    private static Toolbar toolbar;
-
-    private static ImageView mLoadedImage;
     private static Bitmap mImage;
-    private static Button mPreprocessingAutomatic;
-    private static Button mPreprocessingManual;
-
-    private static Button dialogButton;
-    private static TextView mSettingTitleText;
-    private static TextView mEdittextTitle;
-    private static EditText mEditText;
-    private static RadioButton radioButton1;
-    private static RadioButton radioButton2;
-    private static RadioGroup radioGroup;
     private static Dialog dialog;
 
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.view_loaded_image) ImageView mLoadedImage;
+    @Bind(R.id.preprocessing_automatic) Button mPreprocessingAutomatic;
+    @Bind(R.id.preprocessing_manual) Button mPreprocessingManual;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+        ButterKnife.bind(this);
+
+        setSupportActionBar(toolbar);
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setTitle(R.string.preview);
+
         help = new Help(this);
         dialog = new Dialog(this);
 
-        mLoadedImage = (ImageView) findViewById(R.id.view_loaded_image);
-        mPreprocessingAutomatic = (Button) findViewById(R.id.preprocessing_automatic);
-        mPreprocessingManual = (Button) findViewById(R.id.preprocessing_manual);
-
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if(byteArray != null) {
 
             mImage = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -74,7 +63,7 @@ public class Preview extends AppCompatActivity {
             mPreprocessingManual.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startPreprocessing(mImage, MANUAL);
+                    startPreprocessing(mImage, help.MANUAL);
                 }
             });
         }else{
@@ -115,8 +104,8 @@ public class Preview extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Intent i = new Intent(this, Segmentation.class);
-        i.putExtra("BitmapImage", byteArray);
-        i.putExtra("Type", type);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
+        i.putExtra(help.TYPE, type);
         startActivity(i);
     }
 
@@ -125,25 +114,26 @@ public class Preview extends AppCompatActivity {
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
+        EditText mEditText = (EditText) dialog.findViewById(R.id.settingsEdittext);
+        final RadioButton radioButton1 = (RadioButton) dialog.findViewById(R.id.radioButton1);
+        final RadioButton radioButton2 = (RadioButton) dialog.findViewById(R.id.radioButton2);
+        final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
+
         mSettingTitleText.setVisibility(View.GONE);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.text_for_edittext);
         mEdittextTitle.setVisibility(View.GONE);
-        mEditText = (EditText) dialog.findViewById(R.id.settings_edittext);
         mEditText.setVisibility(View.GONE);
-        radioButton1 = (RadioButton) dialog.findViewById(R.id.radioButton1);
-        radioButton2 = (RadioButton) dialog.findViewById(R.id.radioButton2);
-        radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
         radioGroup.setVisibility(View.VISIBLE);
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if( radioButton1.isChecked() ) {
-                    startPreprocessing(mImage, AUTOMATIC);
+                    startPreprocessing(mImage, help.AUTOMATIC);
                 }else if( radioButton2.isChecked() ){
-                    startPreprocessing(mImage, AUTOMATIC_FULL);
+                    startPreprocessing(mImage, help.AUTOMATIC_FULL);
                 }else{
 
                 }

@@ -29,23 +29,30 @@ import org.opencv.android.OpenCVLoader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String JPEG = "jpeg";
-    private static final String PNG = "png";
-
     private static final int SELECT_PICTURE = 1;
-
     private static Help help;
-    private static Toolbar toolbar;
-    private static Button mLoadImage;
-    private static Button mScanImage;
     private static Bitmap image;
-    private static TextView version;
 
-    //po testovani vymazat
-    private static Button test;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    @Bind(R.id.load_image)
+    Button mLoadImage;
+
+    @Bind(R.id.scan_image)
+    Button mScanImage;
+
+    @Bind(R.id.name_version)
+    TextView version;
+
+    @Bind(R.id.test_extraction)//po testovani vymazat
+    Button test;
 
     static {
         if (!OpenCVLoader.initDebug()) {
@@ -59,9 +66,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setTitle(R.string.app_name);
 
         //po stetovani vymazat
-        test = (Button) findViewById(R.id.test_extraction);
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,12 +80,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         help = new Help(this);
 
-        mLoadImage = (Button) findViewById(R.id.load_image);
         mLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), SELECT_PICTURE);
             }
         });
-
-        mScanImage = (Button) findViewById(R.id.scan_image);
 
         mScanImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,11 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
         Resources res = getResources();
         String app_version = String.format(res.getString(R.string.app_version_text), BuildConfig.VERSION_NAME);
-        version = (TextView)findViewById(R.id.name_version);
         version.setText(app_version);
     }
-
-
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -125,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
 
-                if( strMimeType.contains(JPEG) ){
+                if( strMimeType.contains(help.JPEG) ){
                     startPreview(image, 0); // 0 = .jpg
-                }else if( strMimeType.contains(PNG) ){
+                }else if( strMimeType.contains(help.PNG) ){
                     startPreview(image, 1); // 1 = .png
                 }else{
                     startPreview(image, 1); // 1 = .png for .bmp too
@@ -177,7 +179,8 @@ public class MainActivity extends AppCompatActivity {
         }else{
             i = new Intent(this, Preview.class);
         }
-        i.putExtra("BitmapImage", byteArray);
+
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
         startActivity(i);
     }
 

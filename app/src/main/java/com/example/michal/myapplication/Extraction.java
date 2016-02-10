@@ -62,6 +62,8 @@ public class Extraction extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setTitle(R.string.extraction);
 
         pb = (ProgressBar) findViewById(R.id.progressBar);
         mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);

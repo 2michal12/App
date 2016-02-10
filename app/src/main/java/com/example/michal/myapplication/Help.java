@@ -37,8 +37,21 @@ public class Help {
     public final String THINNING = "Thinning";
     public final String EXTRACTION = "Extraction";
 
+    //type of preprocessing
+    public final String AUTOMATIC = "automatic";
+    public final String AUTOMATIC_FULL = "automatic_full";
+    public final String MANUAL = "manual";
+
     //menuItem
     private static final int SELECT_PICTURE = 1;
+
+    //intent putExtra names
+    public final String BITMAP_IMAGE = "BitmapImage";
+    public final String TYPE = "Type";
+
+    //image format
+    public final String JPEG = "jpeg";
+    public final String PNG = "png";
 
 
     Help(){}
