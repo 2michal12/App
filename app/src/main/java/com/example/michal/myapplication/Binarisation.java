@@ -54,10 +54,6 @@ public class Binarisation extends AppCompatActivity {
     private static TextView mSettingTitleText;
     private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,13 +93,13 @@ public class Binarisation extends AppCompatActivity {
             imageAftefBinarisation = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mBinarisationImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(AUTOMATIC) ) {
+            if( type.equals(help.AUTOMATIC) ) {
                 //BINARISATION_BLOCK = 10; dorobit vypocet automaticky
 
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(AUTOMATIC_FULL) ){
+            }else if( type.equals(help.AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -285,7 +281,7 @@ public class Binarisation extends AppCompatActivity {
                 }
             });
 
-            if( type.equals(AUTOMATIC_FULL) )
+            if( type.equals(help.AUTOMATIC_FULL) )
                 startPreprocessing(imageAftefBinarisation);
         }
 
@@ -297,12 +293,13 @@ public class Binarisation extends AppCompatActivity {
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
+        final EditText mBinarisationBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
+
         mSettingTitleText.setText(R.string.binarisation_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.binarisation_block);
-        mBinarisationBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mBinarisationBlock.setText(String.valueOf(BINARISATION_BLOCK));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -320,7 +317,6 @@ public class Binarisation extends AppCompatActivity {
 
             }
         });
-
         dialog.show();
     }
 

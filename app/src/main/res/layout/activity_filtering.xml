@@ -55,34 +55,6 @@
 
     </LinearLayout>
 
-
-    <RelativeLayout
-        android:id="@+id/progress_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black90"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:indeterminate="false"
-            android:paddingEnd="20dp"
-            android:paddingStart="20dp"
-            android:progressDrawable="@drawable/progress_bar" />
-
-        <TextView
-            android:id="@+id/progress_bar_text"
-            style="@style/ProgressBarText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:gravity="center" />
-
-    </RelativeLayout>
+    <include layout="@layout/progress_bar" />
 
 </RelativeLayout>

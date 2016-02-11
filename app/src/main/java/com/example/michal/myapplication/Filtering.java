@@ -36,66 +36,50 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class Filtering extends AppCompatActivity {
 
     private static Help help;
-    private static Toolbar toolbar;
+    private static Bitmap imageBitmap;
     private static Bitmap imageAftefFiltering;
-    private static ImageView mFilteringImage;
-    private static Button mNextProcess;
-    private static EditText mFilteringSize;
-    private static EditText mFilteringStrength;
-    private static LinearLayout editText2;
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.progressBar) ProgressBar pb;
+    @Bind(R.id.view_filtering_image) ImageView mFilteringImage;
+    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.settings) Button mSettings;
+    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
     private static double treshold = 0.0;
     private static int[][] mask;
-
     private static int FILTERING_BLOCK = 10;
     private static int GAUSS_SIZE = 5;
     private static int GAUSS_STRENGTH = 10;
-
-    Mat orientation_angle, orientation_gui, frequence;
-
-    private static RelativeLayout mProgresBarLayout;
-    private static ProgressBar pb;
-    private static Bitmap imageBitmap ;
+    private static Mat orientation_angle, orientation_gui;
     private static String type;
-    private static Button dialogButton;
-    private static Button mSettings;
-    private static TextView mProgressBarText;
-    private static TextView mEdittextTitle,mEdittextTitle2;
-    private static TextView mSettingTitleText;
-
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtering);
+        ButterKnife.bind(this);
+
         help = new Help(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.filtering);
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
-        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        mNextProcess = (Button) findViewById(R.id.next);
         mNextProcess.setEnabled(false);
-        mSettings = (Button) findViewById(R.id.settings);
-        mFilteringImage = (ImageView) findViewById(R.id.view_filtering_image);
-
-        type = getIntent().getStringExtra("Type");
-        treshold = getIntent().getDoubleExtra("Treshold", treshold);
-        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
-
+        type = getIntent().getStringExtra(help.TYPE);
+        treshold = getIntent().getDoubleExtra(help.TRESHOLD, treshold);
+        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         mask = null;
-        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
             mask = new int[objectArray.length][];
             for(int i = 0; i < objectArray.length; i++){
@@ -103,20 +87,20 @@ public class Filtering extends AppCompatActivity {
             }
         }
 
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if (byteArray != null) {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefFiltering = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mFilteringImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(AUTOMATIC) ) {
+            if( type.equals(help.AUTOMATIC) ) {
                 //FILTERING_BLOCK = 10; dorobit vypocet automatickeho zvysenia
 
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(AUTOMATIC_FULL) ){
+            }else if( type.equals(help.AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -161,13 +145,13 @@ public class Filtering extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Bundle mBundle = new Bundle();
-        mBundle.putSerializable("Mask", mask);
+        mBundle.putSerializable(help.MASK, mask);
 
         Intent i = new Intent(this, Binarisation.class);
-        i.putExtra("BitmapImage", byteArray);
-        i.putExtra("Treshold", treshold);
-        i.putExtra("SegmentationBlock", BLOCK_SIZE);
-        i.putExtra("Type", type);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
+        i.putExtra(help.TRESHOLD, treshold);
+        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
     }
@@ -583,7 +567,7 @@ public class Filtering extends AppCompatActivity {
                 }
             });
 
-            if( type.equals(AUTOMATIC_FULL) )
+            if( type.equals(help.AUTOMATIC_FULL) )
                 startPreprocessing(imageAftefFiltering);
         }
 
@@ -595,24 +579,20 @@ public class Filtering extends AppCompatActivity {
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
+        final EditText mFilteringSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
+        LinearLayout editText2 = (LinearLayout) dialog.findViewById(R.id.edittext2);
+        TextView mEdittextTitle2 = (TextView) dialog.findViewById(R.id.text_for_edittext2);
+        final EditText mFilteringStrength = (EditText) dialog.findViewById(R.id.settings_edittext2);
+
         mSettingTitleText.setText(R.string.filtering_settings_title);
-
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.filtering_block);
-        mFilteringSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mFilteringSize.setText(String.valueOf(GAUSS_SIZE));
-
-        editText2 = (LinearLayout) dialog.findViewById(R.id.edittext2);
         editText2.setVisibility(View.VISIBLE);
-
-        mEdittextTitle2 = (TextView) dialog.findViewById(R.id.text_for_edittext2);
         mEdittextTitle2.setText(R.string.filtering_strength);
-        mFilteringStrength = (EditText) dialog.findViewById(R.id.settings_edittext2);
         mFilteringStrength.setText(String.valueOf(GAUSS_STRENGTH));
-
-
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override

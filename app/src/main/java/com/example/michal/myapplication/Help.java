@@ -48,6 +48,10 @@ public class Help {
     //intent putExtra names
     public final String BITMAP_IMAGE = "BitmapImage";
     public final String TYPE = "Type";
+    public final String TRESHOLD = "Treshold";
+    public final String VARIANCE = "Variance";
+    public final String MASK = "Mask";
+    public final String SEGMENTATION_BLOCK = "SegmentationBlock";
 
     //image format
     public final String JPEG = "jpeg";

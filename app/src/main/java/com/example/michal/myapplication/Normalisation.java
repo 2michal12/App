@@ -26,14 +26,22 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class Normalisation extends AppCompatActivity {
 
     private static Help help;
-    private static Toolbar toolbar;
-    private static ImageView mNormalisationImage;
-    private static EditText mNormalisationContrast;
-    private static Button mNextProcess;
+    private static Bitmap imageBitmap;
     private static Bitmap imageAftefNormalisation;
+
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.settings) Button mSettings;
+    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+    @Bind(R.id.progressBar) ProgressBar pb;
+    @Bind(R.id.view_normalisation_image) ImageView mNormalisationImage;
 
     private static double treshold = 0.0;
     private static double variance = 0.0;
@@ -41,48 +49,27 @@ public class Normalisation extends AppCompatActivity {
     private static int NORMALISATION_CONTRAST = 10;
     private static int[][] mask;
 
-    private static RelativeLayout mProgresBarLayout;
-    private static ProgressBar pb;
-    private static Bitmap imageBitmap ;
     private static String type;
-    private static Button dialogButton;
-    private static Button mSettings;
-    private static TextView mProgressBarText;
-    private static TextView mEdittextTitle;
-    private static TextView mSettingTitleText;
-
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normalisation);
-        help = new Help(this);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.normalisation);
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
-        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        mNextProcess = (Button) findViewById(R.id.next);
+        help = new Help(this);
         mNextProcess.setEnabled(false);
-        mSettings = (Button) findViewById(R.id.settings);
-        mNormalisationImage = (ImageView) findViewById(R.id.view_normalisation_image);
 
-        type = getIntent().getStringExtra("Type");
-
-        variance = getIntent().getDoubleExtra("Variance", variance);
-        treshold = getIntent().getDoubleExtra("Treshold", treshold);
-        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
-
+        type = getIntent().getStringExtra(help.TYPE);
+        variance = getIntent().getDoubleExtra(help.VARIANCE, variance);
+        treshold = getIntent().getDoubleExtra(help.TRESHOLD, treshold);
+        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         mask = null;
-        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
             mask = new int[objectArray.length][];
             for(int i = 0; i < objectArray.length; i++){
@@ -90,20 +77,19 @@ public class Normalisation extends AppCompatActivity {
             }
         }
 
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if(byteArray != null) {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefNormalisation = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mNormalisationImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(AUTOMATIC) ) {
+            if( type.equals(help.AUTOMATIC) ) {
                 //NORMALISATION_CONTRAST = 1; dorobit vypocet automatickeho zvysenia
-
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(AUTOMATIC_FULL) ){
+            }else if( type.equals(help.AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -130,7 +116,6 @@ public class Normalisation extends AppCompatActivity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { //due to finishAffinity(); supported from API 16
             menu.getItem(4).setVisible(false);  //exit app
         }
-
         return true;
     }
 
@@ -147,13 +132,13 @@ public class Normalisation extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Bundle mBundle = new Bundle();
-        mBundle.putSerializable("Mask", mask);
+        mBundle.putSerializable(help.MASK, mask);
 
         Intent i = new Intent(this, Filtering.class);
-        i.putExtra("BitmapImage", byteArray);
-        i.putExtra("Treshold",treshold);
-        i.putExtra("SegmentationBlock", BLOCK_SIZE);
-        i.putExtra("Type", type);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
+        i.putExtra(help.TRESHOLD,treshold);
+        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
     }
@@ -192,7 +177,6 @@ public class Normalisation extends AppCompatActivity {
                             for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
                                 data = image.get(k, l);
                                 if (data[0] > treshold) {
-                                    //odtlacok1.at<uchar>(i,j)=abs(mean+(sqrt(variance*(pow(d-mean_cely,2))/variancia_cela))-255);
                                     if ((treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) > 255) {
                                         image.put(k, l, data_full);
                                     } else {
@@ -200,7 +184,6 @@ public class Normalisation extends AppCompatActivity {
                                         image.put(k, l, data_new);
                                     }
                                 } else {
-                                    //odtlacok1.at<uchar>(i,j)=abs(mean-(sqrt(variance*(pow(d-mean_cely,2))/variancia_cela))-255);
                                     if ((treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) < 0) {
                                         image.put(k, l, data_zero);
                                     } else {
@@ -242,24 +225,24 @@ public class Normalisation extends AppCompatActivity {
                 }
             });
 
-            if( type.equals(AUTOMATIC_FULL) )
+            if( type.equals(help.AUTOMATIC_FULL) )
                 startPreprocessing(imageAftefNormalisation);
         }
 
     }
-
 
     public void settingsDialog(){
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
+        final EditText mNormalisationContrast = (EditText) dialog.findViewById(R.id.settingsEdittext);
+
         mSettingTitleText.setText(R.string.normalisation_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.normalisation_contrast);
-        mNormalisationContrast = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mNormalisationContrast.setText(String.valueOf(NORMALISATION_CONTRAST));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {

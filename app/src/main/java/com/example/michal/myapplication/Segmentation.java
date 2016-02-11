@@ -26,70 +26,60 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class Segmentation extends AppCompatActivity{
 
     private static Help help;
-    private static Toolbar toolbar;
     private static Bitmap imageAftefSegmentation;
+    private static Bitmap imageBitmap ;
+    private static Dialog dialog;
+
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.view_segmentation_image) ImageView mSegmentationImage;
+    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.settings) Button mSettings;
+    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+    @Bind(R.id.progressBar) ProgressBar pb;
+
     private static double treshold = 0.0;
     private static double variance = 0.0;
     private static int SEGMENTATION_SIZE = 7;
     private static final Integer SEGMENTATION_CLEANING = 10;
     private static boolean clearOnceEdges = false;
-
-    private static ImageView mSegmentationImage;
-    private static EditText mSegmentationBlockSize;
-    private static Button mNextProcess;
-    private static Button mSettings;
-    private static TextView mProgressBarText;
-
     private static int mask[][];
-    private static RelativeLayout mProgresBarLayout;
-    private static ProgressBar pb;
-    private static Bitmap imageBitmap ;
     private static String type;
-    private static Button dialogButton;
-    private static TextView mSettingTitleText;
-    private static TextView mEdittextTitle;
 
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_segmentation);
-        help = new Help(this);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.segmentation);
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
-        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        mNextProcess = (Button) findViewById(R.id.next);
+        help = new Help(this);
         mNextProcess.setEnabled(false);
-        mSettings = (Button) findViewById(R.id.settings);
-        mSegmentationImage = (ImageView) findViewById(R.id.view_segmentation_image);
 
-        type = getIntent().getStringExtra("Type");
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        type = getIntent().getStringExtra(help.TYPE);
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if(byteArray != null) {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefSegmentation = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mSegmentationImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(AUTOMATIC) ) {
+            if( type.equals(help.AUTOMATIC) ) {
                 //SEGMENTATION_SIZE = 7; dorobit vypocet automatickej velkosti bloku
-
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(AUTOMATIC_FULL) ){
+            }else if( type.equals(help.AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -134,14 +124,14 @@ public class Segmentation extends AppCompatActivity{
         byte[] byteArray = stream.toByteArray();
 
         Bundle mBundle = new Bundle();
-        mBundle.putSerializable("Mask", mask);
+        mBundle.putSerializable(help.MASK, mask);
 
         Intent i = new Intent(this, Normalisation.class);
-        i.putExtra("BitmapImage", byteArray);
-        i.putExtra("SegmentationBlock", SEGMENTATION_SIZE);
-        i.putExtra("Treshold",treshold);
-        i.putExtra("Variance",variance);
-        i.putExtra("Type",type);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
+        i.putExtra(help.SEGMENTATION_BLOCK, SEGMENTATION_SIZE);
+        i.putExtra(help.TRESHOLD,treshold);
+        i.putExtra(help.VARIANCE,variance);
+        i.putExtra(help.TYPE,type);
         i.putExtras(mBundle);
 
         startActivity(i);
@@ -342,7 +332,7 @@ public class Segmentation extends AppCompatActivity{
                 }
             });
 
-            if( type.equals(AUTOMATIC_FULL) )
+            if( type.equals(help.AUTOMATIC_FULL) )
                 startPreprocessing(imageAftefSegmentation);
 
         }
@@ -351,16 +341,17 @@ public class Segmentation extends AppCompatActivity{
 
 
     public void settingsDialog(){
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
+        final EditText mSegmentationBlockSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
+
         mSettingTitleText.setText(R.string.segmentation_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.segmentation_block);
-        mSegmentationBlockSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mSegmentationBlockSize.setText(String.valueOf(SEGMENTATION_SIZE));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
