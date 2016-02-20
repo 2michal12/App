@@ -254,21 +254,56 @@ public class Filtering extends AppCompatActivity {
                     }
                 }
             }
-            //System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
+            System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
 
         }
 
         mapExtermination(block);
 
         //Zapnut len v pripade ze chcem vykreslit smerovu mapu "orientation_gui"
-        /*for (int i = 0; i<orientation_gui.rows() / block; i++){
+        for (int i = 0; i<orientation_gui.rows() / block; i++){
             for (int j = 0; j<orientation_gui.cols() / block; j++){
                 data_input = orientation_angle.get(i*block+block/2, j*block+block/2); //angle
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
-        }*/
+        }
 
         return orientation_map;
+    }
+
+    private void mapExtermination(int block){ // vyhladenie smerovej mapy
+        Mat sinComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+        Mat cosComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+        Mat sinOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+        Mat cosOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
+
+        double[] data = new double[1];
+        double[] cos = new double[1];
+        double[] sin = new double[1];;
+        for (int i = 0; i < orientation_angle.rows(); i++){
+            for (int j = 0; j < orientation_angle.cols(); j++){
+                data = orientation_angle.get(i, j);
+                cos[0] = Math.cos(2 * data[0]);
+                cosComponent.put(i, j, cos);
+                sin[0] = Math.sin(2 * data[0]);
+                sinComponent.put(i, j, sin);
+            }
+        }
+
+        Size kernel = new Size((2 * block) - 1, (2 * block) - 1);
+
+        Imgproc.GaussianBlur(sinComponent, sinOutput, kernel, 10, 10);
+        Imgproc.GaussianBlur(cosComponent, cosOutput, kernel, 10, 10);
+/*
+        for (int i = 1; i < cosOutput.rows(); i++){
+            for (int j = 1; j < sinOutput.cols(); j++) {
+                sin = sinOutput.get(i, j);
+                cos = cosOutput.get(i, j);
+                data[0] = 1 / 2.0 * ( Math.atan2(sin[0], cos[0]) );
+                orientation_angle.put(i-1, j-1, data);
+            }
+        }
+        */
     }
 
     private void frequenceMap(Mat image, int block){
@@ -333,40 +368,6 @@ public class Filtering extends AppCompatActivity {
     private void gaussianFilter(Mat image){
         Size kernel = new Size(GAUSS_SIZE, GAUSS_SIZE);
         Imgproc.GaussianBlur(image, image, kernel, GAUSS_STRENGTH, GAUSS_STRENGTH);
-    }
-
-    private void mapExtermination(int block){ // vyhladenie smerovej mapy
-        Mat sinComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
-        Mat cosComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
-        Mat sinOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
-        Mat cosOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
-
-        double[] data = new double[1];
-        double[] cos = new double[1];
-        double[] sin = new double[1];;
-        for (int i = 0; i < orientation_angle.rows(); i++){
-            for (int j = 0; j < orientation_angle.cols(); j++){
-                data = orientation_angle.get(i, j);
-                cos[0] = Math.cos(2 * data[0]);
-                cosComponent.put(i, j, cos);
-                sin[0] = Math.sin(2 * data[0]);
-                sinComponent.put(i, j, sin);
-            }
-        }
-
-        Size kernel = new Size((2 * block) - 1, (2 * block) - 1);
-
-        Imgproc.GaussianBlur(sinComponent, sinOutput, kernel, 10, 10);
-        Imgproc.GaussianBlur(cosComponent, cosOutput, kernel, 10, 10);
-
-        for (int i = 1; i < cosOutput.rows(); i++){
-            for (int j = 1; j < sinOutput.cols(); j++) {
-                sin = sinOutput.get(i, j);
-                cos = cosOutput.get(i, j);
-                data[0] = 1 / 2.0 * ( Math.atan2(sin[0], cos[0]) );
-                orientation_angle.put(i-1, j-1, data);
-            }
-        }
     }
 
     //ZMENIT SYNTAX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -472,7 +473,7 @@ public class Filtering extends AppCompatActivity {
         Mat enhanced = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
 
         // predefine parameters for Gabor kernel
-        Size kSize = new Size(31,31);
+        Size kSize = new Size(7,7);
 
         double theta1 = 0;
         double theta2 = 45;
@@ -480,7 +481,7 @@ public class Filtering extends AppCompatActivity {
         double theta4 = 135;
 
         double lambda = 8;
-        double sigma = 10;
+        double sigma = 16;
         double gamma = 0.25;
         double psi =  0;
 

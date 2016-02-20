@@ -19,43 +19,34 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-
 import java.io.ByteArrayOutputStream;
+import butterknife.Bind;
 
 public class Thinning extends AppCompatActivity {
 
     private static Help help;
-    private static Toolbar toolbar;
-    private static ImageView mThinningImage;
-    private static Button mNextProcess;
+    private static Bitmap imageBitmap;
     private static Bitmap imageAftefThinning;
-    private static EditText mThinningBlock;
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.progressBar) ProgressBar pb;
+    @Bind(R.id.view_thinning_image) ImageView mThinningImage;
+    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.settings) Button mSettings;
+    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
     private static int[][] mask;
     int blocksWidth, blocksHeight;
     double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
-
-    private static RelativeLayout mProgresBarLayout;
-    private static ProgressBar pb;
-    private static Bitmap imageBitmap ;
     private static String type;
-    private static Button dialogButton;
-    private static Button mSettings;
-    private static TextView mProgressBarText;
-    private static TextView mEdittextTitle;
-    private static TextView mSettingTitleText;
-
-    private static String AUTOMATIC = "automatic";
-    private static String AUTOMATIC_FULL = "automatic_full";
-    private static String MANUAL = "manual";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +67,11 @@ public class Thinning extends AppCompatActivity {
         mSettings = (Button) findViewById(R.id.settings);
         mThinningImage = (ImageView) findViewById(R.id.view_thinning_image);
 
-        type = getIntent().getStringExtra("Type");
-        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
+        type = getIntent().getStringExtra(help.TYPE);
+        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
 
         mask = null;
-        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
             mask = new int[objectArray.length][];
             for(int i = 0; i < objectArray.length; i++){
@@ -88,18 +79,18 @@ public class Thinning extends AppCompatActivity {
             }
         }
 
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if (byteArray != null) {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefThinning = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mThinningImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(AUTOMATIC) ) {
+            if( type.equals(help.AUTOMATIC) ) {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(AUTOMATIC_FULL) ){
+            }else if( type.equals(help.AUTOMATIC_FULL) ){
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -147,12 +138,12 @@ public class Thinning extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Bundle mBundle = new Bundle();
-        mBundle.putSerializable("Mask", mask);
+        mBundle.putSerializable(help.MASK, mask);
 
         Intent i = new Intent(this, Extraction.class);
-        i.putExtra("BitmapImage", byteArray);
-        i.putExtra("SegmentationBlock", BLOCK_SIZE);
-        i.putExtra("Type", type);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
+        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
     }
@@ -352,12 +343,13 @@ public class Thinning extends AppCompatActivity {
         dialog.setContentView(R.layout.popup_settings);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
+        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
+
         mSettingTitleText.setText(R.string.thinning_settings_title);
-        mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
         mEdittextTitle.setText(R.string.thinning_block);
-        mThinningBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
+        final EditText mThinningBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mThinningBlock.setText(String.valueOf(BLOCK_SIZE));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {

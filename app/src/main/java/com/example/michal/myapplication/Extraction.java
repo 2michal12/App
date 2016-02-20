@@ -29,30 +29,28 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
 
+import butterknife.Bind;
+
 /**
  * Created by Michal on 27.01.16.
  */
 public class Extraction extends AppCompatActivity {
 
     private static Help help;
-    private static Toolbar toolbar;
-    private static ImageView mExtractionImage;
-    private static Button mNextProcess;
+    private static Bitmap imageBitmap;
     private static Bitmap imageAftefExtraction;
+
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.progressBar) ProgressBar pb;
+    @Bind(R.id.view_extraction_image) ImageView mExtractionImage;
+    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.settings) Button mSettings;
+    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+
     private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
-    private static String type;
-
-    private static RelativeLayout mProgresBarLayout;
-    private static ProgressBar pb;
-    private static Bitmap imageBitmap ;
-    private static Button dialogButton;
-    private static Button mSettings;
-    private static TextView mProgressBarText;
     private static int[][] mask;
-
-
-    private RadioGroup radioGroup;
-    private RadioButton radioButton;
+    private static String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +71,11 @@ public class Extraction extends AppCompatActivity {
         mSettings = (Button) findViewById(R.id.settings);
         mExtractionImage = (ImageView) findViewById(R.id.view_extraction_image);
 
-        type = getIntent().getStringExtra("Type");
-        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
+        type = getIntent().getStringExtra(help.TYPE);
+        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
 
         mask = null;
-        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
             mask = new int[objectArray.length][];
             for(int i = 0; i < objectArray.length; i++){
@@ -85,7 +83,7 @@ public class Extraction extends AppCompatActivity {
             }
         }
 
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if (byteArray != null) {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -134,7 +132,7 @@ public class Extraction extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Intent i = new Intent(this, Extraction.class);
-        i.putExtra("BitmapImage", byteArray);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
         startActivity(i);
     }
 
@@ -238,7 +236,6 @@ public class Extraction extends AppCompatActivity {
                             startPreprocessing(imageAftefExtraction);
                         }
                     });
-
         }
 
     }
@@ -248,16 +245,15 @@ public class Extraction extends AppCompatActivity {
         dialog.setContentView(R.layout.popup_settings_extraction);
         dialog.setTitle(R.string.settings);
 
-        dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-
-        radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
+        final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 int selectedId = radioGroup.getCheckedRadioButtonId();
-                radioButton = (RadioButton) dialog.findViewById(selectedId);
+                Button radioButton = (RadioButton) dialog.findViewById(selectedId);
 
                 if (radioButton.getText().equals(getResources().getString(R.string.minutie_ending))) {
                     dialog.dismiss();
@@ -268,7 +264,6 @@ public class Extraction extends AppCompatActivity {
                     mProgresBarLayout.setVisibility(View.VISIBLE);
                     new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_bifurcation));
                 }
-
             }
         });
 

@@ -27,58 +27,49 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class Binarisation extends AppCompatActivity {
 
     private static Help help;
-    private static Toolbar toolbar;
-    private static ImageView mBinarisationImage;
-    private static Button mNextProcess;
+    private static Bitmap imageBitmap;
     private static Bitmap imageAftefBinarisation;
-    private static EditText mBinarisationBlock;
 
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.progressBar) ProgressBar pb;
+    @Bind(R.id.view_binarisation_image) ImageView mBinarisationImage;
+    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.settings) Button mSettings;
+    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+
+    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
     private static double treshold = 0.0;
     private static int[][] mask;
-
     private static int BINARISATION_BLOCK = 10;
     private static int GAUSS_SIZE = 3;
     private static int GAUSS_STRENGTH = 5;
-
-    private static RelativeLayout mProgresBarLayout;
-    private static ProgressBar pb;
-    private static Bitmap imageBitmap ;
     private static String type;
-    private static Button dialogButton;
-    private static Button mSettings;
-    private static TextView mProgressBarText;
-    private static TextView mEdittextTitle;
-    private static TextView mSettingTitleText;
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_binarisation);
+        ButterKnife.bind(this);
+
         help = new Help(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.binarisation);
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
-        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        mNextProcess = (Button) findViewById(R.id.next);
         mNextProcess.setEnabled(false);
-        mSettings = (Button) findViewById(R.id.settings);
-        mBinarisationImage = (ImageView) findViewById(R.id.view_binarisation_image);
-
-        type = getIntent().getStringExtra("Type");
-        treshold = getIntent().getDoubleExtra("Treshold",treshold);
-        BLOCK_SIZE = getIntent().getIntExtra("SegmentationBlock", BLOCK_SIZE);
-
+        type = getIntent().getStringExtra(help.TYPE);
+        treshold = getIntent().getDoubleExtra(help.TRESHOLD,treshold);
+        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         mask = null;
-        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable("Mask");
+        Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
             mask = new int[objectArray.length][];
             for(int i = 0; i < objectArray.length; i++){
@@ -86,7 +77,7 @@ public class Binarisation extends AppCompatActivity {
             }
         }
 
-        byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
+        byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if(byteArray != null) {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
@@ -147,12 +138,12 @@ public class Binarisation extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Bundle mBundle = new Bundle();
-        mBundle.putSerializable("Mask", mask);
+        mBundle.putSerializable(help.MASK, mask);
 
         Intent i = new Intent(this, Thinning.class);
-        i.putExtra("BitmapImage", byteArray);
-        i.putExtra("SegmentationBlock", BLOCK_SIZE);
-        i.putExtra("Type", type);
+        i.putExtra(help.BITMAP_IMAGE, byteArray);
+        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
     }
