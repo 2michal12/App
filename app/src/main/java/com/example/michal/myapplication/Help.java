@@ -57,6 +57,14 @@ public class Help {
     public final String JPEG = "jpeg";
     public final String PNG = "png";
 
+    //default sizes
+    public int BLOCK_SIZE = 7;
+
+    public int GABOR_KERNEL_SIZE = 7; //best solution when it is same to the BLOCK_SIZE .. need to be odd number
+    public int GABOR_FREQUENCY = 7; // lambda, frequency map of fingerprint
+    public int GABOR_STRENGTH = 10; // sigma
+    public double GABOR_RATIO = 0.25; // gamma, ratio between length and width {0 .. 1}
+    public double GABOR_PSI = 0; // psi, {0 .. pi}
 
     Help(){}
 

@@ -39,8 +39,11 @@
 
     <!-- Filtering -->
     <string name="filtering">Filtering</string>
-    <string name="filtering_block">Gaussian filter size: </string>
-    <string name="filtering_strength">Gaussian filter strength: </string>
+    <string name="filtering_frequency">Frequency (lambda): </string>
+    <string name="filtering_gamma">Ratio length/width (gamma): </string>
+    <string name="filtering_psi">Filter (psi): </string>
+    <string name="filtering_block">Filter size: </string>
+    <string name="filtering_strength">Filter strength (sigma): </string>
     <string name="filtering_running">Running filtering …</string>
     <string name="filtering_finished">Filtering finished</string>
     <string name="filtering_settings_title">Input parameters for normalisation</string>

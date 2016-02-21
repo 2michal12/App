@@ -42,7 +42,7 @@ public class Thinning extends AppCompatActivity {
     @Bind(R.id.progress_bar_text) TextView mProgressBarText;
     @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
 
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
+    private static int BLOCK_SIZE;
     private static int[][] mask;
     int blocksWidth, blocksHeight;
     double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
@@ -68,7 +68,7 @@ public class Thinning extends AppCompatActivity {
         mThinningImage = (ImageView) findViewById(R.id.view_thinning_image);
 
         type = getIntent().getStringExtra(help.TYPE);
-        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        BLOCK_SIZE = help.BLOCK_SIZE;
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
@@ -154,6 +154,8 @@ public class Thinning extends AppCompatActivity {
         double[] data_input = new double[1];
         data_input[0] = 1;
         int A = 0, B, m1, m2;
+        int BLACK = 0;
+        int WHITE = 1;
 
         for(int i = 0; i < blocksHeight-1; i++){
             for(int j = 0; j < blocksWidth-1; j++){
@@ -170,41 +172,30 @@ public class Thinning extends AppCompatActivity {
                             p8 = image.get(k, l-1);
                             p9 = image.get(k-1, l-1);
 
-                            if((int)p2[0] == 0 && (int)p3[0] == 1){
+                            if((int)p2[0] == BLACK && (int)p3[0] == WHITE){
                                 A++;
                             }
-                            if(((int)p3[0] == 0 && (int)p4[0] == 1)){
+                            if(((int)p3[0] == BLACK && (int)p4[0] == WHITE)){
                                 A++;
                             }
-                            if(((int)p4[0] == 0 && (int)p5[0] == 1)){
+                            if(((int)p4[0] == BLACK && (int)p5[0] == WHITE)){
                                 A++;
                             }
-                            if(((int)p5[0] == 0 && (int)p6[0] == 1)){
+                            if(((int)p5[0] == BLACK && (int)p6[0] == WHITE)){
                                 A++;
                             }
-                            if(((int)p6[0] == 0 && (int)p7[0] == 1)){
+                            if(((int)p6[0] == BLACK && (int)p7[0] == WHITE)){
                                 A++;
                             }
-                            if(((int)p7[0] == 0 && (int)p8[0] == 1)){
+                            if(((int)p7[0] == BLACK && (int)p8[0] == WHITE)){
                                 A++;
                             }
-                            if(((int)p8[0] == 0 && (int)p9[0] == 1)){
+                            if(((int)p8[0] == BLACK && (int)p9[0] == WHITE)){
                                 A++;
                             }
-                            if(((int)p9[0] == 0 && (int)p2[0] == 1)) {
+                            if(((int)p9[0] == BLACK && (int)p2[0] == WHITE)) {
                                 A++;
                             }
-
-                            /* druhy algoritmus - vyzera byt horsi
-                            int C = ( (ivt((int)p2[0]) & ( (int)p3[0] | (int)p4[0] )) + (ivt((int)p4[0]) & ( (int)p5[0] | (int)p6[0] )) + (ivt((int)p6[0]) & ( (int)p7[0] | (int)p8[0] )) + (ivt((int)p8[0]) & ( (int)p9[0] | (int)p2[0] )) );
-                            int N1 = ( ((int)p9[0] | (int)p2[0])  +  ((int)p3[0] | (int)p4[0])  +  ((int)p5[0] | (int)p6[0]) + ((int)p7[0] | (int)p8[0]) );
-                            int N2 = ( ((int)p2[0] | (int)p3[0])  +  ((int)p4[0] | (int)p5[0])  +  ((int)p6[0] | (int)p7[0]) + ((int)p8[0] | (int)p9[0]) );
-                            int N = N1 < N2 ? N1 : N2;
-                            int m = iter == 0 ?  (((int)p6[0] | (int)p7[0] | ivt((int)p9[0])) & (int)p8[0]) : (((int)p2[0] | (int)p3[0] | ivt((int)p5[0])) & (int)p4[0]) ;
-
-                            if(C == 1 && (N >= 2 && N <= 6) && m == 0){
-                                marker.put(k, l, data_input);
-                            }*/
 
                             B = (int)p2[0] + (int)p3[0] + (int)p4[0] + (int)p5[0] + (int)p6[0] + (int)p7[0] + (int)p8[0] + (int)p9[0];
                             m1 = iter == 0 ? ((int)p2[0] * (int)p4[0] * (int)p6[0]) : ((int)p2[0] * (int)p4[0] * (int)p8[0]);

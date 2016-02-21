@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                image = BitmapFactory.decodeFile("storage/emulated/0/Pictures/DIPLOMOVKA/FtrScan/skeleton3.bmp");
+                //image = BitmapFactory.decodeFile("storage/emulated/0/Pictures/DIPLOMOVKA/FtrScan/skeleton3.bmp");
+                image = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton);
                 startPreview(image, 2);
             }
         });

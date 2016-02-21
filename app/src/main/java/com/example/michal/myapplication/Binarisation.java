@@ -44,7 +44,7 @@ public class Binarisation extends AppCompatActivity {
     @Bind(R.id.progress_bar_text) TextView mProgressBarText;
     @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
 
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
+    private static int BLOCK_SIZE;
     private static double treshold = 0.0;
     private static int[][] mask;
     private static int BINARISATION_BLOCK = 10;
@@ -67,7 +67,7 @@ public class Binarisation extends AppCompatActivity {
         mNextProcess.setEnabled(false);
         type = getIntent().getStringExtra(help.TYPE);
         treshold = getIntent().getDoubleExtra(help.TRESHOLD,treshold);
-        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        BLOCK_SIZE = help.BLOCK_SIZE;
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){

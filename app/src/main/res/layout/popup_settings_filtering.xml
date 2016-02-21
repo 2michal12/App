@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/popUpSettingTextTitle"
+        style="@style/PopUpTextTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filtering_settings_title"
+        android:gravity="center"
+        android:padding="16dp" />
+
+    <LinearLayout
+        android:id="@+id/popup_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/popUpSettingTextTitle"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp">
+
+        <LinearLayout
+            android:id="@+id/edittext1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/textForEdittext"
+                style="@style/SettingsItem"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filtering_block"/>
+
+
+            <EditText
+                android:id="@+id/settingsEdittext"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edittext2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/text_for_edittext2"
+                style="@style/SettingsItem"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filtering_frequency"/>
+
+
+            <EditText
+                android:id="@+id/settingsEdittext2"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edittext3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/text_for_edittext3"
+                style="@style/SettingsItem"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filtering_strength"/>
+
+
+            <EditText
+                android:id="@+id/settingsEdittext3"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edittext4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/text_for_edittext4"
+                style="@style/SettingsItem"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filtering_gamma"/>
+
+
+            <EditText
+                android:id="@+id/settingsEdittext4"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edittext5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/text_for_edittext5"
+                style="@style/SettingsItem"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="@string/filtering_psi"/>
+
+
+            <EditText
+                android:id="@+id/settingsEdittext5"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/radioButtonGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="gone">
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/automatic_preprocessing_steps" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/automatic_preprocessing_full" />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/popUpOK"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/popup_settings"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:text="@string/ok" />
+
+</RelativeLayout>

@@ -48,7 +48,7 @@ public class Extraction extends AppCompatActivity {
     @Bind(R.id.progress_bar_text) TextView mProgressBarText;
     @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
 
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
+    private static int BLOCK_SIZE;
     private static int[][] mask;
     private static String type;
 
@@ -72,7 +72,7 @@ public class Extraction extends AppCompatActivity {
         mExtractionImage = (ImageView) findViewById(R.id.view_extraction_image);
 
         type = getIntent().getStringExtra(help.TYPE);
-        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
+        BLOCK_SIZE = help.BLOCK_SIZE;
 
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
@@ -165,7 +165,7 @@ public class Extraction extends AppCompatActivity {
 
             for(int i = 0; i < blocksHeight-1; i++){
                 for(int j = 0; j < blocksWidth-1; j++) {
-                    if (mask[j][i] == 1)
+                    if (mask[j][i] == 1 && testMaskEdge(j, i))
                         for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
                             for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
 
@@ -237,10 +237,19 @@ public class Extraction extends AppCompatActivity {
                         }
                     });
         }
-
     }
 
-    public void settingsDialog(){
+    protected boolean testMaskEdge(int j, int i){
+        int WHITE = 1;
+        int BLACK = 0;
+
+        if(mask[j][i] == WHITE && (mask[j-1][i]==BLACK || mask[j-1][i+1]==BLACK || mask[j][i+1]==BLACK || mask[j+1][i+1]==BLACK || mask[j+1][i]==BLACK || mask[j+1][i-1]==BLACK || mask[j][i-1]==BLACK || mask[j-1][i-1]==BLACK ) ){
+            return false;
+        }
+        return true;
+    }
+
+    public void settingsDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.popup_settings_extraction);
         dialog.setTitle(R.string.settings);

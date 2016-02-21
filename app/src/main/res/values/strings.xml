@@ -39,8 +39,11 @@
 
     <!-- Filtering -->
     <string name="filtering">Filtrovanie</string>
-    <string name="filtering_block">Veľkosť Gaussovho filtra: </string>
-    <string name="filtering_strength">Sila Gaussovho filtra: </string>
+    <string name="filtering_block">Veľkosť filtra: </string>
+    <string name="filtering_frequency">Frekvencia (lambda): </string>
+    <string name="filtering_strength">Sila filtra (sigma): </string>
+    <string name="filtering_gamma">Pomer dlzka/sirka (gamma): </string>
+    <string name="filtering_psi">Vysunutie filtra (psi): </string>
     <string name="filtering_running">Prebieha filtrovanie …</string>
     <string name="filtering_finished">Filtrovanie dokončené</string>
     <string name="filtering_settings_title">Vstupné parametre pre filtrovanie</string>

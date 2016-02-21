@@ -45,7 +45,7 @@ public class Normalisation extends AppCompatActivity {
 
     private static double treshold = 0.0;
     private static double variance = 0.0;
-    private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
+    private static int BLOCK_SIZE;
     private static int NORMALISATION_CONTRAST = 10;
     private static int[][] mask;
 
@@ -64,10 +64,10 @@ public class Normalisation extends AppCompatActivity {
         help = new Help(this);
         mNextProcess.setEnabled(false);
 
+        BLOCK_SIZE = help.BLOCK_SIZE;
         type = getIntent().getStringExtra(help.TYPE);
         variance = getIntent().getDoubleExtra(help.VARIANCE, variance);
         treshold = getIntent().getDoubleExtra(help.TRESHOLD, treshold);
-        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
@@ -137,7 +137,6 @@ public class Normalisation extends AppCompatActivity {
         Intent i = new Intent(this, Filtering.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
         i.putExtra(help.TRESHOLD,treshold);
-        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);

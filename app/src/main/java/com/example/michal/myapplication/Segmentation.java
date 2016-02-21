@@ -46,7 +46,7 @@ public class Segmentation extends AppCompatActivity{
 
     private static double treshold = 0.0;
     private static double variance = 0.0;
-    private static int SEGMENTATION_SIZE = 7;
+    private static int BLOCK_SIZE;
     private static final Integer SEGMENTATION_CLEANING = 10;
     private static boolean clearOnceEdges = false;
     private static int mask[][];
@@ -66,6 +66,7 @@ public class Segmentation extends AppCompatActivity{
         help = new Help(this);
         mNextProcess.setEnabled(false);
 
+        BLOCK_SIZE = help.BLOCK_SIZE;
         type = getIntent().getStringExtra(help.TYPE);
         byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if(byteArray != null) {
@@ -128,7 +129,6 @@ public class Segmentation extends AppCompatActivity{
 
         Intent i = new Intent(this, Normalisation.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
-        i.putExtra(help.SEGMENTATION_BLOCK, SEGMENTATION_SIZE);
         i.putExtra(help.TRESHOLD,treshold);
         i.putExtra(help.VARIANCE,variance);
         i.putExtra(help.TYPE,type);
@@ -256,19 +256,19 @@ public class Segmentation extends AppCompatActivity{
             treshold = grayscaleTreshold(image, 0, 0, image.width(), image.height());
             variance = grayVariance(image, treshold);
 
-            int blocksWidth = (int)Math.floor(image.width()/SEGMENTATION_SIZE);
-            int blocksHeight = (int)Math.floor(image.height()/SEGMENTATION_SIZE);
+            int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
+            int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
             mask = new int[blocksWidth][blocksHeight];
 
-            int padding_x = image.width() - (blocksWidth*SEGMENTATION_SIZE); //padding of image
-            int padding_y = image.height() - (blocksHeight*SEGMENTATION_SIZE);
+            int padding_x = image.width() - (blocksWidth*BLOCK_SIZE); //padding of image
+            int padding_y = image.height() - (blocksHeight*BLOCK_SIZE);
 
             //calculate mask
             for(int i = 0; i < blocksWidth; i++)
             {
                 for(int j = 0; j < blocksHeight; j++)
                 {
-                    if(treshold < grayscaleTreshold(image, i * SEGMENTATION_SIZE, j * SEGMENTATION_SIZE, i * SEGMENTATION_SIZE + SEGMENTATION_SIZE, j * SEGMENTATION_SIZE+SEGMENTATION_SIZE)) {
+                    if(treshold < grayscaleTreshold(image, i * BLOCK_SIZE, j * BLOCK_SIZE, i * BLOCK_SIZE + BLOCK_SIZE, j * BLOCK_SIZE+BLOCK_SIZE)) {
                         mask[i][j] = 0;
                     }
                     else {
@@ -292,9 +292,9 @@ public class Segmentation extends AppCompatActivity{
                 for(int j = 0; j < blocksWidth; j++)
                 {
                     if(mask[j][i] == 0)
-                        for(int k = i*SEGMENTATION_SIZE; k < i*SEGMENTATION_SIZE+SEGMENTATION_SIZE; k++)
+                        for(int k = i*BLOCK_SIZE; k < i*BLOCK_SIZE+BLOCK_SIZE; k++)
                         {
-                            for(int l = j*SEGMENTATION_SIZE; l < j*SEGMENTATION_SIZE+SEGMENTATION_SIZE; l++)
+                            for(int l = j*BLOCK_SIZE; l < j*BLOCK_SIZE+BLOCK_SIZE; l++)
                             {
                                 image.put(k, l, data);
                             }
@@ -352,15 +352,15 @@ public class Segmentation extends AppCompatActivity{
 
         mSettingTitleText.setText(R.string.segmentation_settings_title);
         mEdittextTitle.setText(R.string.segmentation_block);
-        mSegmentationBlockSize.setText(String.valueOf(SEGMENTATION_SIZE));
+        mSegmentationBlockSize.setText(String.valueOf(BLOCK_SIZE));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if( !mSegmentationBlockSize.getText().toString().isEmpty() )
-                    SEGMENTATION_SIZE = Integer.valueOf(mSegmentationBlockSize.getText().toString());
+                    BLOCK_SIZE = Integer.valueOf(mSegmentationBlockSize.getText().toString());
 
-                if( SEGMENTATION_SIZE > 0 && SEGMENTATION_SIZE < 100 ){
+                if( BLOCK_SIZE > 0 && BLOCK_SIZE < 100 ){
                     dialog.dismiss();
 
                     mProgresBarLayout.setVisibility(View.VISIBLE);

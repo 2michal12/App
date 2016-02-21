@@ -16,11 +16,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -30,7 +28,6 @@ import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,22 +42,32 @@ public class Filtering extends AppCompatActivity {
     private static Bitmap imageBitmap;
     private static Bitmap imageAftefFiltering;
 
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.progressBar) ProgressBar pb;
-    @Bind(R.id.view_filtering_image) ImageView mFilteringImage;
-    @Bind(R.id.next) Button mNextProcess;
-    @Bind(R.id.settings) Button mSettings;
-    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
-    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.progressBar)
+    ProgressBar pb;
+    @Bind(R.id.view_filtering_image)
+    ImageView mFilteringImage;
+    @Bind(R.id.next)
+    Button mNextProcess;
+    @Bind(R.id.settings)
+    Button mSettings;
+    @Bind(R.id.progress_bar_text)
+    TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout)
+    RelativeLayout mProgresBarLayout;
 
     private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
     private static double treshold = 0.0;
-    private static int[][] mask;
-    private static int FILTERING_BLOCK = 10;
-    private static int GAUSS_SIZE = 5;
-    private static int GAUSS_STRENGTH = 10;
+    private static int[][] mask = null;
     private static Mat orientation_angle, orientation_gui;
     private static String type;
+
+    //variables use when direction map is printing
+    private double x1, y1, x2, y2; //points of line
+    private Point calculate_point, static_point;
+    Scalar sc;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,18 +78,17 @@ public class Filtering extends AppCompatActivity {
         help = new Help(this);
 
         setSupportActionBar(toolbar);
-        if( getSupportActionBar() != null )
+        if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(R.string.filtering);
 
         mNextProcess.setEnabled(false);
         type = getIntent().getStringExtra(help.TYPE);
         treshold = getIntent().getDoubleExtra(help.TRESHOLD, treshold);
-        BLOCK_SIZE = getIntent().getIntExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
-        mask = null;
+        BLOCK_SIZE = help.BLOCK_SIZE;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
-        if(objectArray != null){
+        if (objectArray != null) {
             mask = new int[objectArray.length][];
-            for(int i = 0; i < objectArray.length; i++){
+            for (int i = 0; i < objectArray.length; i++) {
                 mask[i] = (int[]) objectArray[i];
             }
         }
@@ -94,17 +100,17 @@ public class Filtering extends AppCompatActivity {
             imageAftefFiltering = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mFilteringImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(help.AUTOMATIC) ) {
+            if (type.equals(help.AUTOMATIC)) {
                 //FILTERING_BLOCK = 10; dorobit vypocet automatickeho zvysenia
 
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(help.AUTOMATIC_FULL) ){
+            } else if (type.equals(help.AUTOMATIC_FULL)) {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else{
+            } else {
                 mSettings.setVisibility(View.VISIBLE);
                 mSettings.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -156,63 +162,7 @@ public class Filtering extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void gaborFilter(Mat src_gray, Mat dest_gray, double[][] smerova_mapa_gauss, double[][] frekvencna_mapa ,int velkost_gabora, double sigmaa, double lambdaa, double gammaa, double psii){
-        Point anchor;
-        double delta, sucet = 0.0;
-        int ddepth, u = 0, v = 0, count = 0;
-        int kernel_size=0;
-        Mat kernel;
-        /// Initialize arguments for the filter
-        anchor = new Point(-1, -1);
-        delta = 0;
-        ddepth = -1;
-        ///Vytvorenie Gaborovho filtra
-        double sigma = sigmaa, // to je ta odchylka - urcuje silu filtra - skus ju menit a uvidis
-                lambda = lambdaa,  // toto znamena ze rozostup linii je cca 10 pixelov a to je pravda
-                gamma = gammaa,  // to je rozmerovy faktor je to pomer dlzka_filtra/sirka_filtra, teraz je viac dlhy ako siroky lebo je 0.25
-                psi = psii; // to je nejake vysunutie filtra v bloku , nechaj ako je
-
-        Size dim = new Size(velkost_gabora, velkost_gabora);
-
-        //CvSize dim = cvSize(velkost_gabora, velkost_gabora);
-
-        for (int i = (velkost_gabora - 1) / 2; i<src_gray.rows() - (velkost_gabora - 1) / 2; i++){ //prechadzam vsetky body okrem okrajovich aby sa dala pocitat okolo okrajovich matica
-            for (int j = (velkost_gabora - 1) / 2; j<src_gray.cols() - (velkost_gabora - 1) / 2; j++){
-
-                if (smerova_mapa_gauss[i][j] > Math.PI/2){
-                    smerova_mapa_gauss[i][j] -= Math.PI/2;
-                }
-                else{
-                    smerova_mapa_gauss[i][j] += Math.PI/2;
-                }
-                //kernel = getGaborKernel(dim, sigma, smerova_mapa_gauss[i][j], lambdaa, gamma, psi, CvType.CV_64F); //spomalujem vypocet
-                kernel = Imgproc.getGaborKernel(dim, sigma, smerova_mapa_gauss[i][j], lambda, gamma, psi, CvType.CV_64F);
-
-                for (int k = i - (velkost_gabora - 1) / 2; k<i + velkost_gabora - (velkost_gabora - 1) / 2; k++){ //ked mam vypocitany kernel pre dany bod tak urobim okolo neho blok o velkosti gaborovho filtra
-                    for (int l = j - (velkost_gabora - 1) / 2; l<j + velkost_gabora - (velkost_gabora - 1) / 2; l++){
-                        //sucet = sucet + (src_gray.at<uchar>(k, l) / 255)*kernel.at<double>(u, v); //spomalujem vypocet tiez
-                        sucet = sucet + ( (src_gray.get(k, l)[0]/255) * (kernel.get(u, v)[0]) );
-                        v++;
-                    }
-                    v = 0;
-                    u++;
-                }
-                u = 0;
-                //dest_gray.at<uchar>(i, j) = sucet; //ulozim sucet do centralneho bodu
-                if(sucet != 0){
-                    System.out.println(sucet);
-
-                }
-                dest_gray.put(i, j, sucet);
-                //cout << sucet<<endl;
-                sucet = 0.0;
-            }
-            //progressBar(i - (velkost_gabora - 1)/2+1, src_gray.rows - (velkost_gabora - 1), 50);
-        }
-
-    }
-
-    private double[][] orientationMap(Mat image, int block){
+    private double[][] orientationMap(Mat image, int block) {
         double[][] orientation_map = new double[image.rows()][image.cols()];
         orientation_gui = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
         orientation_angle = new Mat(image.rows(), image.cols(), CvType.CV_64F);
@@ -230,23 +180,23 @@ public class Filtering extends AppCompatActivity {
         int rows = image.rows() - block / 2;
         int cols = image.cols() - block / 2;
 
-        for(int x = block / 2; x < rows - block / 2; x += block){
-            for(int y=block / 2; y < cols - block / 2; y += block){
+        for (int x = block / 2; x < rows - block / 2; x += block) {
+            for (int y = block / 2; y < cols - block / 2; y += block) {
                 gauss_x = -1;
                 gauss_y = -1;
 
-                for(int i = x - block / 2; i < x + block / 2; i++){
-                    for(int j = y - block / 2; j < y + block / 2; j++) {
+                for (int i = x - block / 2; i < x + block / 2; i++) {
+                    for (int j = y - block / 2; j < y + block / 2; j++) {
                         data_x = gradientX.get(i, j);
                         data_y = gradientY.get(i, j);
-                        gauss_x = gauss_x + ( Math.pow(data_x[0], 2) - Math.pow(data_y[0], 2));
-                        gauss_y = gauss_y + ( 2*(data_x[0] * data_y[0]) );
+                        gauss_x = gauss_x + (Math.pow(data_x[0], 2) - Math.pow(data_y[0], 2));
+                        gauss_y = gauss_y + (2 * (data_x[0] * data_y[0]));
 
-                        if(gauss_y != -1 && gauss_x != -1){
-                            data_input[0] = 0.5*Math.atan2(gauss_y, gauss_x) + Math.PI/2; //uhol v radianoch
+                        if (gauss_y != -1 && gauss_x != -1) {
+                            data_input[0] = 0.5 * Math.atan2(gauss_y, gauss_x) + Math.PI / 2; //uhol v radianoch
                             orientation_angle.put(i, j, data_input);
                             orientation_map[i][j] = data_input[0];
-                        }else {
+                        } else {
                             data_input[0] = 0;
                             orientation_angle.put(x, y, data_input);
                             orientation_map[x][y] = data_input[0];
@@ -254,24 +204,24 @@ public class Filtering extends AppCompatActivity {
                     }
                 }
             }
-            System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
+            //System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
 
         }
 
         mapExtermination(block);
 
         //Zapnut len v pripade ze chcem vykreslit smerovu mapu "orientation_gui"
-        for (int i = 0; i<orientation_gui.rows() / block; i++){
+        /*for (int i = 0; i<orientation_gui.rows() / block; i++){
             for (int j = 0; j<orientation_gui.cols() / block; j++){
                 data_input = orientation_angle.get(i*block+block/2, j*block+block/2); //angle
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
-        }
+        }*/
 
         return orientation_map;
     }
 
-    private void mapExtermination(int block){ // vyhladenie smerovej mapy
+    private void mapExtermination(int block) { // vyhladenie smerovej mapy
         Mat sinComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
         Mat cosComponent = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
         Mat sinOutput = new Mat(orientation_angle.rows(), orientation_angle.cols(), CvType.CV_64F);
@@ -279,9 +229,10 @@ public class Filtering extends AppCompatActivity {
 
         double[] data = new double[1];
         double[] cos = new double[1];
-        double[] sin = new double[1];;
-        for (int i = 0; i < orientation_angle.rows(); i++){
-            for (int j = 0; j < orientation_angle.cols(); j++){
+        double[] sin = new double[1];
+        ;
+        for (int i = 0; i < orientation_angle.rows(); i++) {
+            for (int j = 0; j < orientation_angle.cols(); j++) {
                 data = orientation_angle.get(i, j);
                 cos[0] = Math.cos(2 * data[0]);
                 cosComponent.put(i, j, cos);
@@ -294,19 +245,32 @@ public class Filtering extends AppCompatActivity {
 
         Imgproc.GaussianBlur(sinComponent, sinOutput, kernel, 10, 10);
         Imgproc.GaussianBlur(cosComponent, cosOutput, kernel, 10, 10);
-/*
-        for (int i = 1; i < cosOutput.rows(); i++){
+
+        for (int i = 1; i < cosOutput.rows(); i++) {
             for (int j = 1; j < sinOutput.cols(); j++) {
                 sin = sinOutput.get(i, j);
                 cos = cosOutput.get(i, j);
-                data[0] = 1 / 2.0 * ( Math.atan2(sin[0], cos[0]) );
-                orientation_angle.put(i-1, j-1, data);
+                data[0] = 1 / 2.0 * (Math.atan2(sin[0], cos[0]));
+                orientation_angle.put(i - 1, j - 1, data);
             }
         }
-        */
+
     }
 
-    private void frequenceMap(Mat image, int block){
+    private void printLine(Mat image, int block, int i, int j, double angle) {
+        x1 = block / 2.0 + (i * block);
+        y1 = block / 2.0 + (j * block);
+        x2 = block + (i * block);
+        y2 = block / 2.0 + (j * block);
+
+        calculate_point = new Point(((x2 - x1) * Math.cos(angle) - (y2 - y1) * Math.sin(angle)) + block / 2.0 + (i * block), ((x2 - x1) * Math.sin(angle) + (y2 - y1) * Math.cos(angle)) + block / 2.0 + (j * block));
+        static_point = new Point(x1, y1);
+        sc = new Scalar(255, 255, 255);
+
+        Imgproc.line(image, static_point, calculate_point, sc, 2, 4, 0); //color of line, thickness, type, shift
+    }
+
+    private void frequenceMap(Mat image, int block) {
         Point center;
         double angle;
         double[] data;
@@ -318,44 +282,44 @@ public class Filtering extends AppCompatActivity {
         Mat rotate = new Mat(image.rows(), image.cols(), CvType.CV_64F);
         Mat crop = new Mat(image.rows(), image.cols(), CvType.CV_64F);
 
-        for(int i = 0; i < image.rows() / block; i++){ //x
-            for(int j = 0; j < image.cols() / block; j++) { //y
+        for (int i = 0; i < image.rows() / block; i++) { //x
+            for (int j = 0; j < image.cols() / block; j++) { //y
 
-                center = new Point(j*block+block/2, i*block+block/2);
-                data = orientation_angle.get(i*block, j*block);
-                angle = ( data[0] + Math.PI/2 ) * 180/Math.PI; //uhol do stupnov
+                center = new Point(j * block + block / 2, i * block + block / 2);
+                data = orientation_angle.get(i * block, j * block);
+                angle = (data[0] + Math.PI / 2) * 180 / Math.PI; //uhol do stupnov
 
-                kernel = new Size(3*block, 2*block);
+                kernel = new Size(3 * block, 2 * block);
                 rRect = new RotatedRect(center, kernel, angle);
                 M = Imgproc.getRotationMatrix2D(rRect.center, angle, 1.0); //otocenie
                 Imgproc.warpAffine(image, rotate, M, image.size(), Imgproc.INTER_CUBIC); //rotacia na 0 stupnov
                 Imgproc.getRectSubPix(rotate, rRect.size, rRect.center, crop); //vyber ROI
 
                 Vector xSignature = new Vector();
-                for (int k = 0; k < crop.cols(); k++){
+                for (int k = 0; k < crop.cols(); k++) {
                     int sum = 0;
-                    for (int d = 0; d < crop.rows(); d++){
+                    for (int d = 0; d < crop.rows(); d++) {
                         data = crop.get(d, k);
-                        sum = sum + (int)data[0];
+                        sum = sum + (int) data[0];
                     }
-                    xSignature.add((float)sum/block);
+                    xSignature.add((float) sum / block);
                 }
 
                 Vector xSignature2 = new Vector(); //xSignatura pre vypocet sigmy v Gaborovom filtri
-                for(int index = 0; index < xSignature.size(); index++){
-                    xSignature2.add( Math.abs( (float)xSignature.get(index) - 255.0) );
+                for (int index = 0; index < xSignature.size(); index++) {
+                    xSignature2.add(Math.abs((float) xSignature.get(index) - 255.0));
                 }
 
                 min_max = localMinMax(xSignature2);
 
                 //System.out.println(min_max[0]+" * "+min_max[1]);
 
-                for(int k = 0; k < block; k++){
-                    for(int l = 0; l < block; l++){
+                for (int k = 0; k < block; k++) {
+                    for (int l = 0; l < block; l++) {
                         //this->sigma.at<double>(i*velkost_bloku+k,j*velkost_bloku+l) = vysledok_min; // hodnota urcena pre sigma v Gabore
                         //this->frekvencnaMat.at<double>(i*velkost_bloku+k,j*velkost_bloku+l) = 2*vysledok; //frekvencncia
                         data_input[0] = 10 * min_max[1];
-                        image.put(i*block+k, j*block+l, data_input);
+                        image.put(i * block + k, j * block + l, data_input);
                     }
                 }
 
@@ -365,125 +329,33 @@ public class Filtering extends AppCompatActivity {
 
     }
 
-    private void gaussianFilter(Mat image){
-        Size kernel = new Size(GAUSS_SIZE, GAUSS_SIZE);
-        Imgproc.GaussianBlur(image, image, kernel, GAUSS_STRENGTH, GAUSS_STRENGTH);
+    private void gaussianFilter(Mat image) {
+        Size kernel = new Size(help.GABOR_KERNEL_SIZE, help.GABOR_KERNEL_SIZE);
+        Imgproc.GaussianBlur(image, image, kernel, help.GABOR_STRENGTH, help.GABOR_STRENGTH);
     }
 
-    //ZMENIT SYNTAX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    private void printLine(Mat image, int block, int i, int j, double angle){
-        double x1, y1, x2, y2;
-        x1 = block / 2.0 + (i*block);
-        y1 = block / 2.0 + (j*block);
-        x2 = block + (i*block);
-        y2 = block / 2.0 + (j*block);
-
-        Point calculate = new Point(((x2 - x1)*Math.cos(angle) - (y2 - y1)*Math.sin(angle)) + block / 2.0 + (i*block), ((x2 - x1)*Math.sin(angle) + (y2 - y1)*Math.cos(angle)) + block / 2.0 + (j*block));
-        Point static_point = new Point(x1, y1);
-
-        Scalar sc = new Scalar(255, 255, 255);
-        Imgproc.line(image, static_point, calculate, sc, 2, 4, 0); //farba, hrubka, typ, shift
-    }
-
-    private double[] localMinMax(Vector<Double> vec){
-
-        double array[] = new double[vec.size()];
-        Double vectorValues;
-        for(int i = 0; i != vec.size(); i++){
-            vectorValues = (Double)vec.elementAt(i);
-            array[i] = vectorValues.doubleValue();
-        }
-
-        ArrayList<Integer> mins = new ArrayList<Integer>();
-        ArrayList<Integer> maxs = new ArrayList<Integer>();
-
-        double prevDiff = array[0] - array[1];
-        int i=1;
-        while(i<array.length-1){
-            double currDiff = 0;
-            int zeroCount = 0;
-            while(currDiff == 0 && i<array.length-1){
-                zeroCount++;
-                i++;
-                currDiff = array[i-1] - array[i];
-            }
-
-            int signCurrDiff = Integer.signum((int)currDiff);
-            int signPrevDiff = Integer.signum((int)prevDiff);
-            if( signPrevDiff != signCurrDiff && signCurrDiff != 0){ //signSubDiff==0, the case when prev while ended bcoz of last elem
-                int index = i-1-(zeroCount)/2;
-                if(signPrevDiff == 1){
-                    mins.add( index );
-                }else{
-                    maxs.add( index );
-                }
-            }
-            prevDiff = currDiff;
-        }
-
-        double[] maxs_values = new double[maxs.size()];
-        double[] mins_values = new double[mins.size()];
-
-        int ind2 = 0;
-        for(Integer ind : maxs){
-            maxs_values[ind2++] = array[ind];
-        }
-        ind2 = 0;
-        for(Integer ind : mins){
-            mins_values[ind2++] = array[ind];
-        }
-
-        Arrays.sort(maxs_values);
-        Arrays.sort(mins_values);
-
-        //AZ TU PREBIEHA VYPOCET
-        double sum = 0;
-        for(int j = 0; j < maxs_values.length; j++){//priemerny pocet pixlov medzi dvoma maximami v xSignature
-            if(j != (maxs_values.length - 1)){
-                sum += maxs_values[j+1] - maxs_values[j] - 1;
-            }
-        }
-        double vysledok = sum/maxs_values.length; //zmen na double
-        if(vysledok<0){
-            vysledok = 0;
-        }
-        sum = 0;
-        for(int j = 0; j<mins_values.length; j++){
-            if(j != (mins_values.length-1)){
-                sum += mins_values[j+1] - mins_values[j] - 1;
-            }
-        }
-        double vysledok_min = sum/mins_values.length; //zmen na double
-        if(vysledok_min<0){
-            vysledok_min = 0;
-        }
-
-        double[] min_max = new double[]{vysledok_min, vysledok};
-        return min_max;
-    }
-
-    private Mat enhanceImg(Mat myImg){
+    private Mat enhanceImg(Mat myImg) {
         myImg.convertTo(myImg, CvType.CV_32F);
 
         // prepare the output matrix for filters
-        Mat gabor1 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat gabor2 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat gabor3 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat gabor4 = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat enhanced = new Mat (myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor1 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor2 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor3 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat gabor4 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
+        Mat enhanced = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
 
         // predefine parameters for Gabor kernel
-        Size kSize = new Size(7,7);
+        Size kSize = new Size(7, 7);
 
         double theta1 = 0;
         double theta2 = 45;
         double theta3 = 90;
         double theta4 = 135;
 
-        double lambda = 8;
+        double lambda = 7;
         double sigma = 16;
-        double gamma = 0.25;
-        double psi =  0;
+        double gamma = 0.5;
+        double psi = 0;
 
         // the filters kernel
         Mat kernel1 = Imgproc.getGaborKernel(kSize, sigma, theta1, lambda, gamma, psi, CvType.CV_32F);
@@ -498,14 +370,94 @@ public class Filtering extends AppCompatActivity {
         Imgproc.filter2D(myImg, gabor4, -1, kernel4);
 
         // enhanced = gabor1+gabor2+gabor3+gabor4 - something like that
-        Core.addWeighted(gabor1 , 0, gabor1, 1, 0, enhanced);
-        Core.addWeighted(enhanced , 1, gabor2, 1, 0, enhanced);
-        Core.addWeighted(enhanced , 1, gabor3, 1, 0, enhanced);
-        Core.addWeighted(enhanced , 1, gabor4, 1, 0, enhanced);
+        Core.addWeighted(gabor1, 0, gabor1, 1, 0, enhanced);
+        Core.addWeighted(enhanced, 1, gabor2, 1, 0, enhanced);
+        Core.addWeighted(enhanced, 1, gabor3, 1, 0, enhanced);
+        Core.addWeighted(enhanced, 1, gabor4, 1, 0, enhanced);
 
         enhanced.convertTo(enhanced, CvType.CV_8UC1);
         return enhanced;
     }
+
+    //ZMENIT SYNTAX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //dont work .. in the end erase
+    private double[] localMinMax(Vector<Double> vec) {
+
+        double array[] = new double[vec.size()];
+        Double vectorValues;
+        for (int i = 0; i != vec.size(); i++) {
+            vectorValues = (Double) vec.elementAt(i);
+            array[i] = vectorValues.doubleValue();
+        }
+
+        ArrayList<Integer> mins = new ArrayList<Integer>();
+        ArrayList<Integer> maxs = new ArrayList<Integer>();
+
+        double prevDiff = array[0] - array[1];
+        int i = 1;
+        while (i < array.length - 1) {
+            double currDiff = 0;
+            int zeroCount = 0;
+            while (currDiff == 0 && i < array.length - 1) {
+                zeroCount++;
+                i++;
+                currDiff = array[i - 1] - array[i];
+            }
+
+            int signCurrDiff = Integer.signum((int) currDiff);
+            int signPrevDiff = Integer.signum((int) prevDiff);
+            if (signPrevDiff != signCurrDiff && signCurrDiff != 0) { //signSubDiff==0, the case when prev while ended bcoz of last elem
+                int index = i - 1 - (zeroCount) / 2;
+                if (signPrevDiff == 1) {
+                    mins.add(index);
+                } else {
+                    maxs.add(index);
+                }
+            }
+            prevDiff = currDiff;
+        }
+
+        double[] maxs_values = new double[maxs.size()];
+        double[] mins_values = new double[mins.size()];
+
+        int ind2 = 0;
+        for (Integer ind : maxs) {
+            maxs_values[ind2++] = array[ind];
+        }
+        ind2 = 0;
+        for (Integer ind : mins) {
+            mins_values[ind2++] = array[ind];
+        }
+
+        Arrays.sort(maxs_values);
+        Arrays.sort(mins_values);
+
+        //AZ TU PREBIEHA VYPOCET
+        double sum = 0;
+        for (int j = 0; j < maxs_values.length; j++) {//priemerny pocet pixlov medzi dvoma maximami v xSignature
+            if (j != (maxs_values.length - 1)) {
+                sum += maxs_values[j + 1] - maxs_values[j] - 1;
+            }
+        }
+        double vysledok = sum / maxs_values.length; //zmen na double
+        if (vysledok < 0) {
+            vysledok = 0;
+        }
+        sum = 0;
+        for (int j = 0; j < mins_values.length; j++) {
+            if (j != (mins_values.length - 1)) {
+                sum += mins_values[j + 1] - mins_values[j] - 1;
+            }
+        }
+        double vysledok_min = sum / mins_values.length; //zmen na double
+        if (vysledok_min < 0) {
+            vysledok_min = 0;
+        }
+
+        double[] min_max = new double[]{vysledok_min, vysledok};
+        return min_max;
+    }
+
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
@@ -522,26 +474,50 @@ public class Filtering extends AppCompatActivity {
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-            //image = enhanceImg(image);
-
-            //double[][] or_map = orientationMap(image, FILTERING_BLOCK);
-            //publishProgress(33);
-
-            //frequenceMap(image, FILTERING_BLOCK);
-            //publishProgress(66);
-
+            //image = enhanceImg(image); //gaborKernel in this function use from opencv library, fast but not so good
             //gaussianFilter(image);
 
+            double[][] orientation_map = orientationMap(image, help.GABOR_KERNEL_SIZE); //calculating of fingerprint orientation map
+            //frequenceMap(image, FILTERING_BLOCK); //calculating of fingerprint frequency map
 
-            /*int kernel_size = 15;
-            double sigma = 1; //odchylka - sila filtra
-            double lambda = 6; //rozostup linii
-            double gamma = 0.25; //pomer dlzka_filtra/sirka_filtra
-            double psi = 1; //vysunutie filtra v bloku
-            gaborFilter(image, dest, or_map, or_map, kernel_size, sigma, lambda, gamma, psi);*/
-            publishProgress(100);
+            Mat dest = new Mat(image.rows(), image.cols(), image.type());
+            Mat kernel;
+            Size dim = new Size(help.GABOR_KERNEL_SIZE, help.GABOR_KERNEL_SIZE);
+            double final_value = 0.0;
+            int u = 0, v = 0;
 
-            Utils.matToBitmap(image, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation_gui"
+            //variables for publishing state in progress bar
+            int start = (help.GABOR_KERNEL_SIZE - 1) / 2;
+            int end = image.rows() - (help.GABOR_KERNEL_SIZE - 1) / 2;
+            double progress = 100.0 / (end - start);
+
+            for (int i = (help.GABOR_KERNEL_SIZE - 1) / 2; i < image.rows() - (help.GABOR_KERNEL_SIZE - 1) / 2; i++) {
+                for (int j = (help.GABOR_KERNEL_SIZE - 1) / 2; j < image.cols() - (help.GABOR_KERNEL_SIZE - 1) / 2; j++) {
+
+                    if (orientation_map[i][j] > Math.PI / 2) {
+                        orientation_map[i][j] -= Math.PI / 2;
+                    } else {
+                        orientation_map[i][j] += Math.PI / 2;
+                    }
+                    kernel = Imgproc.getGaborKernel(dim, help.GABOR_STRENGTH, orientation_map[i][j], help.GABOR_FREQUENCY, help.GABOR_RATIO, help.GABOR_PSI, CvType.CV_64F);
+
+                    for (int k = i - (help.GABOR_KERNEL_SIZE - 1) / 2; k < i + help.GABOR_KERNEL_SIZE - (help.GABOR_KERNEL_SIZE - 1) / 2; k++) { //ked mam vypocitany kernel pre dany bod tak urobim okolo neho blok o velkosti gaborovho filtra
+                        for (int l = j - (help.GABOR_KERNEL_SIZE - 1) / 2; l < j + help.GABOR_KERNEL_SIZE - (help.GABOR_KERNEL_SIZE - 1) / 2; l++) {
+                            final_value = final_value + ((image.get(k, l)[0]) * (kernel.get(u, v)[0]));
+                            v++;
+                        }
+                        v = 0;
+                        u++;
+                    }
+                    u = 0;
+
+                    dest.put(i, j, final_value);
+                    final_value = 0.0;
+                }
+                publishProgress((int) (progress * i));
+            }
+
+            Utils.matToBitmap(dest, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation_gui" a odkomentovat zapisovanie na konci funkcie "orientationMap"
 
             return "filtering_finished";
         }
@@ -568,44 +544,45 @@ public class Filtering extends AppCompatActivity {
                 }
             });
 
-            if( type.equals(help.AUTOMATIC_FULL) )
+            if (type.equals(help.AUTOMATIC_FULL))
                 startPreprocessing(imageAftefFiltering);
         }
 
     }
 
 
-    public void settingsDialog(){
+    public void settingsDialog() {
         final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.popup_settings);
+        dialog.setContentView(R.layout.popup_settings_filtering);
         dialog.setTitle(R.string.settings);
 
-        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
-        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
-        final EditText mFilteringSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
-        LinearLayout editText2 = (LinearLayout) dialog.findViewById(R.id.edittext2);
-        TextView mEdittextTitle2 = (TextView) dialog.findViewById(R.id.text_for_edittext2);
-        final EditText mFilteringStrength = (EditText) dialog.findViewById(R.id.settings_edittext2);
+        final EditText mFilterSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
+        final EditText mFilterFrequency = (EditText) dialog.findViewById(R.id.settingsEdittext2);
+        final EditText mFilterStrength = (EditText) dialog.findViewById(R.id.settingsEdittext3);
+        final EditText mFilterRatio = (EditText) dialog.findViewById(R.id.settingsEdittext4);
+        final EditText mFilterPsi = (EditText) dialog.findViewById(R.id.settingsEdittext5);
 
-        mSettingTitleText.setText(R.string.filtering_settings_title);
-        mEdittextTitle.setText(R.string.filtering_block);
-        mFilteringSize.setText(String.valueOf(GAUSS_SIZE));
-        editText2.setVisibility(View.VISIBLE);
-        mEdittextTitle2.setText(R.string.filtering_strength);
-        mFilteringStrength.setText(String.valueOf(GAUSS_STRENGTH));
+        mFilterSize.setText(String.valueOf(help.GABOR_KERNEL_SIZE));
+        mFilterFrequency.setText(String.valueOf(help.GABOR_FREQUENCY));
+        mFilterStrength.setText(String.valueOf(help.GABOR_STRENGTH));
+        mFilterRatio.setText(String.valueOf(help.GABOR_RATIO));
+        mFilterPsi.setText(String.valueOf(help.GABOR_PSI));
+
+        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mFilteringSize.getText().toString().isEmpty() && !mFilteringStrength.getText().toString().isEmpty()) {
-                    GAUSS_SIZE = Integer.valueOf(mFilteringSize.getText().toString());
-                    GAUSS_STRENGTH = Integer.valueOf(mFilteringStrength.getText().toString());
+                if (!mFilterSize.getText().toString().isEmpty() && !mFilterFrequency.getText().toString().isEmpty() && mFilterStrength.getText().toString().isEmpty() && !mFilterRatio.getText().toString().isEmpty() && !mFilterPsi.getText().toString().isEmpty()) {
+                    help.GABOR_KERNEL_SIZE = Integer.valueOf(mFilterSize.getText().toString());
+                    help.GABOR_STRENGTH = Integer.valueOf(mFilterStrength.getText().toString());
+                    help.GABOR_FREQUENCY = Integer.valueOf(mFilterFrequency.getText().toString());
+                    help.GABOR_RATIO = Integer.valueOf(mFilterRatio.getText().toString());
+                    help.GABOR_PSI = Integer.valueOf(mFilterPsi.getText().toString());
                 }
 
-                if (GAUSS_SIZE > 0 && GAUSS_STRENGTH > 0 && (GAUSS_SIZE % 2 != 0) )  {
+                if (help.GABOR_KERNEL_SIZE > 0 && (help.GABOR_KERNEL_SIZE % 2 != 0) && help.GABOR_STRENGTH > 0 && help.GABOR_FREQUENCY > 0 && help.GABOR_RATIO >= 0.0 && help.GABOR_RATIO <= 1.0 && help.GABOR_PSI >= 0.0 && help.GABOR_PSI <= Math.PI) {
                     dialog.dismiss();
-
                     mProgresBarLayout.setVisibility(View.VISIBLE);
                     new AsyncTaskSegmentation().execute();
                 }
