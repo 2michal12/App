@@ -43,8 +43,6 @@ public class Normalisation extends AppCompatActivity {
     @Bind(R.id.progressBar) ProgressBar pb;
     @Bind(R.id.view_normalisation_image) ImageView mNormalisationImage;
 
-    private static double treshold = 0.0;
-    private static double variance = 0.0;
     private static int BLOCK_SIZE;
     private static int NORMALISATION_CONTRAST = 10;
     private static int[][] mask;
@@ -66,8 +64,8 @@ public class Normalisation extends AppCompatActivity {
 
         BLOCK_SIZE = help.BLOCK_SIZE;
         type = getIntent().getStringExtra(help.TYPE);
-        variance = getIntent().getDoubleExtra(help.VARIANCE, variance);
-        treshold = getIntent().getDoubleExtra(help.TRESHOLD, treshold);
+        help.TRESHOLD = getIntent().getDoubleExtra(help.TRESHOLD_NAME, help.TRESHOLD);
+        help.VARIANCE = getIntent().getDoubleExtra(help.VARIANCE_NAME, help.VARIANCE);
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
@@ -136,7 +134,6 @@ public class Normalisation extends AppCompatActivity {
 
         Intent i = new Intent(this, Filtering.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
-        i.putExtra(help.TRESHOLD,treshold);
         i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
@@ -156,7 +153,7 @@ public class Normalisation extends AppCompatActivity {
             Mat image = help.bitmap2mat(imageBitmap);
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
-            double variance_local = variance + (variance * NORMALISATION_CONTRAST);
+            double variance_local = help.VARIANCE + (help.VARIANCE * NORMALISATION_CONTRAST);
 
             double[] data = new double[1];
             double[] data_zero = new double[1];
@@ -175,18 +172,18 @@ public class Normalisation extends AppCompatActivity {
                         for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
                             for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
                                 data = image.get(k, l);
-                                if (data[0] > treshold) {
-                                    if ((treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) > 255) {
+                                if (data[0] > help.TRESHOLD) {
+                                    if ((help.TRESHOLD + (Math.sqrt((variance_local * (Math.pow((data[0] - help.TRESHOLD), 2))) / help.VARIANCE))) > 255) {
                                         image.put(k, l, data_full);
                                     } else {
-                                        data_new[0] = treshold + (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
+                                        data_new[0] = help.TRESHOLD + (Math.sqrt((variance_local * (Math.pow((data[0] - help.TRESHOLD), 2))) / help.VARIANCE));
                                         image.put(k, l, data_new);
                                     }
                                 } else {
-                                    if ((treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance))) < 0) {
+                                    if ((help.TRESHOLD - (Math.sqrt((variance_local * (Math.pow((data[0] - help.TRESHOLD), 2))) / help.VARIANCE))) < 0) {
                                         image.put(k, l, data_zero);
                                     } else {
-                                        data_new[0] = treshold - (Math.sqrt((variance_local * (Math.pow((data[0] - treshold), 2))) / variance));
+                                        data_new[0] = help.TRESHOLD - (Math.sqrt((variance_local * (Math.pow((data[0] - help.TRESHOLD), 2))) / help.VARIANCE));
                                         image.put(k, l, data_new);
                                     }
                                 }

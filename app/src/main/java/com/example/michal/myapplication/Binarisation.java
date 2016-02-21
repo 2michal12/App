@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -45,11 +46,7 @@ public class Binarisation extends AppCompatActivity {
     @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
 
     private static int BLOCK_SIZE;
-    private static double treshold = 0.0;
     private static int[][] mask;
-    private static int BINARISATION_BLOCK = 10;
-    private static int GAUSS_SIZE = 3;
-    private static int GAUSS_STRENGTH = 5;
     private static String type;
 
     @Override
@@ -66,7 +63,6 @@ public class Binarisation extends AppCompatActivity {
 
         mNextProcess.setEnabled(false);
         type = getIntent().getStringExtra(help.TYPE);
-        treshold = getIntent().getDoubleExtra(help.TRESHOLD,treshold);
         BLOCK_SIZE = help.BLOCK_SIZE;
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
@@ -142,15 +138,9 @@ public class Binarisation extends AppCompatActivity {
 
         Intent i = new Intent(this, Thinning.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
-        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
-    }
-
-    private void gaussianFilter(Mat image){
-        Size kernel = new Size(GAUSS_SIZE, GAUSS_SIZE);
-        Imgproc.GaussianBlur(image, image, kernel, GAUSS_STRENGTH, GAUSS_STRENGTH);
     }
 
     private double grayscaleTreshold(Mat image, int startX, int startY, int endX, int endY){
@@ -166,19 +156,6 @@ public class Binarisation extends AppCompatActivity {
 
         return Math.round( actualTreshold/((endX-startX) * (endY-startY)) );
     }
-
-    private double grayVariance(Mat image, double treshold){
-        int variance = 0;
-        double[] data;
-        for(int i = 0; i < image.height(); i++) {
-            for (int j = 0; j < image.width(); j++) {
-                data = image.get(i, j);
-                variance += ( data[0]-treshold)*( data[0]-treshold);
-            }
-        }
-        return (double)Math.round( variance/(image.width()*image.height()));
-    }
-
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
@@ -291,15 +268,15 @@ public class Binarisation extends AppCompatActivity {
 
         mSettingTitleText.setText(R.string.binarisation_settings_title);
         mEdittextTitle.setText(R.string.binarisation_block);
-        mBinarisationBlock.setText(String.valueOf(BINARISATION_BLOCK));
+        mBinarisationBlock.setText(String.valueOf(BLOCK_SIZE));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if( !mBinarisationBlock.getText().toString().isEmpty() )
-                    BINARISATION_BLOCK = Integer.valueOf(mBinarisationBlock.getText().toString());
+                    BLOCK_SIZE = Integer.valueOf(mBinarisationBlock.getText().toString());
 
-                if( BINARISATION_BLOCK > 0 && BINARISATION_BLOCK < 100 ){
+                if( BLOCK_SIZE > 0 && BLOCK_SIZE < 100 ){
                     dialog.dismiss();
 
                     mProgresBarLayout.setVisibility(View.VISIBLE);

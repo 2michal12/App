@@ -27,6 +27,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class Thinning extends AppCompatActivity {
 
@@ -52,24 +53,17 @@ public class Thinning extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thinning);
+        ButterKnife.bind(this);
+
         help = new Help(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.thinning);
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
-        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        mNextProcess = (Button) findViewById(R.id.next);
         mNextProcess.setEnabled(false);
-        mSettings = (Button) findViewById(R.id.settings);
-        mThinningImage = (ImageView) findViewById(R.id.view_thinning_image);
-
         type = getIntent().getStringExtra(help.TYPE);
         BLOCK_SIZE = help.BLOCK_SIZE;
-
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){
@@ -142,7 +136,6 @@ public class Thinning extends AppCompatActivity {
 
         Intent i = new Intent(this, Extraction.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
-        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);

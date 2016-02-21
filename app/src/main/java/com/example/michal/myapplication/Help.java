@@ -9,6 +9,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +27,7 @@ import java.io.FileOutputStream;
 /**
  * Created by Michal on 10.11.2015.
  */
-public class Help {
+public class Help{
 
     Activity context;
 
@@ -48,18 +50,21 @@ public class Help {
     //intent putExtra names
     public final String BITMAP_IMAGE = "BitmapImage";
     public final String TYPE = "Type";
-    public final String TRESHOLD = "Treshold";
-    public final String VARIANCE = "Variance";
     public final String MASK = "Mask";
-    public final String SEGMENTATION_BLOCK = "SegmentationBlock";
+    public final String TRESHOLD_NAME = "Treshold";
+    public final String VARIANCE_NAME = "Variance";
 
     //image format
     public final String JPEG = "jpeg";
     public final String PNG = "png";
 
     //default sizes
-    public int BLOCK_SIZE = 7;
+    public double TRESHOLD = 0.0;
+    public double VARIANCE = 0.0;
 
+    public int BLOCK_SIZE = 7; //segmentation, normalisation, ...
+
+    public int ORIENTATION_MAP_BLOCK = 30;
     public int GABOR_KERNEL_SIZE = 7; //best solution when it is same to the BLOCK_SIZE .. need to be odd number
     public int GABOR_FREQUENCY = 7; // lambda, frequency map of fingerprint
     public int GABOR_STRENGTH = 10; // sigma
@@ -71,6 +76,49 @@ public class Help {
     Help(Activity context){
         this.context = context;
     }
+/*
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(PREVIEW);
+        dest.writeString(SEGMENTATION);
+        dest.writeString(NORMALISATION);
+        dest.writeString(FILTERING);
+        dest.writeString(BINARISATION);
+        dest.writeString(THINNING);
+        dest.writeString(EXTRACTION);
+        dest.writeString(AUTOMATIC);
+        dest.writeString(AUTOMATIC_FULL);
+        dest.writeString(MANUAL);
+        dest.writeString(BITMAP_IMAGE);
+        dest.writeString(TYPE);
+        dest.writeString(MASK);
+        dest.writeString(JPEG);
+        dest.writeString(PNG);
+        dest.writeInt(SELECT_PICTURE);
+        dest.writeInt(BLOCK_SIZE);
+        dest.writeInt(ORIENTATION_MAP_BLOCK);
+        dest.writeInt(GABOR_KERNEL_SIZE);
+        dest.writeInt(GABOR_FREQUENCY);
+        dest.writeInt(GABOR_STRENGTH);
+        dest.writeDouble(TRESHOLD);
+        dest.writeDouble(VARIANCE);
+        dest.writeDouble(GABOR_RATIO);
+        dest.writeDouble(GABOR_PSI);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Help createFromParcel(Parcel in) {
+            return new Help(in);
+        }
+        public Help[] newArray(int size) {
+            return new Help[size]; }
+    };
+    */
 
     public Mat bitmap2mat(Bitmap src){
         Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);
@@ -171,7 +219,5 @@ public class Help {
         }
 
     }
-
-
 
 }

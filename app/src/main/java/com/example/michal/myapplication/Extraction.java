@@ -30,6 +30,7 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Created by Michal on 27.01.16.
@@ -56,24 +57,17 @@ public class Extraction extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_extraction);
+        ButterKnife.bind(this);
+
         help = new Help(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.extraction);
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        mProgresBarLayout = (RelativeLayout) findViewById(R.id.progress_bar_layout);
-        mProgressBarText = (TextView) findViewById(R.id.progress_bar_text);
-        mNextProcess = (Button) findViewById(R.id.next);
         mNextProcess.setEnabled(false);
-        mSettings = (Button) findViewById(R.id.settings);
-        mExtractionImage = (ImageView) findViewById(R.id.view_extraction_image);
-
         type = getIntent().getStringExtra(help.TYPE);
         BLOCK_SIZE = help.BLOCK_SIZE;
-
         mask = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if(objectArray != null){

@@ -58,7 +58,6 @@ public class Filtering extends AppCompatActivity {
     RelativeLayout mProgresBarLayout;
 
     private static int BLOCK_SIZE = 0; //velkost pouzita ako v segmentacii
-    private static double treshold = 0.0;
     private static int[][] mask = null;
     private static Mat orientation_angle, orientation_gui;
     private static String type;
@@ -83,7 +82,6 @@ public class Filtering extends AppCompatActivity {
 
         mNextProcess.setEnabled(false);
         type = getIntent().getStringExtra(help.TYPE);
-        treshold = getIntent().getDoubleExtra(help.TRESHOLD, treshold);
         BLOCK_SIZE = help.BLOCK_SIZE;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if (objectArray != null) {
@@ -155,8 +153,6 @@ public class Filtering extends AppCompatActivity {
 
         Intent i = new Intent(this, Binarisation.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
-        i.putExtra(help.TRESHOLD, treshold);
-        i.putExtra(help.SEGMENTATION_BLOCK, BLOCK_SIZE);
         i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
@@ -477,7 +473,7 @@ public class Filtering extends AppCompatActivity {
             //image = enhanceImg(image); //gaborKernel in this function use from opencv library, fast but not so good
             //gaussianFilter(image);
 
-            double[][] orientation_map = orientationMap(image, help.GABOR_KERNEL_SIZE); //calculating of fingerprint orientation map
+            double[][] orientation_map = orientationMap(image, help.ORIENTATION_MAP_BLOCK); //calculating of fingerprint orientation map
             //frequenceMap(image, FILTERING_BLOCK); //calculating of fingerprint frequency map
 
             Mat dest = new Mat(image.rows(), image.cols(), image.type());

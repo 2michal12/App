@@ -44,8 +44,6 @@ public class Segmentation extends AppCompatActivity{
     @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
     @Bind(R.id.progressBar) ProgressBar pb;
 
-    private static double treshold = 0.0;
-    private static double variance = 0.0;
     private static int BLOCK_SIZE;
     private static final Integer SEGMENTATION_CLEANING = 10;
     private static boolean clearOnceEdges = false;
@@ -129,9 +127,9 @@ public class Segmentation extends AppCompatActivity{
 
         Intent i = new Intent(this, Normalisation.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
-        i.putExtra(help.TRESHOLD,treshold);
-        i.putExtra(help.VARIANCE,variance);
         i.putExtra(help.TYPE,type);
+        i.putExtra(help.TRESHOLD_NAME, help.TRESHOLD);
+        i.putExtra(help.VARIANCE_NAME, help.VARIANCE);
         i.putExtras(mBundle);
 
         startActivity(i);
@@ -154,10 +152,10 @@ public class Segmentation extends AppCompatActivity{
         for(int i = 0; i < image.height(); i++) {
             for (int j = 0; j < image.width(); j++) {
                 data = image.get(i, j);
-                variance += ( data[0]-treshold)*( data[0]-treshold);
+                help.VARIANCE += ( data[0]-treshold)*( data[0]-treshold);
             }
         }
-        return (double)Math.round( variance/(image.width()*image.height()));
+        return (double)Math.round( help.VARIANCE/(image.width()*image.height()));
     }
 
     private int[][] cleanMask(int[][] mask, int blocksWidth, int blocksHeight){
@@ -253,8 +251,8 @@ public class Segmentation extends AppCompatActivity{
             Mat image = help.bitmap2mat(imageBitmap);
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
-            treshold = grayscaleTreshold(image, 0, 0, image.width(), image.height());
-            variance = grayVariance(image, treshold);
+            help.TRESHOLD = grayscaleTreshold(image, 0, 0, image.width(), image.height());
+            help.VARIANCE = grayVariance(image, help.TRESHOLD);
 
             int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
             int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
@@ -268,7 +266,7 @@ public class Segmentation extends AppCompatActivity{
             {
                 for(int j = 0; j < blocksHeight; j++)
                 {
-                    if(treshold < grayscaleTreshold(image, i * BLOCK_SIZE, j * BLOCK_SIZE, i * BLOCK_SIZE + BLOCK_SIZE, j * BLOCK_SIZE+BLOCK_SIZE)) {
+                    if(help.TRESHOLD < grayscaleTreshold(image, i * BLOCK_SIZE, j * BLOCK_SIZE, i * BLOCK_SIZE + BLOCK_SIZE, j * BLOCK_SIZE+BLOCK_SIZE)) {
                         mask[i][j] = 0;
                     }
                     else {
