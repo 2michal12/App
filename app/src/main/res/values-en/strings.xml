@@ -89,8 +89,8 @@
     <string name="save">Save</string>
     <string name="save_and_run">Save and Run</string>
     <string name="file_name">Image name</string>
-    <string name="scanner_unplag">Device Futronic FS80 is not connected.</string>
+    <string name="scanner_unplag">External scanner is not connected.</string>
     <string name="image_saved">Fingerprint is saved.</string>
-    <string name="scanner_plug">Device Futronic FS80 is connected.</string>
+    <string name="scanner_plug">External scanner is connected.</string>
 
 </resources>

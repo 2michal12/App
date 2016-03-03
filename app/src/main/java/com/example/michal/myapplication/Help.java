@@ -28,8 +28,7 @@ import java.io.FileOutputStream;
  * Created by Michal on 10.11.2015.
  */
 public class Help{
-
-    Activity context;
+    private Activity context;
 
     public final String PREVIEW = "Preview";
     public final String SEGMENTATION = "Segmentation";
@@ -61,7 +60,6 @@ public class Help{
     //default sizes
     public double TRESHOLD = 0.0;
     public double VARIANCE = 0.0;
-
     public int BLOCK_SIZE = 7; //segmentation, normalisation, ...
 
     public int ORIENTATION_MAP_BLOCK = 30;
@@ -71,54 +69,13 @@ public class Help{
     public double GABOR_RATIO = 0.25; // gamma, ratio between length and width {0 .. 1}
     public double GABOR_PSI = 0; // psi, {0 .. pi}
 
+    public int ISLANDS_LENGTH_FILTER = 4; //constant for filtering false islands
+
     Help(){}
 
     Help(Activity context){
         this.context = context;
     }
-/*
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(PREVIEW);
-        dest.writeString(SEGMENTATION);
-        dest.writeString(NORMALISATION);
-        dest.writeString(FILTERING);
-        dest.writeString(BINARISATION);
-        dest.writeString(THINNING);
-        dest.writeString(EXTRACTION);
-        dest.writeString(AUTOMATIC);
-        dest.writeString(AUTOMATIC_FULL);
-        dest.writeString(MANUAL);
-        dest.writeString(BITMAP_IMAGE);
-        dest.writeString(TYPE);
-        dest.writeString(MASK);
-        dest.writeString(JPEG);
-        dest.writeString(PNG);
-        dest.writeInt(SELECT_PICTURE);
-        dest.writeInt(BLOCK_SIZE);
-        dest.writeInt(ORIENTATION_MAP_BLOCK);
-        dest.writeInt(GABOR_KERNEL_SIZE);
-        dest.writeInt(GABOR_FREQUENCY);
-        dest.writeInt(GABOR_STRENGTH);
-        dest.writeDouble(TRESHOLD);
-        dest.writeDouble(VARIANCE);
-        dest.writeDouble(GABOR_RATIO);
-        dest.writeDouble(GABOR_PSI);
-    }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Help createFromParcel(Parcel in) {
-            return new Help(in);
-        }
-        public Help[] newArray(int size) {
-            return new Help[size]; }
-    };
-    */
 
     public Mat bitmap2mat(Bitmap src){
         Mat dest = new Mat(src.getWidth(), src.getHeight(), CvType.CV_8UC1);

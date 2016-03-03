@@ -40,7 +40,8 @@
             android:layout_margin="10dp"
             android:background="@color/red"
             android:padding="5dp"
-            android:text="Testovanie extrakcie" />
+            android:text="Testovanie extrakcie"
+            android:visibility="gone"/>
 
 
 

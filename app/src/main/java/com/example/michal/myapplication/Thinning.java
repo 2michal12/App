@@ -35,16 +35,23 @@ public class Thinning extends AppCompatActivity {
     private static Bitmap imageBitmap;
     private static Bitmap imageAftefThinning;
 
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.progressBar) ProgressBar pb;
-    @Bind(R.id.view_thinning_image) ImageView mThinningImage;
-    @Bind(R.id.next) Button mNextProcess;
-    @Bind(R.id.settings) Button mSettings;
-    @Bind(R.id.progress_bar_text) TextView mProgressBarText;
-    @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.progressBar)
+    ProgressBar pb;
+    @Bind(R.id.view_thinning_image)
+    ImageView mThinningImage;
+    @Bind(R.id.next)
+    Button mNextProcess;
+    @Bind(R.id.settings)
+    Button mSettings;
+    @Bind(R.id.progress_bar_text)
+    TextView mProgressBarText;
+    @Bind(R.id.progress_bar_layout)
+    RelativeLayout mProgresBarLayout;
 
     private static int BLOCK_SIZE;
-    private static int[][] mask;
+    private static int[][] mask, mask2;
     int blocksWidth, blocksHeight;
     double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
     private static String type;
@@ -58,18 +65,23 @@ public class Thinning extends AppCompatActivity {
         help = new Help(this);
 
         setSupportActionBar(toolbar);
-        if( getSupportActionBar() != null )
+        if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(R.string.thinning);
 
         mNextProcess.setEnabled(false);
         type = getIntent().getStringExtra(help.TYPE);
         BLOCK_SIZE = help.BLOCK_SIZE;
         mask = null;
+        mask2 = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
-        if(objectArray != null){
+        if (objectArray != null) {
             mask = new int[objectArray.length][];
-            for(int i = 0; i < objectArray.length; i++){
+            mask2 = new int[objectArray.length][];
+
+            for (int i = 0; i < objectArray.length; i++) {
                 mask[i] = (int[]) objectArray[i];
+                mask2[i] = (int[]) objectArray[i];
+
             }
         }
 
@@ -80,15 +92,15 @@ public class Thinning extends AppCompatActivity {
             imageAftefThinning = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mThinningImage.setImageBitmap(imageBitmap);
 
-            if( type.equals(help.AUTOMATIC) ) {
+            if (type.equals(help.AUTOMATIC)) {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else if( type.equals(help.AUTOMATIC_FULL) ){
+            } else if (type.equals(help.AUTOMATIC_FULL)) {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-            }else{
+            } else {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -132,7 +144,7 @@ public class Thinning extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
 
         Bundle mBundle = new Bundle();
-        mBundle.putSerializable(help.MASK, mask);
+        mBundle.putSerializable(help.MASK, mask2);
 
         Intent i = new Intent(this, Extraction.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
@@ -141,7 +153,7 @@ public class Thinning extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void thinningIteration(Mat image, int iter){
+    public void thinningIteration(Mat image, int iter) {
         Mat marker = Mat.zeros(image.size(), CvType.CV_8UC1);
 
         double[] data_input = new double[1];
@@ -150,51 +162,51 @@ public class Thinning extends AppCompatActivity {
         int BLACK = 0;
         int WHITE = 1;
 
-        for(int i = 0; i < blocksHeight-1; i++){
-            for(int j = 0; j < blocksWidth-1; j++){
-                if(mask[j][i] == 1)
-                    for(int k = i*BLOCK_SIZE; k < i*BLOCK_SIZE+BLOCK_SIZE; k++){
-                        for(int l = j*BLOCK_SIZE; l < j*BLOCK_SIZE+BLOCK_SIZE; l++){
+        for (int i = 0; i < blocksHeight - 1; i++) {
+            for (int j = 0; j < blocksWidth - 1; j++) {
+                if (mask[j][i] == 1)
+                    for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                        for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
 
-                            p2 = image.get(k-1, l);
-                            p3 = image.get(k-1, l+1);
-                            p4 = image.get(k, l+1);
-                            p5 = image.get(k+1, l+1);
-                            p6 = image.get(k+1, l);
-                            p7 = image.get(k+1, l-1);
-                            p8 = image.get(k, l-1);
-                            p9 = image.get(k-1, l-1);
+                            p2 = image.get(k - 1, l);
+                            p3 = image.get(k - 1, l + 1);
+                            p4 = image.get(k, l + 1);
+                            p5 = image.get(k + 1, l + 1);
+                            p6 = image.get(k + 1, l);
+                            p7 = image.get(k + 1, l - 1);
+                            p8 = image.get(k, l - 1);
+                            p9 = image.get(k - 1, l - 1);
 
-                            if((int)p2[0] == BLACK && (int)p3[0] == WHITE){
+                            if ((int) p2[0] == BLACK && (int) p3[0] == WHITE) {
                                 A++;
                             }
-                            if(((int)p3[0] == BLACK && (int)p4[0] == WHITE)){
+                            if (((int) p3[0] == BLACK && (int) p4[0] == WHITE)) {
                                 A++;
                             }
-                            if(((int)p4[0] == BLACK && (int)p5[0] == WHITE)){
+                            if (((int) p4[0] == BLACK && (int) p5[0] == WHITE)) {
                                 A++;
                             }
-                            if(((int)p5[0] == BLACK && (int)p6[0] == WHITE)){
+                            if (((int) p5[0] == BLACK && (int) p6[0] == WHITE)) {
                                 A++;
                             }
-                            if(((int)p6[0] == BLACK && (int)p7[0] == WHITE)){
+                            if (((int) p6[0] == BLACK && (int) p7[0] == WHITE)) {
                                 A++;
                             }
-                            if(((int)p7[0] == BLACK && (int)p8[0] == WHITE)){
+                            if (((int) p7[0] == BLACK && (int) p8[0] == WHITE)) {
                                 A++;
                             }
-                            if(((int)p8[0] == BLACK && (int)p9[0] == WHITE)){
+                            if (((int) p8[0] == BLACK && (int) p9[0] == WHITE)) {
                                 A++;
                             }
-                            if(((int)p9[0] == BLACK && (int)p2[0] == WHITE)) {
+                            if (((int) p9[0] == BLACK && (int) p2[0] == WHITE)) {
                                 A++;
                             }
 
-                            B = (int)p2[0] + (int)p3[0] + (int)p4[0] + (int)p5[0] + (int)p6[0] + (int)p7[0] + (int)p8[0] + (int)p9[0];
-                            m1 = iter == 0 ? ((int)p2[0] * (int)p4[0] * (int)p6[0]) : ((int)p2[0] * (int)p4[0] * (int)p8[0]);
-                            m2 = iter == 0 ? ((int)p4[0] * (int)p6[0] * (int)p8[0]) : ((int)p2[0] * (int)p6[0] * (int)p8[0]);
+                            B = (int) p2[0] + (int) p3[0] + (int) p4[0] + (int) p5[0] + (int) p6[0] + (int) p7[0] + (int) p8[0] + (int) p9[0];
+                            m1 = iter == 0 ? ((int) p2[0] * (int) p4[0] * (int) p6[0]) : ((int) p2[0] * (int) p4[0] * (int) p8[0]);
+                            m2 = iter == 0 ? ((int) p4[0] * (int) p6[0] * (int) p8[0]) : ((int) p2[0] * (int) p6[0] * (int) p8[0]);
 
-                            if(A == 1 && (B >= 2 && B <= 6) && m1 == 0 && m2 == 0){
+                            if (A == 1 && (B >= 2 && B <= 6) && m1 == 0 && m2 == 0) {
                                 marker.put(k, l, data_input);
                             }
                             A = 0;
@@ -209,34 +221,35 @@ public class Thinning extends AppCompatActivity {
         Core.bitwise_and(image, marker, image);
     }
 
-    private int ivt(int x){
-        if( x==1 ){
+    private int ivt(int x) {
+        if (x == 1) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
 
-    public void removeSinglePoint(Mat image){
+    public void removeSinglePoint(Mat image) {
         double[] data_input = new double[1];
         data_input[0] = 0;
+        double BLACK = 0.0, WHITE = 255.0;
 
-        for(int i = 0; i < blocksHeight-1; i++){
+        for (int i = 0; i < blocksHeight - 1; i++) {
             for (int j = 0; j < blocksWidth - 1; j++) {
                 if (mask[j][i] == 1) {
                     for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
                         for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
                             pC = image.get(k, l);
-                            p2 = image.get(k-1, l);
-                            p3 = image.get(k-1, l+1);
-                            p4 = image.get(k, l+1);
-                            p5 = image.get(k+1, l+1);
-                            p6 = image.get(k+1, l);
-                            p7 = image.get(k+1, l-1);
-                            p8 = image.get(k, l-1);
-                            p9 = image.get(k-1, l-1);
+                            p2 = image.get(k - 1, l);
+                            p3 = image.get(k - 1, l + 1);
+                            p4 = image.get(k, l + 1);
+                            p5 = image.get(k + 1, l + 1);
+                            p6 = image.get(k + 1, l);
+                            p7 = image.get(k + 1, l - 1);
+                            p8 = image.get(k, l - 1);
+                            p9 = image.get(k - 1, l - 1);
 
-                            if( pC[0] == 255.0 && p2[0] == 0.0 &&  p3[0] == 0.0 &&  p4[0] == 0.0 &&  p5[0] == 0.0 &&  p6[0] == 0.0 &&  p7[0] == 0.0 &&  p8[0] == 0.0 &&  p9[0] == 0.0 ){
+                            if (pC[0] == WHITE && p2[0] == BLACK && p3[0] == BLACK && p4[0] == BLACK && p5[0] == BLACK && p6[0] == BLACK && p7[0] == BLACK && p8[0] == BLACK && p9[0] == BLACK) {
                                 image.put(k, l, data_input);
                             }
                         }
@@ -246,6 +259,80 @@ public class Thinning extends AppCompatActivity {
 
         }
     }
+
+    public void removeIslands2(Mat image) {
+        double[] data_input = new double[1];
+        data_input[0] = 0;
+        double BLACK = 0.0, WHITE = 255.0;
+        int[][] point = new int[2][1];
+        int count = 0;
+
+        for (int i = 0; i < blocksHeight - 1; i++) {
+            for (int j = 0; j < blocksWidth - 1; j++) {
+                if (mask[j][i] == 1) {
+                    for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                        for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+                            if( image.get(k, l)[0] == WHITE ){
+                                if( image.get(k - 1, l)[0] == WHITE )count++;
+                                if( image.get(k - 1, l + 1)[0] == WHITE )count++;
+                                if( image.get(k, l + 1)[0] == WHITE )count++;
+                                if( image.get(k + 1, l + 1)[0] == WHITE )count++;
+                                if( image.get(k + 1, l)[0] == WHITE )count++;
+                                if( image.get(k + 1, l - 1)[0] == WHITE )count++;
+                                if( image.get(k, l - 1)[0] == WHITE )count++;
+                                if( image.get(k - 1, l - 1)[0] == WHITE )count++;
+
+                                if(count == 1){
+                                    image.put(k, l, data_input);
+                                }
+                                count = 0;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void removeMaskEdges(Mat image) {
+        double[] data_new = new double[1];
+
+        for(int i = 0; i < blocksHeight; i++) {
+            for (int j = 0; j < blocksWidth; j++) {
+                if ( mask[j][i] == 0 ) {
+                    for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                        for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+                            data_new[0] = 0;
+                            image.put(k, l, data_new);
+                        }
+                    }
+                }
+                if ( !testMaskEdge(j, i) ) {
+                    for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
+                        for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
+                            data_new[0] = 0;
+                            image.put(k, l, data_new);
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    protected boolean testMaskEdge(int j, int i){
+        int WHITE = 1;
+        int BLACK = 0;
+
+        if(mask[j][i] == WHITE && (mask[j-1][i]==BLACK || mask[j-1][i+1]==BLACK || mask[j][i+1]==BLACK || mask[j+1][i+1]==BLACK || mask[j+1][i]==BLACK || mask[j+1][i-1]==BLACK || mask[j][i-1]==BLACK || mask[j-1][i-1]==BLACK ) ){
+            return false;
+        }
+        return true;
+    }
+
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
@@ -285,7 +372,13 @@ public class Thinning extends AppCompatActivity {
             Core.multiply(image, Scalar.all(255.0), image);
 
             //repare skeleton
+            for(int i = 0; i < help.ISLANDS_LENGTH_FILTER; i++)
+                removeIslands2(image);
+
             removeSinglePoint(image);
+
+            removeMaskEdges(image);
+
             publishProgress(100);
 
             Utils.matToBitmap(image, imageAftefThinning);

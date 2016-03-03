@@ -306,7 +306,7 @@ public class Filtering extends AppCompatActivity {
                     xSignature2.add(Math.abs((float) xSignature.get(index) - 255.0));
                 }
 
-                min_max = localMinMax(xSignature2);
+                //min_max = localMinMax(xSignature2);
 
                 //System.out.println(min_max[0]+" * "+min_max[1]);
 
@@ -314,7 +314,7 @@ public class Filtering extends AppCompatActivity {
                     for (int l = 0; l < block; l++) {
                         //this->sigma.at<double>(i*velkost_bloku+k,j*velkost_bloku+l) = vysledok_min; // hodnota urcena pre sigma v Gabore
                         //this->frekvencnaMat.at<double>(i*velkost_bloku+k,j*velkost_bloku+l) = 2*vysledok; //frekvencncia
-                        data_input[0] = 10 * min_max[1];
+                        //data_input[0] = 10 * min_max[1];
                         image.put(i * block + k, j * block + l, data_input);
                     }
                 }
@@ -330,130 +330,38 @@ public class Filtering extends AppCompatActivity {
         Imgproc.GaussianBlur(image, image, kernel, help.GABOR_STRENGTH, help.GABOR_STRENGTH);
     }
 
-    private Mat enhanceImg(Mat myImg) {
-        myImg.convertTo(myImg, CvType.CV_32F);
-
-        // prepare the output matrix for filters
-        Mat gabor1 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat gabor2 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat gabor3 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat gabor4 = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
-        Mat enhanced = new Mat(myImg.width(), myImg.height(), CvType.CV_32F);
-
-        // predefine parameters for Gabor kernel
-        Size kSize = new Size(7, 7);
-
-        double theta1 = 0;
-        double theta2 = 45;
-        double theta3 = 90;
-        double theta4 = 135;
-
-        double lambda = 7;
-        double sigma = 16;
-        double gamma = 0.5;
-        double psi = 0;
-
-        // the filters kernel
-        Mat kernel1 = Imgproc.getGaborKernel(kSize, sigma, theta1, lambda, gamma, psi, CvType.CV_32F);
-        Mat kernel2 = Imgproc.getGaborKernel(kSize, sigma, theta2, lambda, gamma, psi, CvType.CV_32F);
-        Mat kernel3 = Imgproc.getGaborKernel(kSize, sigma, theta3, lambda, gamma, psi, CvType.CV_32F);
-        Mat kernel4 = Imgproc.getGaborKernel(kSize, sigma, theta4, lambda, gamma, psi, CvType.CV_32F);
-
-        // apply filters on my image. The result is stored in gabor1...4
-        Imgproc.filter2D(myImg, gabor1, -1, kernel1);
-        Imgproc.filter2D(myImg, gabor2, -1, kernel2);
-        Imgproc.filter2D(myImg, gabor3, -1, kernel3);
-        Imgproc.filter2D(myImg, gabor4, -1, kernel4);
-
-        // enhanced = gabor1+gabor2+gabor3+gabor4 - something like that
-        Core.addWeighted(gabor1, 0, gabor1, 1, 0, enhanced);
-        Core.addWeighted(enhanced, 1, gabor2, 1, 0, enhanced);
-        Core.addWeighted(enhanced, 1, gabor3, 1, 0, enhanced);
-        Core.addWeighted(enhanced, 1, gabor4, 1, 0, enhanced);
-
-        enhanced.convertTo(enhanced, CvType.CV_8UC1);
-        return enhanced;
+    private void clearPadding(Mat image, int padding_x, int padding_y){
+        double[] data = new double[1];
+        data[0] = 0;
+        for(int i = image.width(); i >= image.width() - padding_x; i--) //clear padding column on the right
+        {
+            for(int j = 0; j < image.height(); j++)
+            {
+                image.put(j, i, data);
+            }
+        }
+        for(int i = 0; i <= padding_x; i++) //clear padding column on the left
+        {
+            for(int j = 0; j < image.height(); j++)
+            {
+                image.put(j, i, data);
+            }
+        }
+        for(int i = image.height(); i >= image.height() - padding_y; i--) //clear padding row at the bottom
+        {
+            for(int j = 0; j < image.width(); j++)
+            {
+                image.put(i, j, data);
+            }
+        }
+        for(int i = 0; i <= padding_y; i++) //clear padding row at the top
+        {
+            for(int j = 0; j < image.width(); j++)
+            {
+                image.put(i, j, data);
+            }
+        }
     }
-
-    //ZMENIT SYNTAX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //dont work .. in the end erase
-    private double[] localMinMax(Vector<Double> vec) {
-
-        double array[] = new double[vec.size()];
-        Double vectorValues;
-        for (int i = 0; i != vec.size(); i++) {
-            vectorValues = (Double) vec.elementAt(i);
-            array[i] = vectorValues.doubleValue();
-        }
-
-        ArrayList<Integer> mins = new ArrayList<Integer>();
-        ArrayList<Integer> maxs = new ArrayList<Integer>();
-
-        double prevDiff = array[0] - array[1];
-        int i = 1;
-        while (i < array.length - 1) {
-            double currDiff = 0;
-            int zeroCount = 0;
-            while (currDiff == 0 && i < array.length - 1) {
-                zeroCount++;
-                i++;
-                currDiff = array[i - 1] - array[i];
-            }
-
-            int signCurrDiff = Integer.signum((int) currDiff);
-            int signPrevDiff = Integer.signum((int) prevDiff);
-            if (signPrevDiff != signCurrDiff && signCurrDiff != 0) { //signSubDiff==0, the case when prev while ended bcoz of last elem
-                int index = i - 1 - (zeroCount) / 2;
-                if (signPrevDiff == 1) {
-                    mins.add(index);
-                } else {
-                    maxs.add(index);
-                }
-            }
-            prevDiff = currDiff;
-        }
-
-        double[] maxs_values = new double[maxs.size()];
-        double[] mins_values = new double[mins.size()];
-
-        int ind2 = 0;
-        for (Integer ind : maxs) {
-            maxs_values[ind2++] = array[ind];
-        }
-        ind2 = 0;
-        for (Integer ind : mins) {
-            mins_values[ind2++] = array[ind];
-        }
-
-        Arrays.sort(maxs_values);
-        Arrays.sort(mins_values);
-
-        //AZ TU PREBIEHA VYPOCET
-        double sum = 0;
-        for (int j = 0; j < maxs_values.length; j++) {//priemerny pocet pixlov medzi dvoma maximami v xSignature
-            if (j != (maxs_values.length - 1)) {
-                sum += maxs_values[j + 1] - maxs_values[j] - 1;
-            }
-        }
-        double vysledok = sum / maxs_values.length; //zmen na double
-        if (vysledok < 0) {
-            vysledok = 0;
-        }
-        sum = 0;
-        for (int j = 0; j < mins_values.length; j++) {
-            if (j != (mins_values.length - 1)) {
-                sum += mins_values[j + 1] - mins_values[j] - 1;
-            }
-        }
-        double vysledok_min = sum / mins_values.length; //zmen na double
-        if (vysledok_min < 0) {
-            vysledok_min = 0;
-        }
-
-        double[] min_max = new double[]{vysledok_min, vysledok};
-        return min_max;
-    }
-
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
@@ -512,6 +420,10 @@ public class Filtering extends AppCompatActivity {
                 }
                 publishProgress((int) (progress * i));
             }
+
+            int padding_x = image.width() - (((int)Math.floor(image.width()/BLOCK_SIZE))*BLOCK_SIZE);
+            int padding_y = image.height() - (((int)Math.floor(image.height()/BLOCK_SIZE))*BLOCK_SIZE);
+            clearPadding(dest, padding_x, padding_y);
 
             Utils.matToBitmap(dest, imageAftefFiltering); //ak chcem vykreslit smerovu mapu staci zmenit prvy parameter na "orientation_gui" a odkomentovat zapisovanie na konci funkcie "orientationMap"
 

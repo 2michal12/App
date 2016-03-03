@@ -14,7 +14,7 @@
     <string name="automatic_preprocessing_full">Automaticky</string>
     <string name="manual_preprocessing">Manuálne predspracovanie</string>
     <string name="information">Informácie</string>
-    <string name="info_text">Aplikacia Diplomovka (v.%1$s) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.%1$s) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení externého skenera odtlačkov Futronic FS80.</string>
     <string name="settings">Nastavenia</string>
     <string name="error">Chyba !</string>
     <string name="sdcard_unmounted">Obrázok je možné uložiť len na SD kartu !</string>
@@ -94,8 +94,8 @@
     <string name="save">Uložiť</string>
     <string name="save_and_run">Uložiť a použiť</string>
     <string name="file_name">Názov odtlačku</string>
-    <string name="scanner_unplag">Zariadenie Futronic FS80 nie je pripojené.</string>
+    <string name="scanner_unplag">Externý snímač nie je pripojený.</string>
     <string name="image_saved">Odtlačok bol uložený.</string>
-    <string name="scanner_plug">Zariadenie Futronic FS80 je pripojené.</string>
+    <string name="scanner_plug">Externý snímač je pripojený.</string>
 
 </resources>
