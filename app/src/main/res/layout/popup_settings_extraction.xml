@@ -50,6 +50,36 @@
 
         </RadioGroup>
 
+        <LinearLayout
+            android:id="@+id/edittext1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/textForEdittext"
+                style="@style/SettingsItem"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="@string/size_between_minutie"/>
+
+
+            <EditText
+                android:id="@+id/settingsEdittext"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/edittext_style"
+                android:ellipsize="start"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 

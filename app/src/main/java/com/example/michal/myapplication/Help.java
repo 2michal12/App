@@ -56,6 +56,8 @@ public class Help{
     //image format
     public final String JPEG = "jpeg";
     public final String PNG = "png";
+    public int FORMAT_JPEG = 0;
+    public int FORMAT_BMP = 1;
 
     //default sizes
     public double TRESHOLD = 0.0;
@@ -70,6 +72,7 @@ public class Help{
     public double GABOR_PSI = 0; // psi, {0 .. pi}
 
     public int ISLANDS_LENGTH_FILTER = 4; //constant for filtering false islands
+    public int SIZE_BETWEEN_MINUTIE = 15; //length between minutie.. minutie in this area will be delete
 
     Help(){}
 

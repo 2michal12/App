@@ -85,6 +85,8 @@
     <string name="title_activity_thinning">Thinning</string>
     <string name="title_activity_binarisation">Binarisation</string>
     <string name="title_activity_extraction">Extraction</string>
+    
+    <string name="size_between_minutie">Vzdialenosť medzi markantmi: </string>
 
 
     <!-- Futronic scanner -->

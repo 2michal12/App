@@ -75,9 +75,13 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //image = BitmapFactory.decodeFile("storage/emulated/0/Pictures/DIPLOMOVKA/FtrScan/skeleton3.bmp");
-                image = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton);
-                startPreview(image, 2);
+                //image = BitmapFactory.decodeFile("storage/emulated/0/Pictures/DIPLOMOVKA/FtrScan/skeleton13.bmp");
+                //image = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton);
+                //startPreview(image, 2);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), 2);
             }
         });
 
@@ -110,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //for testing of extraction
+        if(requestCode == 2){
+            requestCode = SELECT_PICTURE;
+            help.FORMAT_BMP = 2;
+            help.FORMAT_JPEG = 2;
+        }
+
         if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Uri uri = data.getData();
@@ -129,11 +140,11 @@ public class MainActivity extends AppCompatActivity {
                 image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
 
                 if( strMimeType.contains(help.JPEG) ){
-                    startPreview(image, 0); // 0 = .jpg
+                    startPreview(image, help.FORMAT_JPEG); // 0 = .jpg
                 }else if( strMimeType.contains(help.PNG) ){
-                    startPreview(image, 1); // 1 = .png
+                    startPreview(image, help.FORMAT_BMP); // 1 = .png
                 }else{
-                    startPreview(image, 1); // 1 = .png for .bmp too
+                    startPreview(image, help.FORMAT_BMP); // 1 = .png and .bmp too
                 }
 
             } catch (IOException e) {
@@ -208,5 +219,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
+
+
 
 }

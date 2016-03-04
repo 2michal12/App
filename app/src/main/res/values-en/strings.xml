@@ -82,6 +82,9 @@
     <string name="title_activity_thinning">Thinning</string>
     <string name="title_activity_binarisation">Binarisation</string>
 
+    <string name="size_between_minutie">Length between minutiie: </string>
+
+
     <!-- Futronic scanner -->
     <string name="futronic_title">Futronic FS80</string>
     <string name="scan">Scan</string>

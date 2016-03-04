@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -191,12 +192,49 @@ public class Extraction extends AppCompatActivity {
                 publishProgress(progress+mod);
             }
 
+            int SIZE = help.SIZE_BETWEEN_MINUTIE;
+            int fix_val_x, fix_val_y;
+
             if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
+
+                //cistenie blizkych markantov
+                for(int j = 0; j < countEndings; j++) {
+                    fix_val_x = endings[1][j];
+                    fix_val_y = endings[0][j];
+
+                    for(int i = 0; i < countEndings; i++) {
+                        if( (endings[0][i]!=fix_val_y) && (endings[1][i]!=fix_val_x) && ( ( Math.abs(fix_val_x - endings[1][i])) <= SIZE) && ( (Math.abs(fix_val_y - endings[0][i])) <= SIZE)  ){
+                            endings[1][i] = 0;
+                            endings[0][i] = 0;
+                            endings[1][j] = 0;
+                            endings[0][j] = 0;
+                            break;
+                        }
+                    }
+                }
+
                 for(int i = 0; i < countEndings; i++){
                     Point core = new Point(endings[1][i], endings[0][i]);
                     Imgproc.circle(image, core, 8, new Scalar(150, 0, 0), 2);
                 }
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
+
+                //cistenie blizkych markantov
+                for(int j = 0; j < countBifurcation; j++) {
+                    fix_val_x = bifurcation[1][j];
+                    fix_val_y = bifurcation[0][j];
+
+                    for(int i = 0; i < countBifurcation; i++) {
+                        if( (bifurcation[0][i]!=fix_val_y) && (bifurcation[1][i]!=fix_val_x) && ( ( Math.abs(fix_val_x - bifurcation[1][i])) <= SIZE) && ( (Math.abs(fix_val_y - bifurcation[0][i])) <= SIZE)  ){
+                            bifurcation[1][i] = 0;
+                            bifurcation[0][i] = 0;
+                            bifurcation[1][j] = 0;
+                            bifurcation[0][j] = 0;
+                            break;
+                        }
+                    }
+                }
+
                 for(int i = 0; i < countBifurcation; i++){
                     Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                     Imgproc.circle(image, core, 8, new Scalar(150, 0, 0), 2);
@@ -251,26 +289,34 @@ public class Extraction extends AppCompatActivity {
         Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
         final RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.radioButtonGroup);
 
+        final EditText mSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
+        mSize.setText(String.valueOf(help.SIZE_BETWEEN_MINUTIE));
+
+
         dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                                            @Override
+                                            public void onClick(View v) {
 
-                int selectedId = radioGroup.getCheckedRadioButtonId();
-                Button radioButton = (RadioButton) dialog.findViewById(selectedId);
+                                                int selectedId = radioGroup.getCheckedRadioButtonId();
+                                                Button radioButton = (RadioButton) dialog.findViewById(selectedId);
+                                                if (!mSize.getText().toString().isEmpty())
+                                                    help.SIZE_BETWEEN_MINUTIE = Integer.valueOf(mSize.getText().toString());
 
-                if (radioButton.getText().equals(getResources().getString(R.string.minutie_ending))) {
-                    dialog.dismiss();
-                    mProgresBarLayout.setVisibility(View.VISIBLE);
-                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_ending));
-                } else if (radioButton.getText().equals(getResources().getString(R.string.minutie_bifurcation))) {
-                    dialog.dismiss();
-                    mProgresBarLayout.setVisibility(View.VISIBLE);
-                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_bifurcation));
-                }
-            }
-        });
+                                                if (radioButton.getText().equals(getResources().getString(R.string.minutie_ending))) {
+                                                    dialog.dismiss();
+                                                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                                                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_ending));
+                                                } else if (radioButton.getText().equals(getResources().getString(R.string.minutie_bifurcation))) {
+                                                    dialog.dismiss();
+                                                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                                                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_bifurcation));
+                                                }
+                                            }
+                                        }
+
+            );
 
         dialog.show();
-    }
+        }
 
-}
+    }
