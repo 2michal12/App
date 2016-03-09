@@ -26,6 +26,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -51,7 +53,8 @@ public class Thinning extends AppCompatActivity {
     RelativeLayout mProgresBarLayout;
 
     private static int BLOCK_SIZE;
-    private static int[][] mask, mask2;
+    private static int[][] mask;
+    private static int[][] mask2;
     int blocksWidth, blocksHeight;
     double[] pC, p2, p3, p4, p5, p6, p7, p8, p9;
     private static String type;
@@ -72,16 +75,11 @@ public class Thinning extends AppCompatActivity {
         type = getIntent().getStringExtra(help.TYPE);
         BLOCK_SIZE = help.BLOCK_SIZE;
         mask = null;
-        mask2 = null;
         Object[] objectArray = (Object[]) getIntent().getExtras().getSerializable(help.MASK);
         if (objectArray != null) {
             mask = new int[objectArray.length][];
-            mask2 = new int[objectArray.length][];
-
             for (int i = 0; i < objectArray.length; i++) {
                 mask[i] = (int[]) objectArray[i];
-                mask2[i] = (int[]) objectArray[i];
-
             }
         }
 
@@ -298,6 +296,7 @@ public class Thinning extends AppCompatActivity {
 
     public void removeMaskEdges(Mat image) {
         double[] data_new = new double[1];
+        mask2 = cloneArray(mask);
 
         for(int i = 0; i < blocksHeight; i++) {
             for (int j = 0; j < blocksWidth; j++) {
@@ -310,6 +309,7 @@ public class Thinning extends AppCompatActivity {
                     }
                 }
                 if ( !testMaskEdge(j, i) ) {
+                    mask2[j][i] = 0;
                     for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
                         for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
                             data_new[0] = 0;
@@ -321,6 +321,15 @@ public class Thinning extends AppCompatActivity {
             }
         }
 
+    }
+
+    public static int[][] cloneArray(int[][] src) {
+        int length = src.length;
+        int[][] target = new int[length][src[0].length];
+        for (int i = 0; i < length; i++) {
+            System.arraycopy(src[i], 0, target[i], 0, src[i].length);
+        }
+        return target;
     }
 
     protected boolean testMaskEdge(int j, int i){

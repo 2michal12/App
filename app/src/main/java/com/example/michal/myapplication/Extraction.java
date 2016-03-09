@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.opencv.android.Utils;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -160,7 +161,7 @@ public class Extraction extends AppCompatActivity {
 
             for(int i = 0; i < blocksHeight-1; i++){
                 for(int j = 0; j < blocksWidth-1; j++) {
-                    if (mask[j][i] == 1 && testMaskEdge(j, i))
+                    if (mask[j][i] == 1 && testMaskEdge(j, i)){
                         for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
                             for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
 
@@ -187,11 +188,37 @@ public class Extraction extends AppCompatActivity {
 
                             }
                         }
+                    }
                 }
                 progress+=mod;
                 publishProgress(progress+mod);
             }
 
+
+            //copy image to color image
+            Mat color_image = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
+            double[] black = new double[3];
+            black[0] = 0;
+            black[1] = 0;
+            black[2] = 0;
+            double[] white = new double[3];
+            white[0] = 255;
+            white[1] = 255;
+            white[2] = 255;
+
+            for(int i = 0; i < image.height(); i++){
+                for(int j = 0; j < image.width(); j++){
+                    if(image.get(i, j)[0] == 255){
+                        color_image.put(i, j, white);
+                    }else{
+                        color_image.put(i, j, black);
+                    }
+
+                }
+            }
+
+
+            //print minutie
             int SIZE = help.SIZE_BETWEEN_MINUTIE;
             int fix_val_x, fix_val_y;
 
@@ -214,8 +241,10 @@ public class Extraction extends AppCompatActivity {
                 }
 
                 for(int i = 0; i < countEndings; i++){
-                    Point core = new Point(endings[1][i], endings[0][i]);
-                    Imgproc.circle(image, core, 8, new Scalar(150, 0, 0), 2);
+                    if(endings[1][i] != 0 && endings[0][i] != 0) {
+                        Point core = new Point(endings[1][i], endings[0][i]);
+                        Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
+                    }
                 }
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
 
@@ -236,13 +265,14 @@ public class Extraction extends AppCompatActivity {
                 }
 
                 for(int i = 0; i < countBifurcation; i++){
-                    Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
-                    Imgproc.circle(image, core, 8, new Scalar(150, 0, 0), 2);
+                    if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
+                        Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
+                        Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
+                    }
                 }
             }
 
-
-            Utils.matToBitmap(image, imageAftefExtraction);
+            Utils.matToBitmap(color_image, imageAftefExtraction);
 
             return "extraction_finished";
         }

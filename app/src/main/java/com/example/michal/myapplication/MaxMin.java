@@ -131,7 +131,7 @@ public class MaxMin extends AppCompatActivity {
 
         int fix_val_x, fix_val_y;
         int x, y;
-        int SIZE = 40;
+        int SIZE = 10;
         for(int j = 0; j < countEndings; j++) {
             fix_val_x = endings[1][j];
             fix_val_y = endings[0][j];
