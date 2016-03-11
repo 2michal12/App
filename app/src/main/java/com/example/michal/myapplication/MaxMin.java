@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,13 +25,19 @@ import butterknife.ButterKnife;
  */
 public class MaxMin extends AppCompatActivity {
     Bitmap imageBitmap = null, imageAfter;
-    Mat image,color_image;
+    Mat image,color_image,image_new;
 
     @Bind(R.id.text)
     TextView text;
 
     @Bind(R.id.image)
     ImageView imageView;
+
+    @Bind(R.id.origimage)
+    Button origimage;
+
+    @Bind(R.id.newimage)
+    Button newimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +60,30 @@ public class MaxMin extends AppCompatActivity {
         Help help = new Help(this);
         image = help.bitmap2mat(imageBitmap);
         color_image = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
+        image_new = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-        if( !convertSkeleton(image) ){
-            Log.i("convertSkeleton","Error in converting skeleton to reverse color.");
-        }
+        //convertSkeleton(image);
 
         extraction(image, 1); //1 = ukoncenia, 2 = rozdvojenia
 
-        Utils.matToBitmap(image, imageAfter);
-        imageView.setImageBitmap(imageAfter);
+        Utils.matToBitmap(image, imageAfter); //default value without click any button
+        origimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.matToBitmap(image, imageAfter);
+                imageView.setImageBitmap(imageAfter);
+            }
+        });
+
+        newimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.matToBitmap(image_new, imageAfter);
+                imageView.setImageBitmap(imageAfter);
+            }
+        });
 
     }
 
@@ -137,27 +159,33 @@ public class MaxMin extends AppCompatActivity {
 
 
         //copy image to color image
-        double[] black = new double[3];
-        black[0] = 0;
-        black[1] = 0;
-        black[2] = 0;
-        double[] white = new double[3];
-        white[0] = 255;
-        white[1] = 255;
-        white[2] = 255;
+        double[] black3 = new double[3];
+        black3[0] = 0;
+        black3[1] = 0;
+        black3[2] = 0;
+        double[] white3 = new double[3];
+        white3[0] = 255;
+        white3[1] = 255;
+        white3[2] = 255;
+        double[] black1 = new double[1];
+        black1[0] = 0;
+        double[] white1 = new double[1];
+        white1[0] = 255;
 
         for(int i = 0; i < image.height(); i++){
             for(int j = 0; j < image.width(); j++){
                 if(image.get(i, j)[0] > 100){
-                    color_image.put(i, j, white);
+                    color_image.put(i, j, white3);
+                    image_new.put(i, j, white1);
                 }else{
-                    color_image.put(i, j, black);
+                    color_image.put(i, j, black3);
+                    image_new.put(i, j, black1);
                 }
 
             }
         }
 
-        int dlzka_fragmentu = 2;
+        int dlzka_fragmentu = 5;
         int[][] fragment = new int[2][dlzka_fragmentu];
 
         double[] white_pixel;
@@ -167,43 +195,55 @@ public class MaxMin extends AppCompatActivity {
         next_point[1] = 0;
         boolean erase = false;
         int count;
-        double[] black1 = new double[1];
-        black1[0] = 0;
+        double[] gray1 = new double[1];
+        gray1[0] = 100;
+        int[] neighbour;
+        int tempi,tempj;
 
-        for(int i = 0; i < image.height(); i++) {
-            for (int j = 0; j < image.width(); j++) {
-                white_pixel = image.get(i,j);
-                if(white_pixel[0] == 255){
-                    point[0] = i;
-                    point[1] = j;
-                    count = 1;
-                    for(int k = 1; k < dlzka_fragmentu; k++) { //dlzka fragmentu
-                        erase = false;
-                        next_point = testNeighbour(point);
-                        fragment[0][0] = (int)point[0];
-                        fragment[1][0] = (int)point[1];
-                        if (next_point[0] == -1 && next_point[1] == -1) {
+        for(int i = 1; i < image.height()-1; i++) {
+            for (int j = 1; j < image.width()-1; j++) {
+                if(image.get(i,j)[0]==255) {
+                    neighbour = testOneNeighbourOfPoint(i, j);
+                    count = 0;
+                    if (neighbour[2] == 1) {
+                        fragment[0][0] = i;
+                        fragment[1][0] = j;
+                        image.put(i, j, black1);
+                        count++;
+                        //image_new.put(i, j, gray1);
+                        for (int k = 0; k < dlzka_fragmentu - 1; k++) {
+                            tempi = neighbour[0];
+                            tempj = neighbour[1];
+                            neighbour = testOneNeighbourOfPoint(neighbour[0], neighbour[1]);
+                            if (neighbour[2] != 1) {
+                                if(k < dlzka_fragmentu-1){
+                                    erase = true;
+                                    fragment[0][k + 1] = tempi;
+                                    fragment[1][k + 1] = tempj;
+                                    count++;
+                                    image.put(tempi, tempj, black1);
+                                    break;
+                                }else {
+                                    erase = false;
+                                    break;
+                                }
+                            }
+                            fragment[0][k + 1] = tempi;
+                            fragment[1][k + 1] = tempj;
+                            image.put(tempi, tempj, black1);
                             count++;
-                            erase = true;
-                            break;
-                        } else {
-                            count++;
-                            point[0] = next_point[0];
-                            point[1] = next_point[1];
-                            fragment[0][k] = (int)next_point[0];
-                            fragment[1][k] = (int)next_point[1];
-                            if(k == dlzka_fragmentu-1)
-                                erase = true;
-                            else
-                                erase = false;
                         }
-                    }
-                    if(erase){
-                        //vymazat fragment
-                        for (int k = 0; k < count; k++){
-                            image.put(fragment[0][k],fragment[1][k], black1);
-                        }
+                            for (int k = 0; k < count; k++) {
+                                if(erase) {
+                                    image_new.put(fragment[0][k], fragment[1][k], gray1);
+                                }else{
+                                    image.put(fragment[0][k], fragment[1][k], white1);
+                                }
+                                fragment[0][k] = 0;
+                                fragment[1][k] = 0;
+                            }
                         erase = false;
+
                     }
                 }
             }
@@ -279,31 +319,38 @@ public class MaxMin extends AppCompatActivity {
             count++;
             new_point[0]=row-1;
             new_point[1]=col-1;
-        }else if(image.get(row-1,col)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col) ){
+        }
+        if(image.get(row-1,col)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col) ){
             count++;
             new_point[0]=row-1;
             new_point[1]=col;
-        }else if(image.get(row-1,col+1)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col+1) ){
+        }
+        if(image.get(row-1,col+1)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col+1) ){
             count++;
             new_point[0]=row-1;
             new_point[1]=col+1;
-        }else if(image.get(row,col-1)[0] == 255 && (prev[0]!=row) && (prev[1]!=col-1) ){
+        }
+        if(image.get(row,col-1)[0] == 255 && (prev[0]!=row) && (prev[1]!=col-1) ){
             count++;
             new_point[0]=row;
             new_point[1]=col-1;
-        }else if(image.get(row,col+1)[0] == 255 && (prev[0]!=row) && (prev[1]!=col+1) ){
+        }
+        if(image.get(row,col+1)[0] == 255 && (prev[0]!=row) && (prev[1]!=col+1) ){
             count++;
             new_point[0]=row;
             new_point[1]=col+1;
-        }else if(image.get(row+1,col-1)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col-1) ){
+        }
+        if(image.get(row+1,col-1)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col-1) ){
             count++;
             new_point[0]=row+1;
             new_point[1]=col-1;
-        }else if(image.get(row+1,col)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col) ){
+        }
+        if(image.get(row+1,col)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col) ){
             count++;
             new_point[0]=row+1;
             new_point[1]=col;
-        }else if(image.get(row+1,col+1)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col+1) ){
+        }
+        if(image.get(row+1,col+1)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col+1) ){
             count++;
             new_point[0]=row+1;
             new_point[1]=col+11;
@@ -318,6 +365,62 @@ public class MaxMin extends AppCompatActivity {
         }
     }
 
+    int[] testOneNeighbourOfPoint(int row, int col){
+        int count = 0;
+        int[] neighbour = new int[3];
+
+        if(image.get(row-1,col-1)[0] == 255){
+            neighbour[0] = row-1;
+            neighbour[1] = col-1;
+            count++;
+        }
+        if(image.get(row-1,col)[0] == 255){
+            neighbour[0] = row-1;
+            neighbour[1] = col;
+            count++;
+        }
+        if(image.get(row-1,col+1)[0] == 255){
+            neighbour[0] = row-1;
+            neighbour[1] = col+1;
+            count++;
+        }
+        if(image.get(row,col-1)[0] == 255){
+            neighbour[0] = row;
+            neighbour[1] = col-1;
+            count++;
+        }
+        if(image.get(row,col+1)[0] == 255){
+            neighbour[0] = row;
+            neighbour[1] = col+1;
+            count++;
+        }
+        if(image.get(row+1,col-1)[0] == 255){
+            neighbour[0] = row+1;
+            neighbour[1] = col-1;
+            count++;
+        }
+        if(image.get(row+1,col)[0] == 255){
+            neighbour[0] = row+1;
+            neighbour[1] = col;
+            count++;
+        }
+        if(image.get(row+1,col+1)[0] == 255){
+            neighbour[0] = row+1;
+            neighbour[1] = col+1;
+            count++;
+        }
+
+        neighbour[2] = count; // last parameter set how much neighbours has current central point
+        return neighbour;
+    }
+
+    boolean stoppingLine(int row, int col){
+        int fragment_length = 5;
+        for(int i = 0; i < fragment_length; i++){
+
+        }
+        return true;
+    }
 
 
 }
