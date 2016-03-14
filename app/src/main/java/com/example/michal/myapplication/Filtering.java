@@ -1,7 +1,9 @@
 package com.example.michal.myapplication;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -90,6 +92,7 @@ public class Filtering extends AppCompatActivity {
                 mask[i] = (int[]) objectArray[i];
             }
         }
+        SharedData.orientation_map = SharedData.getInstance();
 
         byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if (byteArray != null) {
@@ -200,8 +203,6 @@ public class Filtering extends AppCompatActivity {
                     }
                 }
             }
-            //System.out.println((float) x / ((tempImage.rows() - block / 2) - 1) * 100);
-
         }
 
         mapExtermination(block);
@@ -213,6 +214,8 @@ public class Filtering extends AppCompatActivity {
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
         }*/
+
+        SharedData.orientation_map = orientation_map;
 
         return orientation_map;
     }

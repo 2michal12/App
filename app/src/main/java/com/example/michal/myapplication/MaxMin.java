@@ -80,7 +80,7 @@ public class MaxMin extends AppCompatActivity {
         newimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.matToBitmap(image_new, imageAfter);
+                Utils.matToBitmap(color_image, imageAfter);
                 imageView.setImageBitmap(imageAfter);
             }
         });
@@ -185,7 +185,7 @@ public class MaxMin extends AppCompatActivity {
             }
         }
 
-        int dlzka_fragmentu = 5;
+        int dlzka_fragmentu = 15;
         int[][] fragment = new int[2][dlzka_fragmentu];
 
         double[] white_pixel;
@@ -215,7 +215,10 @@ public class MaxMin extends AppCompatActivity {
                             tempi = neighbour[0];
                             tempj = neighbour[1];
                             neighbour = testOneNeighbourOfPoint(neighbour[0], neighbour[1]);
-                            if (neighbour[2] != 1) {
+                            if(neighbour[2] > 1){
+                                erase = false;
+                                break;
+                            }else if (neighbour[2] != 1) {
                                 if(k < dlzka_fragmentu-1){
                                     erase = true;
                                     fragment[0][k + 1] = tempi;
@@ -250,7 +253,7 @@ public class MaxMin extends AppCompatActivity {
         }
 
 
-        /*
+
         //print minutie
         int SIZE = 15;
         int fix_val_x, fix_val_y;
@@ -304,65 +307,7 @@ public class MaxMin extends AppCompatActivity {
                 }
             }
         }
-        */
-    }
 
-    double[] testNeighbour(double[] prev){
-        int count = 0;
-        double[] new_point = new double[2];
-        double row_d = prev[0];
-        double col_d = prev[1];
-        int row = (int)row_d;
-        int col = (int)col_d;
-
-        if(image.get(row-1,col-1)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col-1) ){
-            count++;
-            new_point[0]=row-1;
-            new_point[1]=col-1;
-        }
-        if(image.get(row-1,col)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col) ){
-            count++;
-            new_point[0]=row-1;
-            new_point[1]=col;
-        }
-        if(image.get(row-1,col+1)[0] == 255 && (prev[0]!=row-1) && (prev[1]!=col+1) ){
-            count++;
-            new_point[0]=row-1;
-            new_point[1]=col+1;
-        }
-        if(image.get(row,col-1)[0] == 255 && (prev[0]!=row) && (prev[1]!=col-1) ){
-            count++;
-            new_point[0]=row;
-            new_point[1]=col-1;
-        }
-        if(image.get(row,col+1)[0] == 255 && (prev[0]!=row) && (prev[1]!=col+1) ){
-            count++;
-            new_point[0]=row;
-            new_point[1]=col+1;
-        }
-        if(image.get(row+1,col-1)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col-1) ){
-            count++;
-            new_point[0]=row+1;
-            new_point[1]=col-1;
-        }
-        if(image.get(row+1,col)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col) ){
-            count++;
-            new_point[0]=row+1;
-            new_point[1]=col;
-        }
-        if(image.get(row+1,col+1)[0] == 255 && (prev[0]!=row+1) && (prev[1]!=col+1) ){
-            count++;
-            new_point[0]=row+1;
-            new_point[1]=col+11;
-        }
-
-        if(count == 1){
-            return new_point;
-        }else{
-            new_point[0]=-1;
-            new_point[1]=-1;
-            return new_point;
-        }
     }
 
     int[] testOneNeighbourOfPoint(int row, int col){
@@ -412,14 +357,6 @@ public class MaxMin extends AppCompatActivity {
 
         neighbour[2] = count; // last parameter set how much neighbours has current central point
         return neighbour;
-    }
-
-    boolean stoppingLine(int row, int col){
-        int fragment_length = 5;
-        for(int i = 0; i < fragment_length; i++){
-
-        }
-        return true;
     }
 
 

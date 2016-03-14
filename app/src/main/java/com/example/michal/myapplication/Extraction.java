@@ -54,6 +54,7 @@ public class Extraction extends AppCompatActivity {
     private static int BLOCK_SIZE;
     private static int[][] mask;
     private static String type;
+    private static double[][] orientation_map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class Extraction extends AppCompatActivity {
                 mask[i] = (int[]) objectArray[i];
             }
         }
+        orientation_map = SharedData.orientation_map;
 
         byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if (byteArray != null) {
@@ -145,6 +147,8 @@ public class Extraction extends AppCompatActivity {
             Mat image = help.bitmap2mat(imageBitmap);
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
+
+
             double[] data = new double[1];
             data[0] = 0;
             int progress = 0;
@@ -157,7 +161,6 @@ public class Extraction extends AppCompatActivity {
             int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
             int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
             int mod = 100/(blocksHeight-1) ;
-
 
             for(int i = 0; i < blocksHeight-1; i++){
                 for(int j = 0; j < blocksWidth-1; j++) {
@@ -197,26 +200,29 @@ public class Extraction extends AppCompatActivity {
 
             //copy image to color image
             Mat color_image = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
-            double[] black = new double[3];
-            black[0] = 0;
-            black[1] = 0;
-            black[2] = 0;
-            double[] white = new double[3];
-            white[0] = 255;
-            white[1] = 255;
-            white[2] = 255;
+
+            //copy image to color image
+            double[] black3 = new double[3];
+            black3[0] = 0;
+            black3[1] = 0;
+            black3[2] = 0;
+            double[] white3 = new double[3];
+            white3[0] = 255;
+            white3[1] = 255;
+            white3[2] = 255;
 
             for(int i = 0; i < image.height(); i++){
                 for(int j = 0; j < image.width(); j++){
-                    if(image.get(i, j)[0] == 255){
-                        color_image.put(i, j, white);
+                    if(image.get(i, j)[0] > 100){
+                        color_image.put(i, j, white3);
                     }else{
-                        color_image.put(i, j, black);
+                        color_image.put(i, j, black3);
                     }
 
                 }
             }
 
+            //findFragments(image);
 
             //print minutie
             int SIZE = help.SIZE_BETWEEN_MINUTIE;
@@ -244,6 +250,7 @@ public class Extraction extends AppCompatActivity {
                     if(endings[1][i] != 0 && endings[0][i] != 0) {
                         Point core = new Point(endings[1][i], endings[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
+                        System.out.println(endings[1][i]+"  "+endings[0][i]+"  "+Math.toDegrees( orientation_map[endings[0][i]][endings[1][i]] )+"  Q");
                     }
                 }
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
@@ -268,6 +275,7 @@ public class Extraction extends AppCompatActivity {
                     if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
+                        System.out.println(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " +Math.toDegrees( orientation_map[bifurcation[0][i]][bifurcation[1][i]] ) + "  Q");
                     }
                 }
             }
@@ -301,6 +309,130 @@ public class Extraction extends AppCompatActivity {
         }
     }
 
+    int[] testOneNeighbourOfPoint(Mat image, int row, int col){
+        int count = 0;
+        int[] neighbour = new int[3];
+
+        if(image.get(row-1,col-1)[0] == 255){
+            neighbour[0] = row-1;
+            neighbour[1] = col-1;
+            count++;
+        }
+        if(image.get(row-1,col)[0] == 255){
+            neighbour[0] = row-1;
+            neighbour[1] = col;
+            count++;
+        }
+        if(image.get(row-1,col+1)[0] == 255){
+            neighbour[0] = row-1;
+            neighbour[1] = col+1;
+            count++;
+        }
+        if(image.get(row,col-1)[0] == 255){
+            neighbour[0] = row;
+            neighbour[1] = col-1;
+            count++;
+        }
+        if(image.get(row,col+1)[0] == 255){
+            neighbour[0] = row;
+            neighbour[1] = col+1;
+            count++;
+        }
+        if(image.get(row+1,col-1)[0] == 255){
+            neighbour[0] = row+1;
+            neighbour[1] = col-1;
+            count++;
+        }
+        if(image.get(row+1,col)[0] == 255){
+            neighbour[0] = row+1;
+            neighbour[1] = col;
+            count++;
+        }
+        if(image.get(row+1,col+1)[0] == 255){
+            neighbour[0] = row+1;
+            neighbour[1] = col+1;
+            count++;
+        }
+
+        neighbour[2] = count; // last parameter set how much neighbours has current central point
+        return neighbour;
+    }
+
+    public Mat findFragments(Mat image){
+        Mat image_new = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
+
+        double[] black1 = new double[1];
+        black1[0] = 0;
+
+        double[] white1 = new double[1];
+        white1[0] = 255;
+
+        int[][] fragment = new int[2][help.SIZE_OF_FRAGMENTS];
+
+        double[] next_point = new double[2];
+        next_point[0] = 0;
+        next_point[1] = 0;
+        boolean erase = false;
+        int count;
+        double[] gray1 = new double[1];
+        gray1[0] = 100;
+        int[] neighbour;
+        int tempi,tempj;
+
+        for(int i = 1; i < image.height()-1; i++) {
+            for (int j = 1; j < image.width()-1; j++) {
+                if(image.get(i,j)[0]==255) {
+                    neighbour = testOneNeighbourOfPoint(image, i, j);
+                    count = 0;
+                    if (neighbour[2] == 1) {
+                        fragment[0][0] = i;
+                        fragment[1][0] = j;
+                        image.put(i, j, black1);
+                        count++;
+                        for (int k = 0; k < help.SIZE_OF_FRAGMENTS - 1; k++) {
+                            tempi = neighbour[0];
+                            tempj = neighbour[1];
+                            neighbour = testOneNeighbourOfPoint(image, neighbour[0], neighbour[1]);
+                            if(neighbour[2] > 1){
+                                erase = false;
+                                break;
+                            }else if (neighbour[2] != 1) {
+                                if(k < help.SIZE_OF_FRAGMENTS-1){
+                                    erase = true;
+                                    fragment[0][k + 1] = tempi;
+                                    fragment[1][k + 1] = tempj;
+                                    count++;
+                                    image.put(tempi, tempj, black1);
+                                    break;
+                                }else {
+                                    erase = false;
+                                    break;
+                                }
+                            }
+                            fragment[0][k + 1] = tempi;
+                            fragment[1][k + 1] = tempj;
+                            image.put(tempi, tempj, black1);
+                            count++;
+                        }
+                        for (int k = 0; k < count; k++) {
+                            if(erase) {
+                                image_new.put(fragment[0][k], fragment[1][k], gray1);
+                            }else{
+                                image.put(fragment[0][k], fragment[1][k], white1);
+                            }
+                            fragment[0][k] = 0;
+                            fragment[1][k] = 0;
+                        }
+                        erase = false;
+
+                    }
+                }
+            }
+        }
+
+        return image;
+    }
+
     protected boolean testMaskEdge(int j, int i){
         int WHITE = 1;
         int BLACK = 0;
@@ -322,6 +454,8 @@ public class Extraction extends AppCompatActivity {
         final EditText mSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mSize.setText(String.valueOf(help.SIZE_BETWEEN_MINUTIE));
 
+        final EditText mSizeFragments = (EditText) dialog.findViewById(R.id.settingsEdittext2);
+        mSizeFragments.setText(String.valueOf(help.SIZE_OF_FRAGMENTS));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
                                             @Override
@@ -329,8 +463,10 @@ public class Extraction extends AppCompatActivity {
 
                                                 int selectedId = radioGroup.getCheckedRadioButtonId();
                                                 Button radioButton = (RadioButton) dialog.findViewById(selectedId);
-                                                if (!mSize.getText().toString().isEmpty())
+                                                if (!mSize.getText().toString().isEmpty() && !mSizeFragments.toString().isEmpty()) {
                                                     help.SIZE_BETWEEN_MINUTIE = Integer.valueOf(mSize.getText().toString());
+                                                    help.SIZE_OF_FRAGMENTS = Integer.valueOf(mSizeFragments.getText().toString());
+                                                }
 
                                                 if (radioButton.getText().equals(getResources().getString(R.string.minutie_ending))) {
                                                     dialog.dismiss();
@@ -344,7 +480,7 @@ public class Extraction extends AppCompatActivity {
                                             }
                                         }
 
-            );
+        );
 
         dialog.show();
         }

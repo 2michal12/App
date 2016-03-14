@@ -48,6 +48,7 @@ public class Help{
 
     //intent putExtra names
     public final String BITMAP_IMAGE = "BitmapImage";
+    public final String ORIENTATION_MAP = "OrientationMap";
     public final String TYPE = "Type";
     public final String MASK = "Mask";
     public final String TRESHOLD_NAME = "Treshold";
@@ -73,6 +74,7 @@ public class Help{
 
     public int ISLANDS_LENGTH_FILTER = 4; //constant for filtering false islands
     public int SIZE_BETWEEN_MINUTIE = 15; //length between minutie.. minutie in this area will be delete
+    public int SIZE_OF_FRAGMENTS = 10;
 
     Help(){}
 

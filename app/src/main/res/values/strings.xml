@@ -87,7 +87,7 @@
     <string name="title_activity_extraction">Extraction</string>
     
     <string name="size_between_minutie">Vzdialenosť medzi markantmi: </string>
-
+    <string name="size_of_fragments">Veľkosť fragmentov: </string>
 
     <!-- Futronic scanner -->
     <string name="futronic_title">Futronic FS80</string>
