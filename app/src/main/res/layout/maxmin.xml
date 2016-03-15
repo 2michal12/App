@@ -22,6 +22,12 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:text="NEW"/>
+
+        <Button
+            android:id="@+id/saveimage"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="SAVE"/>
     </LinearLayout>
 
     <ImageView

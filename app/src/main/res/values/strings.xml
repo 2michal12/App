@@ -17,7 +17,7 @@
     <string name="info_text">Aplikacia Diplomovka (v.%1$s) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení externého skenera odtlačkov Futronic FS80.</string>
     <string name="settings">Nastavenia</string>
     <string name="error">Chyba !</string>
-    <string name="sdcard_unmounted">Obrázok je možné uložiť len na SD kartu !</string>
+    <string name="sdcard_unmounted">Súbor je možné uložiť len na SD kartu !</string>
     <string name="exit">Vypnúť</string>
     <string name="exit_question_title">Chcete ukončiť aplikáciu ?</string>
     <string name="yes">Áno</string>
@@ -98,6 +98,7 @@
     <string name="file_name">Názov odtlačku</string>
     <string name="scanner_unplag">Externý snímač nie je pripojený.</string>
     <string name="image_saved">Odtlačok bol uložený.</string>
+    <string name="txt_saved">Textový súbor bol uložený.</string>
     <string name="scanner_plug">Externý snímač je pripojený.</string>
 
 </resources>

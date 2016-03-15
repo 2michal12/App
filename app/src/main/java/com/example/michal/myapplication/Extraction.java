@@ -55,6 +55,9 @@ public class Extraction extends AppCompatActivity {
     private static int[][] mask;
     private static String type;
     private static double[][] orientation_map;
+    private static StringBuilder ENDINGS_TXT = new StringBuilder("");
+    private static StringBuilder BIFURCATIONS_TXT = new StringBuilder("");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,7 +253,7 @@ public class Extraction extends AppCompatActivity {
                     if(endings[1][i] != 0 && endings[0][i] != 0) {
                         Point core = new Point(endings[1][i], endings[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
-                        System.out.println(endings[1][i]+"  "+endings[0][i]+"  "+Math.toDegrees( orientation_map[endings[0][i]][endings[1][i]] )+"  Q");
+                        ENDINGS_TXT.append(endings[1][i] + " " + endings[0][i] + " " + (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) + " Q\n");
                     }
                 }
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
@@ -275,7 +278,7 @@ public class Extraction extends AppCompatActivity {
                     if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
-                        System.out.println(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " +Math.toDegrees( orientation_map[bifurcation[0][i]][bifurcation[1][i]] ) + "  Q");
+                        BIFURCATIONS_TXT.append(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " + (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) + " Q\n");
                     }
                 }
             }
@@ -294,16 +297,25 @@ public class Extraction extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            if(!ENDINGS_TXT.toString().equals("")) {
+                help.saveTxtToExternalStorage(ENDINGS_TXT, help.ENDING_FILE);
+                ENDINGS_TXT.append("");
+            }
+            if(!BIFURCATIONS_TXT.toString().equals("")){
+                help.saveTxtToExternalStorage(BIFURCATIONS_TXT, help.BIFURCATION_FILE);
+                BIFURCATIONS_TXT.append("");
+            }
+
             mProgressBarText.setText(R.string.thinning_finished);
             mExtractionImage.setImageBitmap(imageAftefExtraction);
 
-                    mProgresBarLayout.setVisibility(View.GONE);
+            mProgresBarLayout.setVisibility(View.GONE);
 
-                    mNextProcess.setEnabled(true);
-                    mNextProcess.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startPreprocessing(imageAftefExtraction);
+            mNextProcess.setEnabled(true);
+            mNextProcess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startPreprocessing(imageAftefExtraction);
                         }
                     });
         }

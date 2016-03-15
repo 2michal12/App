@@ -23,6 +23,7 @@ import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 
 /**
  * Created by Michal on 10.11.2015.
@@ -76,6 +77,9 @@ public class Help{
     public int SIZE_BETWEEN_MINUTIE = 15; //length between minutie.. minutie in this area will be delete
     public int SIZE_OF_FRAGMENTS = 10;
 
+    public String ENDING_FILE = "endingsXYT";
+    public String BIFURCATION_FILE = "bifurcationsXYT";
+
     Help(){}
 
     Help(Activity context){
@@ -112,6 +116,38 @@ public class Help{
                     });
 
             Toast.makeText(context.getApplicationContext(), R.string.image_saved, Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            Toast.makeText(context.getApplicationContext(), R.string.sdcard_unmounted, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    public void saveTxtToExternalStorage(StringBuilder text ,String name){
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File myDir = new File(root + "/DIPLOMOVKA/Output");
+        myDir.mkdirs();
+
+        File file = new File(myDir, name+".txt");
+        if (file.exists())
+            file.delete();
+        try {
+            FileOutputStream out2 = new FileOutputStream(file);
+            OutputStreamWriter osw = new OutputStreamWriter(out2);
+            osw.write(text.toString());
+            osw.flush();
+            osw.close();
+
+            // Tell the media scanner about the new file so that it is immediately available to the user.
+            MediaScannerConnection.scanFile(context, new String[]{file.toString()}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.i("ExternalStorage", "Scanned " + path + ":");
+                            Log.i("ExternalStorage", "-> uri=" + uri);
+                        }
+                    });
+
+            Toast.makeText(context.getApplicationContext(), R.string.txt_saved, Toast.LENGTH_SHORT).show();
         }
         catch (Exception e) {
             Toast.makeText(context.getApplicationContext(), R.string.sdcard_unmounted, Toast.LENGTH_LONG).show();
