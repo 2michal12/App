@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -42,11 +43,12 @@ public class Extraction extends AppCompatActivity {
     private static Help help;
     private static Bitmap imageBitmap;
     private static Bitmap imageAftefExtraction;
+    private static Bitmap imageAftefExtractionOrig;
 
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.progressBar) ProgressBar pb;
     @Bind(R.id.view_extraction_image) ImageView mExtractionImage;
-    @Bind(R.id.next) Button mNextProcess;
+    @Bind(R.id.change_image) Button mChangeImage;
     @Bind(R.id.settings) Button mSettings;
     @Bind(R.id.progress_bar_text) TextView mProgressBarText;
     @Bind(R.id.progress_bar_layout) RelativeLayout mProgresBarLayout;
@@ -55,8 +57,11 @@ public class Extraction extends AppCompatActivity {
     private static int[][] mask;
     private static String type;
     private static double[][] orientation_map;
+    private static boolean createTxt = false;
     private static StringBuilder ENDINGS_TXT = new StringBuilder("");
     private static StringBuilder BIFURCATIONS_TXT = new StringBuilder("");
+    private static boolean isSetOrigImage = false;
+
 
 
     @Override
@@ -71,7 +76,6 @@ public class Extraction extends AppCompatActivity {
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.extraction);
 
-        mNextProcess.setEnabled(false);
         type = getIntent().getStringExtra(help.TYPE);
         BLOCK_SIZE = help.BLOCK_SIZE;
         mask = null;
@@ -89,6 +93,7 @@ public class Extraction extends AppCompatActivity {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefExtraction = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            imageAftefExtractionOrig = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mExtractionImage.setImageBitmap(imageBitmap);
 
             //mSettings.setVisibility(View.GONE);
@@ -135,6 +140,18 @@ public class Extraction extends AppCompatActivity {
         Intent i = new Intent(this, Extraction.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
         startActivity(i);
+    }
+
+    public void onCheckBoxTxt(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+
+        switch (view.getId()){
+            case R.id.checkboxTxtId:
+                if(checked){
+                    createTxt = true;
+                }
+                break;
+        }
     }
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
@@ -231,6 +248,8 @@ public class Extraction extends AppCompatActivity {
             int SIZE = help.SIZE_BETWEEN_MINUTIE;
             int fix_val_x, fix_val_y;
 
+            SharedData.restoreImages();
+
             if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
 
                 //cistenie blizkych markantov
@@ -253,9 +272,11 @@ public class Extraction extends AppCompatActivity {
                     if(endings[1][i] != 0 && endings[0][i] != 0) {
                         Point core = new Point(endings[1][i], endings[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
+                        Imgproc.circle(SharedData.getImageEndings(), core, 10, new Scalar(251, 18, 34), 2);
                         ENDINGS_TXT.append(endings[1][i] + " " + endings[0][i] + " " + (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) + " Q\n");
                     }
                 }
+                Utils.matToBitmap(SharedData.getImageEndings(), imageAftefExtractionOrig);
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
 
                 //cistenie blizkych markantov
@@ -278,9 +299,11 @@ public class Extraction extends AppCompatActivity {
                     if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
+                        Imgproc.circle(SharedData.getImageBifurcation(), core, 15, new Scalar(251, 18, 34), 2);
                         BIFURCATIONS_TXT.append(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " + (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) + " Q\n");
                     }
                 }
+                Utils.matToBitmap(SharedData.getImageBifurcation(), imageAftefExtractionOrig);
             }
 
             Utils.matToBitmap(color_image, imageAftefExtraction);
@@ -297,13 +320,15 @@ public class Extraction extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if(!ENDINGS_TXT.toString().equals("")) {
-                help.saveTxtToExternalStorage(ENDINGS_TXT, help.ENDING_FILE);
-                ENDINGS_TXT.append("");
-            }
-            if(!BIFURCATIONS_TXT.toString().equals("")){
-                help.saveTxtToExternalStorage(BIFURCATIONS_TXT, help.BIFURCATION_FILE);
-                BIFURCATIONS_TXT.append("");
+            if(createTxt) {
+                if (!ENDINGS_TXT.toString().equals("")) {
+                    help.saveTxtToExternalStorage(ENDINGS_TXT, help.ENDING_FILE);
+                    ENDINGS_TXT.append("");
+                }
+                if (!BIFURCATIONS_TXT.toString().equals("")) {
+                    help.saveTxtToExternalStorage(BIFURCATIONS_TXT, help.BIFURCATION_FILE);
+                    BIFURCATIONS_TXT.append("");
+                }
             }
 
             mProgressBarText.setText(R.string.thinning_finished);
@@ -311,13 +336,19 @@ public class Extraction extends AppCompatActivity {
 
             mProgresBarLayout.setVisibility(View.GONE);
 
-            mNextProcess.setEnabled(true);
-            mNextProcess.setOnClickListener(new View.OnClickListener() {
+            mChangeImage.setEnabled(true);
+            mChangeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startPreprocessing(imageAftefExtraction);
-                        }
-                    });
+                    if (!isSetOrigImage) {
+                        mExtractionImage.setImageBitmap(imageAftefExtractionOrig);
+                        isSetOrigImage = true;
+                    } else {
+                        mExtractionImage.setImageBitmap(imageAftefExtraction);
+                        isSetOrigImage = false;
+                    }
+                }
+            });
         }
     }
 

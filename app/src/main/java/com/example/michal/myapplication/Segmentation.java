@@ -247,8 +247,9 @@ public class Segmentation extends AppCompatActivity{
 
         @Override
         protected String doInBackground(String... params) {
-
             Mat image = help.bitmap2mat(imageBitmap);
+            SharedData.setImage(image);
+
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
             help.TRESHOLD = grayscaleTreshold(image, 0, 0, image.width(), image.height());

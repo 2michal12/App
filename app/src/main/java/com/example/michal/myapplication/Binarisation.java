@@ -157,6 +157,26 @@ public class Binarisation extends AppCompatActivity {
         return Math.round( actualTreshold/((endX-startX) * (endY-startY)) );
     }
 
+    public boolean convertImage(Mat image){
+        double[] black = new double[1];
+        black[0] = 0;
+        double[] white = new double[1];
+        white[0] = 255;
+
+
+        for(int i = 0; i < image.height(); i++){
+            for(int j = 0; j < image.width(); j++){
+                if(image.get(i, j)[0] > 100){
+                    image.put(i, j, black);
+                }else{
+                    image.put(i, j, white);
+                }
+
+            }
+        }
+        return true;
+    }
+
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -222,6 +242,7 @@ public class Binarisation extends AppCompatActivity {
                 }
             }*/
 
+            convertImage(image);
             Utils.matToBitmap(image, imageAftefBinarisation);
 
             return "binarisation_finished";
