@@ -155,6 +155,36 @@ public class Help{
         }
     }
 
+    public Mat copyImageToRGB(Mat image, int color) {
+        Mat color_image = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
+
+        double[] black3 = new double[3];
+        black3[0] = 0;
+        black3[1] = 0;
+        black3[2] = 0;
+        double[] white3 = new double[3];
+        white3[0] = 255;
+        white3[1] = 255;
+        white3[2] = 255;
+
+        if( color == 2){ //green
+            white3[0] = 251;
+            white3[1] = 18;
+            white3[2] = 34;
+        }
+
+        for (int i = 0; i < image.height(); i++) {
+            for (int j = 0; j < image.width(); j++) {
+                if (image.get(i, j)[0] > 100) {
+                    color_image.put(i, j, white3);
+                } else {
+                    color_image.put(i, j, black3);
+                }
+
+            }
+        }
+        return  color_image;
+    }
 
     public void informationDialog(){
         final Dialog dialog = new Dialog(context);

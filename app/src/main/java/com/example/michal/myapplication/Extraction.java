@@ -26,11 +26,14 @@ import android.widget.TextView;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Vector;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -217,45 +220,24 @@ public class Extraction extends AppCompatActivity {
                 publishProgress(progress+mod);
             }
 
-
-            //copy image to color image
-            Mat color_image = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
-
-            //copy image to color image
-            double[] black3 = new double[3];
-            black3[0] = 0;
-            black3[1] = 0;
-            black3[2] = 0;
-            double[] white3 = new double[3];
-            white3[0] = 255;
-            white3[1] = 255;
-            white3[2] = 255;
-
-            for(int i = 0; i < image.height(); i++){
-                for(int j = 0; j < image.width(); j++){
-                    if(image.get(i, j)[0] > 100){
-                        color_image.put(i, j, white3);
-                    }else{
-                        color_image.put(i, j, black3);
-                    }
-
-                }
-            }
-
             //findFragments(image);
+
+            //zmenene kvoli tomu ze ukoncenie v kostre je rozdvojenie v original odtlacku a naopak
+            if(params[0].equals(getResources().getString(R.string.minutie_ending) )) {
+                params[0] = getResources().getString(R.string.minutie_bifurcation);
+            }else if(params[0].equals(getResources().getString(R.string.minutie_fragment))){
+                params[0] = getResources().getString(R.string.minutie_fragment);
+            }else{
+                params[0] = getResources().getString(R.string.minutie_ending);
+            }
 
             //print minutie
             int SIZE = help.SIZE_BETWEEN_MINUTIE;
             int fix_val_x, fix_val_y;
 
             SharedData.restoreImages();
-
-            //zmenene kvoli tomu ze ukoncenie v kostre je rozdvojenie v original odtlacku a naopak
-            if(params[0].equals(getResources().getString(R.string.minutie_ending) )){
-                params[0] = getResources().getString(R.string.minutie_bifurcation);
-            }else{
-                params[0] = getResources().getString(R.string.minutie_ending);
-            }
+            //create color image from original grayscale
+            Mat color_image = help.copyImageToRGB(image, 1);
 
             if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
 
@@ -306,11 +288,14 @@ public class Extraction extends AppCompatActivity {
                     if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
-                        Imgproc.circle(SharedData.getImageBifurcation(), core, 8, new Scalar(251, 18, 34), 1);
+                        Imgproc.circle(SharedData.getImageBifurcation(), core, 8, new Scalar(102, 255, 51), 1);
                         BIFURCATIONS_TXT.append(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " + (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) + " Q\n");
                     }
                 }
                 Utils.matToBitmap(SharedData.getImageBifurcation(), imageAftefExtractionOrig);
+            }else if(params[0].equals( getResources().getString(R.string.minutie_fragment) ) ) {
+                Utils.matToBitmap(fragments(image,color_image), imageAftefExtraction);
+                Utils.matToBitmap(SharedData.getImageFragment(), imageAftefExtractionOrig);
             }
 
             Utils.matToBitmap(color_image, imageAftefExtraction);
@@ -357,6 +342,34 @@ public class Extraction extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    Mat fragments(Mat image, Mat color){
+        List<MatOfPoint> contours = new Vector<>();
+        List<MatOfPoint> fragments = new Vector<>();
+        Mat hierarchy = new Mat();
+
+        int maxSize = help.SIZE_OF_FRAGMENTS + 5;
+        int minSize = 0;
+        if( (help.SIZE_OF_FRAGMENTS - 5) > 0 ) {
+            minSize = help.SIZE_OF_FRAGMENTS - 5;
+        }else{
+            minSize = 5;
+        }
+
+        Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE, new Point(0, 0));
+        for (int i = 0; i < contours.size(); i++) {
+            if( contours.get(i).size().height > minSize && contours.get(i).size().height < maxSize){
+                fragments.add(contours.get(i));
+                contours.remove(i);
+                i--;
+            }
+        }
+
+        Imgproc.drawContours(color, contours, -1, new Scalar(255,255,255));
+        Imgproc.drawContours(color, fragments, -1, new Scalar(255,255,0));
+
+        return color;
     }
 
     int[] testOneNeighbourOfPoint(Mat image, int row, int col){
@@ -526,6 +539,10 @@ public class Extraction extends AppCompatActivity {
                                                     dialog.dismiss();
                                                     mProgresBarLayout.setVisibility(View.VISIBLE);
                                                     new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_bifurcation));
+                                                } else if (radioButton.getText().equals(getResources().getString(R.string.minutie_fragment))) {
+                                                    dialog.dismiss();
+                                                    mProgresBarLayout.setVisibility(View.VISIBLE);
+                                                    new AsyncTaskSegmentation().execute(getResources().getString(R.string.minutie_fragment));
                                                 }
                                             }
                                         }

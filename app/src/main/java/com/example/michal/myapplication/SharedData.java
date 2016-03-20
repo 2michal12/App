@@ -8,7 +8,7 @@ import org.opencv.core.Mat;
  */
 public class SharedData extends Application{
     public static double[][] orientation_map;
-    public static Mat original_image_bifurcations, original_image_endings;
+    public static Mat original_image_bifurcations, original_image_endings, original_image_fragment;
     private static Mat original;
 
     public static double[][] getInstance() {
@@ -22,6 +22,7 @@ public class SharedData extends Application{
     public static void restoreImages(){
         original_image_bifurcations = original.clone();
         original_image_endings = original.clone();
+        original_image_fragment = original.clone();
     }
 
     public static Mat getImageBifurcation(){
@@ -32,4 +33,7 @@ public class SharedData extends Application{
         return original_image_endings;
     }
 
+    public static Mat getImageFragment(){
+        return original_image_fragment;
+    }
 }

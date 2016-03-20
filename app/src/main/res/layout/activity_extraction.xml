@@ -42,7 +42,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            android:drawableLeft="@drawable/ic_menu_report_image"
+            android:drawableLeft="@drawable/ic_menu_more"
             android:paddingLeft="7dp"
             android:visibility="visible" />
 

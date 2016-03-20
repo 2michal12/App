@@ -73,7 +73,7 @@
     <string name="extraction_settings_title">Extrakcia markantov</string>
     <string name="minutie_ending">Ukončenia</string>
     <string name="minutie_bifurcation">Rozdvojenia</string>
-
+    <string name="minutie_fragment">Fragment</string>
 
     <string name="start_process">Štart</string>
     <string name="next_process">Ďalej</string>

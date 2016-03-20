@@ -14,6 +14,7 @@ import android.widget.Toast;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -33,6 +34,7 @@ import butterknife.ButterKnife;
 public class MaxMin extends AppCompatActivity {
     Bitmap imageBitmap = null, imageAfter;
     Mat image,color_image,image_new;
+    Help help;
 
     @Bind(R.id.text)
     TextView text;
@@ -70,7 +72,7 @@ public class MaxMin extends AppCompatActivity {
         text.setText(imageBitmap.getHeight() + " " + imageBitmap.getWidth());
         imageView.setImageBitmap(imageBitmap);
 
-        Help help = new Help(this);
+        help = new Help(this);
         image = help.bitmap2mat(imageBitmap);
         color_image = new Mat(image.rows(), image.cols(), CvType.CV_8UC3);
         image_new = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
@@ -408,24 +410,23 @@ public class MaxMin extends AppCompatActivity {
 
     Mat contours(Mat image){
         List<MatOfPoint> contours = new Vector<MatOfPoint>();
+        List<MatOfPoint> fragments = new Vector<MatOfPoint>();
         Mat hierarchy = new Mat();
+        Mat neww = image.clone();
 
-
-        Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE, new Point(0, 0));
+        Imgproc.findContours(neww, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE, new Point(0, 0));
         for (int i = 0; i < contours.size(); i++) {
-            if( contours.get(i).size().height < 10 ){
+            if( contours.get(i).size().height > 10 && contours.get(i).size().height < 100){
+                fragments.add(contours.get(i));
                 contours.remove(i);
                 i--;
             }
         }
 
-        System.out.println(contours.size());
+        Imgproc.drawContours(neww, contours, -1, new Scalar(255,255,255));
+        Imgproc.drawContours(neww, fragments, -1, new Scalar(100,100,100));
 
-
-        Imgproc.drawContours(image, contours, -1, new Scalar(Math.random() * 100, Math.random()*255, Math.random()*155));//, 2, 8, hierarchy, 0, new Point());
-
-
-        return image;
+        return neww;
     }
 
 }

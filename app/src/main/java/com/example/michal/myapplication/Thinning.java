@@ -23,10 +23,14 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -341,7 +345,6 @@ public class Thinning extends AppCompatActivity {
         }
         return true;
     }
-
 
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
