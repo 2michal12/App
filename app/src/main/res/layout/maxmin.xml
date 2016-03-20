@@ -28,6 +28,12 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:text="SAVE"/>
+
+        <Button
+            android:id="@+id/contour"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="CONTOUR"/>
     </LinearLayout>
 
     <ImageView

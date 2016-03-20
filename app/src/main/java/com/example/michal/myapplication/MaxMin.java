@@ -14,12 +14,15 @@ import android.widget.Toast;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Vector;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -46,6 +49,9 @@ public class MaxMin extends AppCompatActivity {
     @Bind(R.id.saveimage)
     Button saveimage;
 
+    @Bind(R.id.contour)
+    Button contour;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +77,18 @@ public class MaxMin extends AppCompatActivity {
 
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-        //convertSkeleton(image);
+        convertSkeleton(image);
 
+        contour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contours(image);
+                Utils.matToBitmap(image, imageAfter);
+                imageView.setImageBitmap(imageAfter);
+            }
+        });
+
+        /*
         extraction(image, 1); //1 = ukoncenia, 2 = rozdvojenia
 
         Utils.matToBitmap(image, imageAfter); //default value without click any button
@@ -98,6 +114,7 @@ public class MaxMin extends AppCompatActivity {
             public void onClick(View v) {
             }
         });
+        */
 
     }
 
@@ -127,9 +144,9 @@ public class MaxMin extends AppCompatActivity {
         for(int i = 0; i < image.height(); i++){
             for(int j = 0; j < image.width(); j++){
                 if(image.get(i, j)[0] > 100){
-                    image.put(i, j, black);
-                }else{
                     image.put(i, j, white);
+                }else{
+                    image.put(i, j, black);
                 }
 
             }
@@ -389,5 +406,26 @@ public class MaxMin extends AppCompatActivity {
         return neighbour;
     }
 
+    Mat contours(Mat image){
+        List<MatOfPoint> contours = new Vector<MatOfPoint>();
+        Mat hierarchy = new Mat();
+
+
+        Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE, new Point(0, 0));
+        for (int i = 0; i < contours.size(); i++) {
+            if( contours.get(i).size().height < 10 ){
+                contours.remove(i);
+                i--;
+            }
+        }
+
+        System.out.println(contours.size());
+
+
+        Imgproc.drawContours(image, contours, -1, new Scalar(Math.random() * 100, Math.random()*255, Math.random()*155));//, 2, 8, hierarchy, 0, new Point());
+
+
+        return image;
+    }
 
 }

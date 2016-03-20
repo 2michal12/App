@@ -242,7 +242,7 @@ public class Binarisation extends AppCompatActivity {
                 }
             }*/
 
-            convertImage(image);
+            //convertImage(image);
             Utils.matToBitmap(image, imageAftefBinarisation);
 
             return "binarisation_finished";

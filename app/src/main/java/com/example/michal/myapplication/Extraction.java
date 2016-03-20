@@ -250,6 +250,13 @@ public class Extraction extends AppCompatActivity {
 
             SharedData.restoreImages();
 
+            //zmenene kvoli tomu ze ukoncenie v kostre je rozdvojenie v original odtlacku a naopak
+            if(params[0].equals(getResources().getString(R.string.minutie_ending) )){
+                params[0] = getResources().getString(R.string.minutie_bifurcation);
+            }else{
+                params[0] = getResources().getString(R.string.minutie_ending);
+            }
+
             if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
 
                 //cistenie blizkych markantov
@@ -272,7 +279,7 @@ public class Extraction extends AppCompatActivity {
                     if(endings[1][i] != 0 && endings[0][i] != 0) {
                         Point core = new Point(endings[1][i], endings[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
-                        Imgproc.circle(SharedData.getImageEndings(), core, 10, new Scalar(251, 18, 34), 2);
+                        Imgproc.circle(SharedData.getImageEndings(), core, 8, new Scalar(251, 18, 34), 1);
                         ENDINGS_TXT.append(endings[1][i] + " " + endings[0][i] + " " + (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) + " Q\n");
                     }
                 }
@@ -299,7 +306,7 @@ public class Extraction extends AppCompatActivity {
                     if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
-                        Imgproc.circle(SharedData.getImageBifurcation(), core, 15, new Scalar(251, 18, 34), 2);
+                        Imgproc.circle(SharedData.getImageBifurcation(), core, 8, new Scalar(251, 18, 34), 1);
                         BIFURCATIONS_TXT.append(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " + (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) + " Q\n");
                     }
                 }
