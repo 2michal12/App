@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,20 +17,14 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import com.example.michal.myapplication.R;
-
 import java.io.File;
 
 public class SelectFileFormatActivity extends Activity {
 
 	private Button mButtonOK;
     private Button mButtonOKRun;
-	private RadioGroup mRadioGroup;
-	private RadioButton mRadioBitmap;
-	private RadioButton mRadioWSQ;
 	private EditText mEditFileName;
-	private TextView mMessage;
 
     private static File mDir;
 	private String mFileFormat = "BITMAP";
@@ -42,29 +37,15 @@ public class SelectFileFormatActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ftr_activity_save);
-        toolbar.setTitle(R.string.futronic_title);
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.futronic_title);
 
         mButtonOK = (Button) findViewById(R.id.btnSaveScan);
         mButtonOKRun = (Button) findViewById(R.id.btnSaveScanAndRun);
 
-        //mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup1);
-        //mRadioBitmap = (RadioButton) findViewById(R.id.radioBitmap);
-        //mRadioWSQ = (RadioButton) findViewById(R.id.radioWSQ);
         mEditFileName = (EditText) findViewById(R.id.editFileName);
-        //mMessage = (TextView) findViewById(R.id.textMessage);
-        
-        setResult(Activity.RESULT_CANCELED);
 
-        /*mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-        	public void onCheckedChanged(RadioGroup group, int checkedId) {          	 
-        		if(checkedId==mRadioBitmap.getId())
-        			mFileFormat = "BITMAP";
-        		else if(checkedId==mRadioWSQ.getId())
-        			mFileFormat = "WSQ";
-        	}
-        });*/
+        setResult(Activity.RESULT_CANCELED);
         
         mButtonOK.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {

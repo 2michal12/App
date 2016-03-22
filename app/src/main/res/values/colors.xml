@@ -6,7 +6,7 @@
 
     <color name="red">#F00</color>
 
-    <color name="main_background">#E3F2FD</color>
+    <color name="main_background">#fff</color> //#E3F2FD
     <color name="toolbar_background">#2196F3</color>
     <color name="button_color_medium">#64B5F6</color>
     <color name="button_color_light">#BBDEFB</color>

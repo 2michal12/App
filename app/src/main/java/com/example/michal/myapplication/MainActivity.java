@@ -27,6 +27,7 @@ import com.example.michal.myapplication.ftrScan.FtrScanDemoUsbHostActivity;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import butterknife.Bind;
@@ -121,7 +122,17 @@ public class MainActivity extends AppCompatActivity {
             help.FORMAT_JPEG = 2;
         }
 
-        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if( data.getData() == null) { //condition for loading image directly from scanning process
+            Uri uriCreated = Uri.fromFile(new File(data.getStringExtra("fileName")));
+            try {
+                image = MediaStore.Images.Media.getBitmap(getContentResolver(), uriCreated);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            startPreview(image, help.FORMAT_BMP);
+        }
+
+        if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && data.getData() != null) {
 
             Uri uri = data.getData();
 

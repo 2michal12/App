@@ -21,7 +21,7 @@
             android:id="@+id/imageFinger"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/logo" />
+            android:src="@drawable/main_background_futronic" />
 
     </LinearLayout>
 
