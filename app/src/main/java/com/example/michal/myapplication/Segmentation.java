@@ -98,6 +98,12 @@ public class Segmentation extends AppCompatActivity{
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -131,8 +137,8 @@ public class Segmentation extends AppCompatActivity{
         i.putExtra(help.TRESHOLD_NAME, help.TRESHOLD);
         i.putExtra(help.VARIANCE_NAME, help.VARIANCE);
         i.putExtras(mBundle);
-
         startActivity(i);
+        overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
 
     private double grayscaleTreshold(Mat image, int startX, int startY, int endX, int endY){
@@ -258,6 +264,8 @@ public class Segmentation extends AppCompatActivity{
             int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
             int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
             mask = new int[blocksWidth][blocksHeight];
+            SharedData.maskWidth = blocksWidth;
+            SharedData.maskHeight = blocksHeight;
 
             int padding_x = image.width() - (blocksWidth*BLOCK_SIZE); //padding of image
             int padding_y = image.height() - (blocksHeight*BLOCK_SIZE);

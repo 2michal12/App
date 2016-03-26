@@ -109,6 +109,12 @@ public class Binarisation extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -141,6 +147,7 @@ public class Binarisation extends AppCompatActivity {
         i.putExtra(help.TYPE, type);
         i.putExtras(mBundle);
         startActivity(i);
+        overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
 
     private double grayscaleTreshold(Mat image, int startX, int startY, int endX, int endY){

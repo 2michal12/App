@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -104,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent scan = new Intent(MainActivity.this, FtrScanDemoUsbHostActivity.class);
                 startActivityForResult(scan, Activity.RESULT_FIRST_USER);
+                overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
             }
         });
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             help.FORMAT_JPEG = 2;
         }
 
-        if( data.getData() == null) { //condition for loading image directly from scanning process
+        if( data != null && data.getData() == null ) { //condition for loading image directly from scanning process
             Uri uriCreated = Uri.fromFile(new File(data.getStringExtra("fileName")));
             try {
                 image = MediaStore.Images.Media.getBitmap(getContentResolver(), uriCreated);
@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         i.putExtra(help.BITMAP_IMAGE, byteArray);
         startActivity(i);
+        overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
 
     @Override

@@ -10,6 +10,7 @@ public class SharedData extends Application{
     public static double[][] orientation_map;
     public static Mat original_image_bifurcations, original_image_endings, original_image_fragment;
     private static Mat original;
+    public static int maskWidth, maskHeight;
 
     public static double[][] getInstance() {
         return orientation_map;
@@ -35,5 +36,13 @@ public class SharedData extends Application{
 
     public static Mat getImageFragment(){
         return original_image_fragment;
+    }
+
+    public static int getMaskWidth(){
+        return maskWidth;
+    }
+
+    public static int getMaskHeight(){
+        return maskHeight;
     }
 }

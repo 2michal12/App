@@ -79,6 +79,12 @@ public class Preview extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -107,6 +113,7 @@ public class Preview extends AppCompatActivity {
         i.putExtra(help.BITMAP_IMAGE, byteArray);
         i.putExtra(help.TYPE, type);
         startActivity(i);
+        overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
 
     public void settingsDialog(){

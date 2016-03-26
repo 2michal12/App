@@ -144,6 +144,12 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 		});
 
     }
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+	}
     
     @Override
 	protected void onDestroy() {
@@ -170,7 +176,8 @@ public class FtrScanDemoUsbHostActivity extends Activity {
     {
 	    Intent serverIntent = new Intent(this, SelectFileFormatActivity.class);
 	    startActivityForResult(serverIntent, REQUEST_FILE_FORMAT);
-    }
+		overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
+	}
 
 	private void SaveImageByFileFormat(String fileFormat, String fileName)
 	{

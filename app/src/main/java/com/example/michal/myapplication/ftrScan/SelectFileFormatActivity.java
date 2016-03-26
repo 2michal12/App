@@ -88,6 +88,12 @@ public class SelectFileFormatActivity extends Activity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+    }
     
     private void ShowAlertDialog()
     {
@@ -112,6 +118,7 @@ public class SelectFileFormatActivity extends Activity {
         // Set result and finish this Activity
         setResult(resultCode, intent);
         finish();
+        overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
     
     private void CheckFileName(final int resultCode)
