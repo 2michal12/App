@@ -2,6 +2,7 @@ package com.example.michal.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -72,16 +73,17 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(R.string.app_name);
 
         //po stetovani vymazat
+        final Dialog dialog = new Dialog(this);
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //image = BitmapFactory.decodeFile("storage/emulated/0/Pictures/DIPLOMOVKA/FtrScan/skeleton13.bmp");
-                //image = BitmapFactory.decodeResource(getResources(), R.drawable.skeleton);
-                //startPreview(image, 2);
-                Intent intent = new Intent();
+               /* Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), 2);
+                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), 2); */
+                dialog.setContentView(R.layout.popup_settings_extraction);
+                dialog.setTitle(R.string.settings);
+                dialog.show();
             }
         });
 

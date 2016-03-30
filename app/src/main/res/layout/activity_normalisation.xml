@@ -41,7 +41,7 @@
             style="@style/button"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginRight="5dp"
             android:text="@string/settings"
             android:visibility="gone" />
 
@@ -50,7 +50,7 @@
             style="@style/button"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginLeft="5dp"
             android:text="@string/next_process" />
 
 

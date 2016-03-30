@@ -31,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -40,7 +41,7 @@
             style="@style/button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginRight="5dp"
             android:text="@string/scan" />
 
         <Button
@@ -48,7 +49,8 @@
             style="@style/button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:text="@string/stop" />
 
         <Button
@@ -56,7 +58,7 @@
             style="@style/button"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginLeft="5dp"
             android:text="@string/save" />
 
     </LinearLayout>

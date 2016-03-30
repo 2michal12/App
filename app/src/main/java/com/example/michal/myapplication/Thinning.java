@@ -269,11 +269,10 @@ public class Thinning extends AppCompatActivity {
         }
     }
 
-    public void removeIslands2(Mat image) {
+    public void removeIslands(Mat image) {
         double[] data_input = new double[1];
         data_input[0] = 0;
-        double BLACK = 0.0, WHITE = 255.0;
-        int[][] point = new int[2][1];
+        double WHITE = 255.0;
         int count = 0;
 
         for (int i = 0; i < blocksHeight - 1; i++) {
@@ -392,7 +391,7 @@ public class Thinning extends AppCompatActivity {
 
             //repare skeleton
             for(int i = 0; i < help.ISLANDS_LENGTH_FILTER; i++)
-                removeIslands2(image);
+                removeIslands(image);
 
             removeSinglePoint(image);
 

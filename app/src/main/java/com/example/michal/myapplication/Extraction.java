@@ -138,7 +138,11 @@ public class Extraction extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        help.menuItemOtherActivities(id, imageAftefExtraction, help.EXTRACTION);
+        if (isSetOrigImage) {
+            help.menuItemOtherActivities(id, imageAftefExtractionOrig, help.EXTRACTION);
+        }else {
+            help.menuItemOtherActivities(id, imageAftefExtraction, help.EXTRACTION);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -531,7 +535,7 @@ public class Extraction extends AppCompatActivity {
         dialogButton.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-
+                                                isSetOrigImage = false;
                                                 int selectedId = radioGroup.getCheckedRadioButtonId();
                                                 Button radioButton = (RadioButton) dialog.findViewById(selectedId);
                                                 if (!mSize.getText().toString().isEmpty() && !mSizeFragments.toString().isEmpty()) {

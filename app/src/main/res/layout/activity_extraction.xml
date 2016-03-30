@@ -41,7 +41,7 @@
             style="@style/button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginRight="5dp"
             android:drawableLeft="@drawable/ic_menu_more"
             android:paddingLeft="7dp"
             android:visibility="visible" />
@@ -51,7 +51,7 @@
             style="@style/button"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_margin="1dp"
+            android:layout_marginLeft="5dp"
             android:text="Vymeniť obrázok"
             android:visibility="visible"/>
 
