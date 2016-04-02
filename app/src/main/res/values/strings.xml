@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DPMM2016</string>
+    <string name="app_name">Diplomová práca 2016</string>
     <string name="app_version_text">Verzia %1$s</string>
 
     <string name="home">Domov</string>
@@ -78,6 +78,7 @@
     <string name="start_process">Štart</string>
     <string name="next_process">Ďalej</string>
     <string name="ok">OK</string>
+    <string name="search">Hľadať</string>
     <string name="title_activity_load_image">Preview</string>
     <string name="title_activity_segmentation">Segmentation</string>
     <string name="title_activity_normalisation">Normalisation</string>
@@ -86,7 +87,7 @@
     <string name="title_activity_binarisation">Binarisation</string>
     <string name="title_activity_extraction">Extraction</string>
     
-    <string name="size_between_minutie">Vzdialenosť medzi markantmi: </string>
+    <string name="size_between_minutie">Min. vzdialenosť medzi markantmi: </string>
     <string name="size_of_fragments">Veľkosť fragmentov: </string>
     <string name="create_txt_file">Vytvoriť .txt súbor s markantmi</string>
 

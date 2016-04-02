@@ -155,7 +155,7 @@
                 android:layout_below="@id/popup_settings"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="5dp"
-                android:text="@string/ok" />
+                android:text="@string/search" />
 
         </RelativeLayout>
     </ScrollView>

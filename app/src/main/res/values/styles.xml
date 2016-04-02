@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="android:Theme.Material"> <!-- Theme.AppCompat.Light.NoActionBar -->
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -15,6 +15,7 @@
     <style name="Toolbar">
         <item name="android:background">@color/toolbar_background</item>
         <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="ToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">

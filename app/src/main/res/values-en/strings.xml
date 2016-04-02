@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Thesis</string>
+    <string name="app_name">Thesis 2016</string>
     <string name="app_version">Vesrion %1$s</string>
 
     <string name="home">Home</string>
@@ -75,6 +75,7 @@
     <string name="start_process">Start</string>
     <string name="next_process">Next</string>
     <string name="ok">OK</string>
+    <string name="search">Search</string>
     <string name="title_activity_load_image">Preview</string>
     <string name="title_activity_segmentation">Segmentation</string>
     <string name="title_activity_normalisation">Normalisation</string>
@@ -82,7 +83,7 @@
     <string name="title_activity_thinning">Thinning</string>
     <string name="title_activity_binarisation">Binarisation</string>
 
-    <string name="size_between_minutie">Length between minutiie: </string>
+    <string name="size_between_minutie">Min. distance between minutiie: </string>
     <string name="size_of_fragments">Length of fragments: </string>
     <string name="create_txt_file">Create .txt file with minutiae</string>
 
