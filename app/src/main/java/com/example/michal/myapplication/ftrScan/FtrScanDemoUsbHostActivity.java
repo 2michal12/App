@@ -168,7 +168,7 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 	private boolean StartScan()
     {
 		mFPScan = new FPScan(usb_host_ctx, mHandler);
-		mFPScan.start();		
+		mFPScan.start();
 		return true;
     }
     
