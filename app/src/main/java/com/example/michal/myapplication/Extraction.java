@@ -235,13 +235,13 @@ public class Extraction extends AppCompatActivity {
             //findFragments(image);
 
             //zmenene kvoli tomu ze ukoncenie v kostre je rozdvojenie v original odtlacku a naopak
-            if(params[0].equals(getResources().getString(R.string.minutie_ending) )) {
+            /*if(params[0].equals(getResources().getString(R.string.minutie_ending) )) {
                 params[0] = getResources().getString(R.string.minutie_bifurcation);
             }else if(params[0].equals(getResources().getString(R.string.minutie_fragment))){
                 params[0] = getResources().getString(R.string.minutie_fragment);
             }else{
                 params[0] = getResources().getString(R.string.minutie_ending);
-            }
+            }*/
 
             //print minutie
             int SIZE = help.SIZE_BETWEEN_MINUTIE;
@@ -361,17 +361,9 @@ public class Extraction extends AppCompatActivity {
         List<MatOfPoint> fragments = new Vector<>();
         Mat hierarchy = new Mat();
 
-        int maxSize = help.SIZE_OF_FRAGMENTS + 5;
-        int minSize = 0;
-        if( (help.SIZE_OF_FRAGMENTS - 5) > 0 ) {
-            minSize = help.SIZE_OF_FRAGMENTS - 5;
-        }else{
-            minSize = 5;
-        }
-
         Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE, new Point(0, 0));
         for (int i = 0; i < contours.size(); i++) {
-            if( contours.get(i).size().height > minSize && contours.get(i).size().height < maxSize){
+            if( contours.get(i).size().height > help.SIZE_OF_FRAGMENTS_MIN && contours.get(i).size().height < help.SIZE_OF_FRAGMENTS_MAX){
                 fragments.add(contours.get(i));
                 contours.remove(i);
                 i--;
@@ -433,81 +425,6 @@ public class Extraction extends AppCompatActivity {
         return neighbour;
     }
 
-    public Mat findFragments(Mat image){
-        Mat image_new = new Mat(image.rows(), image.cols(), CvType.CV_8UC1);
-
-        double[] black1 = new double[1];
-        black1[0] = 0;
-
-        double[] white1 = new double[1];
-        white1[0] = 255;
-
-        int[][] fragment = new int[2][help.SIZE_OF_FRAGMENTS];
-
-        double[] next_point = new double[2];
-        next_point[0] = 0;
-        next_point[1] = 0;
-        boolean erase = false;
-        int count;
-        double[] gray1 = new double[1];
-        gray1[0] = 100;
-        int[] neighbour;
-        int tempi,tempj;
-
-        for(int i = 1; i < image.height()-1; i++) {
-            for (int j = 1; j < image.width()-1; j++) {
-                if(image.get(i,j)[0]==255) {
-                    neighbour = testOneNeighbourOfPoint(image, i, j);
-                    count = 0;
-                    if (neighbour[2] == 1) {
-                        fragment[0][0] = i;
-                        fragment[1][0] = j;
-                        image.put(i, j, black1);
-                        count++;
-                        for (int k = 0; k < help.SIZE_OF_FRAGMENTS - 1; k++) {
-                            tempi = neighbour[0];
-                            tempj = neighbour[1];
-                            neighbour = testOneNeighbourOfPoint(image, neighbour[0], neighbour[1]);
-                            if(neighbour[2] > 1){
-                                erase = false;
-                                break;
-                            }else if (neighbour[2] != 1) {
-                                if(k < help.SIZE_OF_FRAGMENTS-1){
-                                    erase = true;
-                                    fragment[0][k + 1] = tempi;
-                                    fragment[1][k + 1] = tempj;
-                                    count++;
-                                    image.put(tempi, tempj, black1);
-                                    break;
-                                }else {
-                                    erase = false;
-                                    break;
-                                }
-                            }
-                            fragment[0][k + 1] = tempi;
-                            fragment[1][k + 1] = tempj;
-                            image.put(tempi, tempj, black1);
-                            count++;
-                        }
-                        for (int k = 0; k < count; k++) {
-                            if(erase) {
-                                image_new.put(fragment[0][k], fragment[1][k], gray1);
-                            }else{
-                                image.put(fragment[0][k], fragment[1][k], white1);
-                            }
-                            fragment[0][k] = 0;
-                            fragment[1][k] = 0;
-                        }
-                        erase = false;
-
-                    }
-                }
-            }
-        }
-
-        return image;
-    }
-
     protected boolean testMaskEdge(int j, int i){
         int WHITE = 1;
         int BLACK = 0;
@@ -529,8 +446,11 @@ public class Extraction extends AppCompatActivity {
         final EditText mSize = (EditText) dialog.findViewById(R.id.settingsEdittext);
         mSize.setText(String.valueOf(help.SIZE_BETWEEN_MINUTIE));
 
-        final EditText mSizeFragments = (EditText) dialog.findViewById(R.id.settingsEdittext2);
-        mSizeFragments.setText(String.valueOf(help.SIZE_OF_FRAGMENTS));
+        final EditText mSizeFragmentsMin = (EditText) dialog.findViewById(R.id.settingsEdittext2);
+        mSizeFragmentsMin.setText(String.valueOf(help.SIZE_OF_FRAGMENTS_MIN));
+
+        final EditText mSizeFragmentsMax = (EditText) dialog.findViewById(R.id.settingsEdittext3);
+        mSizeFragmentsMax.setText(String.valueOf(help.SIZE_OF_FRAGMENTS_MAX));
 
         dialogButton.setOnClickListener(new View.OnClickListener() {
                                             @Override
@@ -538,9 +458,10 @@ public class Extraction extends AppCompatActivity {
                                                 isSetOrigImage = false;
                                                 int selectedId = radioGroup.getCheckedRadioButtonId();
                                                 Button radioButton = (RadioButton) dialog.findViewById(selectedId);
-                                                if (!mSize.getText().toString().isEmpty() && !mSizeFragments.toString().isEmpty()) {
+                                                if (!mSize.getText().toString().isEmpty() && !mSizeFragmentsMin.toString().isEmpty() && !mSizeFragmentsMax.toString().isEmpty()) {
                                                     help.SIZE_BETWEEN_MINUTIE = Integer.valueOf(mSize.getText().toString());
-                                                    help.SIZE_OF_FRAGMENTS = Integer.valueOf(mSizeFragments.getText().toString());
+                                                    help.SIZE_OF_FRAGMENTS_MIN = Integer.valueOf(mSizeFragmentsMin.getText().toString());
+                                                    help.SIZE_OF_FRAGMENTS_MAX = Integer.valueOf(mSizeFragmentsMax.getText().toString());
                                                 }
 
                                                 if (radioButton.getText().equals(getResources().getString(R.string.minutie_ending))) {

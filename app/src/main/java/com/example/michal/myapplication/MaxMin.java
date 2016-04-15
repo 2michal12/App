@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +37,7 @@ public class MaxMin extends AppCompatActivity {
     Mat image,color_image,image_new;
     Help help;
 
-    @Bind(R.id.text)
+    /*@Bind(R.id.text)
     TextView text;
 
     @Bind(R.id.image)
@@ -52,14 +53,16 @@ public class MaxMin extends AppCompatActivity {
     Button saveimage;
 
     @Bind(R.id.contour)
-    Button contour;
+    Button contour;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.maxmin);
+        setContentView(R.layout.ftr_activity_save);
         ButterKnife.bind(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.futronic_title);
 
         System.out.println("max min");
         byte[] byteArray = getIntent().getByteArrayExtra("BitmapImage");
@@ -68,7 +71,7 @@ public class MaxMin extends AppCompatActivity {
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAfter = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         }
-
+  /*
         text.setText(imageBitmap.getHeight() + " " + imageBitmap.getWidth());
         imageView.setImageBitmap(imageBitmap);
 
@@ -90,7 +93,7 @@ public class MaxMin extends AppCompatActivity {
             }
         });
 
-        /*
+
         extraction(image, 1); //1 = ukoncenia, 2 = rozdvojenia
 
         Utils.matToBitmap(image, imageAfter); //default value without click any button

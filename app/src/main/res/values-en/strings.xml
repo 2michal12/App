@@ -84,7 +84,7 @@
     <string name="title_activity_binarisation">Binarisation</string>
 
     <string name="size_between_minutie">Min. distance between minutiie: </string>
-    <string name="size_of_fragments">Length of fragments: </string>
+    <string name="size_of_fragments">Length of fragments (from - to): </string>
     <string name="create_txt_file">Create .txt file with minutiae</string>
 
     <!-- Futronic scanner -->

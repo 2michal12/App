@@ -75,7 +75,8 @@ public class Help{
 
     public int ISLANDS_LENGTH_FILTER = 4; //constant for filtering false islands
     public int SIZE_BETWEEN_MINUTIE = 15; //length between minutie.. minutie in this area will be delete
-    public int SIZE_OF_FRAGMENTS = 10;
+    public int SIZE_OF_FRAGMENTS_MIN = 20;
+    public int SIZE_OF_FRAGMENTS_MAX = 50;
 
     public String ENDING_FILE = "endingsXYT";
     public String BIFURCATION_FILE = "bifurcationsXYT";

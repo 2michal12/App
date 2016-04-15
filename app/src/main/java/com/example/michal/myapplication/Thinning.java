@@ -368,6 +368,8 @@ public class Thinning extends AppCompatActivity {
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
+            image = convert(image);
+
             blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
             blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
 
@@ -432,6 +434,25 @@ public class Thinning extends AppCompatActivity {
 
     }
 
+    public Mat convert(Mat image){
+        double[] black = new double[1];
+        black[0] = 0;
+        double[] white = new double[1];
+        white[0] = 255;
+
+
+        for(int i = 0; i < image.height(); i++){
+            for(int j = 0; j < image.width(); j++){
+                if(image.get(i, j)[0] == 0){
+                    image.put(i, j, white);
+                }else{
+                    image.put(i, j, black);
+                }
+
+            }
+        }
+        return image;
+    }
 
     public void settingsDialog(){
         final Dialog dialog = new Dialog(this);

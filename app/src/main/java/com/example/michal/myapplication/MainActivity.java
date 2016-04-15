@@ -74,16 +74,19 @@ public class MainActivity extends AppCompatActivity {
 
         //po stetovani vymazat
         final Dialog dialog = new Dialog(this);
+        final Intent i = new Intent(this, MaxMin.class);
+
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(i);
                /* Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), 2); */
+                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), 2);
                 dialog.setContentView(R.layout.popup_settings_extraction);
                 dialog.setTitle(R.string.settings);
-                dialog.show();
+                dialog.show(); */
             }
         });
 

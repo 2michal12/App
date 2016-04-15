@@ -88,7 +88,7 @@
     <string name="title_activity_extraction">Extraction</string>
     
     <string name="size_between_minutie">Min. vzdialenosť medzi markantmi: </string>
-    <string name="size_of_fragments">Veľkosť fragmentov: </string>
+    <string name="size_of_fragments">Veľkosť fragmentov (od - do): </string>
     <string name="create_txt_file">Vytvoriť .txt súbor s markantmi</string>
 
     <!-- Futronic scanner -->
