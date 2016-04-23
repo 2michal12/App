@@ -74,7 +74,6 @@ public class Segmentation extends AppCompatActivity{
             mSegmentationImage.setImageBitmap(imageBitmap);
 
             if( type.equals(help.AUTOMATIC) ) {
-                //SEGMENTATION_SIZE = 7; dorobit vypocet automatickej velkosti bloku
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -234,7 +233,7 @@ public class Segmentation extends AppCompatActivity{
             }
         }
 
-        for(int i = image.height(); i >= image.height() - 40; i--) //doplnene kvoli zlemu snimacu (robil cierny okraj zo spodu)
+        for(int i = image.height(); i >= image.height() - 40; i--) //added due to wrong scanner (black at bottom)
         {
             for(int j = 0; j < image.width(); j++)
             {
@@ -254,7 +253,7 @@ public class Segmentation extends AppCompatActivity{
         @Override
         protected String doInBackground(String... params) {
             Mat image = help.bitmap2mat(imageBitmap);
-            SharedData.setImage(image);
+            Help.setImage(image);
 
 
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
@@ -264,10 +263,10 @@ public class Segmentation extends AppCompatActivity{
             int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
             int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
             mask = new int[blocksWidth][blocksHeight];
-            SharedData.maskWidth = blocksWidth;
-            SharedData.maskHeight = blocksHeight;
+            Help.maskHeight = blocksHeight;
+            Help.maskWidth = blocksWidth;
 
-            int padding_x = image.width() - (blocksWidth*BLOCK_SIZE); //padding of image
+            int padding_x = image.width() - (blocksWidth*BLOCK_SIZE);
             int padding_y = image.height() - (blocksHeight*BLOCK_SIZE);
 
             //calculate mask
@@ -291,7 +290,7 @@ public class Segmentation extends AppCompatActivity{
 
             publishProgress(66);
 
-            //apply mask520184
+            //apply mask
             double[] data = new double[1];
             data[0] = 0;
             for(int i = 0; i < blocksHeight; i++)

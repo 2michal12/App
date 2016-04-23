@@ -29,7 +29,6 @@ public class SelectFileFormatActivity extends Activity {
     private static File mDir;
 	private String mFileFormat = "BITMAP";
 	private String mFileName;
-    // Return Intent extra
     public static String EXTRA_FILE_FORMAT = "file_format";
     private Toolbar toolbar;
     
@@ -115,7 +114,6 @@ public class SelectFileFormatActivity extends Activity {
     	extraString[1] = mDir.getAbsolutePath() + "/"+ mFileName;
         Intent intent = new Intent();
         intent.putExtra(EXTRA_FILE_FORMAT, extraString);
-        // Set result and finish this Activity
         setResult(resultCode, intent);
         finish();
         overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
@@ -136,8 +134,7 @@ public class SelectFileFormatActivity extends Activity {
             }) 
             .setNegativeButton("No", new DialogInterface.OnClickListener() { 
                  public void onClick(DialogInterface dialog, int whichButton) {
-                	 //mMessage.setText("Cancel");
-                 } 
+                 }
             })
 			.setCancelable(false)
             .show();
@@ -148,14 +145,13 @@ public class SelectFileFormatActivity extends Activity {
     
     public boolean isImageFolder()
     {
-        File extStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); //public directory used default
+        File extStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         mDir = new File(extStorageDirectory, "DIPLOMOVKA/FtrScan");
 
          if( mDir.exists() )
         {
             if( !mDir.isDirectory() )
             {
-            	//mMessage.setText( "Can not create image folder " + mDir.getAbsolutePath() + ". File with the same name already exist." );
             	return false;
             }
         } else {
@@ -165,7 +161,6 @@ public class SelectFileFormatActivity extends Activity {
             }
             catch( SecurityException e )
             {
-            	//mMessage.setText( "Can not create image folder " + mDir.getAbsolutePath() + ". Access denied.");
             	return false;
             }
         }

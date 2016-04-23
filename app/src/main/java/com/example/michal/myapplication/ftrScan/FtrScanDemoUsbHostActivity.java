@@ -55,11 +55,9 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 	private static Canvas mCanvas = null;
     private static Paint mPaint = null;
 	
-    private FPScan mFPScan = null;   
-    //
+    private FPScan mFPScan = null;
     public static boolean mUsbHostMode = true;
 
-    // Intent request codes
     private static final int REQUEST_FILE_FORMAT = 1;
     private UsbDeviceDataExchangeImpl usb_host_ctx = null;
 
@@ -181,7 +179,7 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 
 	private void SaveImageByFileFormat(String fileFormat, String fileName)
 	{
-		if( fileFormat.compareTo("WSQ") == 0 )	//save wsq file
+		if( fileFormat.compareTo("WSQ") == 0 )
 		{
 			Scanner devScan = new Scanner();
 			boolean bRet;
@@ -201,32 +199,25 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 				File file = new File(fileName);
 				try {
 					FileOutputStream out = new FileOutputStream(file);
-					out.write(wsqImg, 0, wsqHelper.mWSQ_size);	// save the wsq_size bytes data to file
+					out.write(wsqImg, 0, wsqHelper.mWSQ_size);
 					out.close();
-					//mMessage.setText("Image is saved as " + fileName);
 				} catch (Exception e) {
-					//mMessage.setText("Exception in saving file");
 				}
 			}
 			else
-				//mMessage.setText("Failed to convert the image!");
 			if( mUsbHostMode )
 				devScan.CloseDeviceUsbHost();
 			else
 				devScan.CloseDevice();
 			return;
 		}
-		// 0 - save bitmap file
 		File file = new File(fileName);
 		try {
 			FileOutputStream out = new FileOutputStream(file);
-			//mBitmapFP.compress(Bitmap.CompressFormat.PNG, 90, out);
 			MyBitmapFile fileBMP = new MyBitmapFile(mImageWidth, mImageHeight, mImageFP);
 			out.write(fileBMP.toBytes());
 			out.close();
-			//mMessage.setText("Image is saved as " + fileName);
 		} catch (Exception e) {
-			//mMessage.setText("Exception in saving file");
 		}
 
 		// Tell the media scanner about the new file so that it is immediately available to the user.
@@ -273,10 +264,8 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 	        		}	
             	}
             	else
-            		//mMessage.setText("Can't open scanner device");
-            	break;           
+            	break;
 	        case UsbDeviceDataExchangeImpl.MESSAGE_DENY_DEVICE:
-            	//mMessage.setText("User deny scanner device");
             	break;
             }
         }
@@ -322,8 +311,7 @@ public class FtrScanDemoUsbHostActivity extends Activity {
 				 setResult(Activity.RESULT_FIRST_USER, intent);
 				 finish();
 			 }
-				 //mMessage.setText("Cancelled!");
-             break;            
+             break;
         }
     }
 

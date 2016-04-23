@@ -66,7 +66,6 @@ public class FPScan {
          	        	bRet = devScan.OpenDevice();
                     if( !bRet )
                     {
-                        //Toast.makeText(this, strInfo, Toast.LENGTH_LONG).show();
                     	if(FtrScanDemoUsbHostActivity.mUsbHostMode)
                     		ctx.CloseDevice();
                         mHandler.obtainMessage(FtrScanDemoUsbHostActivity.MESSAGE_SHOW_MSG, -1, -1, devScan.GetErrorMessage()).sendToTarget();
@@ -91,7 +90,6 @@ public class FPScan {
     	        	mHandler.obtainMessage(FtrScanDemoUsbHostActivity.MESSAGE_SHOW_SCANNER_INFO, -1, -1, strInfo).sendToTarget();
 	    	        bGetInfo = true;            	
              	}
-                //set options
                 flag = 0;
                 mask = devScan.FTR_OPTIONS_DETECT_FAKE_FINGER | devScan.FTR_OPTIONS_INVERT_IMAGE;
                 if(false) //LFD
@@ -100,7 +98,6 @@ public class FPScan {
                 	flag |= devScan.FTR_OPTIONS_INVERT_IMAGE;                
                 if( !devScan.SetOptions(mask, flag) )
     	        	mHandler.obtainMessage(FtrScanDemoUsbHostActivity.MESSAGE_SHOW_MSG, -1, -1, devScan.GetErrorMessage()).sendToTarget();
-                // get frame / image2
                 long lT1 = SystemClock.uptimeMillis();
                 if(false) //Frame
                 	bRet = devScan.GetFrame(FtrScanDemoUsbHostActivity.mImageFP);

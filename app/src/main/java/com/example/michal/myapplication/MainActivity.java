@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.name_version)
     TextView version;
 
-    @Bind(R.id.test_extraction)//po testovani vymazat
-    Button test;
-
     static {
         if (!OpenCVLoader.initDebug()) {
             Log.i("opencv", "opencv failed");
@@ -71,25 +68,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if( getSupportActionBar() != null )
             getSupportActionBar().setTitle(R.string.app_name);
-
-        //po stetovani vymazat
-        final Dialog dialog = new Dialog(this);
-        final Intent i = new Intent(this, MaxMin.class);
-
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(i);
-               /* Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Vyber odtlačok"), 2);
-                dialog.setContentView(R.layout.popup_settings_extraction);
-                dialog.setTitle(R.string.settings);
-                dialog.show(); */
-            }
-        });
-
 
         help = new Help(this);
 
@@ -120,8 +98,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //for testing of extraction
-        if(requestCode == 2){
+        if(requestCode == 2){        //for testing of extraction
             requestCode = SELECT_PICTURE;
             help.FORMAT_BMP = 2;
             help.FORMAT_JPEG = 2;
@@ -156,11 +133,11 @@ public class MainActivity extends AppCompatActivity {
                 image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
 
                 if( strMimeType.contains(help.JPEG) ){
-                    startPreview(image, help.FORMAT_JPEG); // 0 = .jpg
+                    startPreview(image, help.FORMAT_JPEG);
                 }else if( strMimeType.contains(help.PNG) ){
-                    startPreview(image, help.FORMAT_BMP); // 1 = .png
+                    startPreview(image, help.FORMAT_BMP);
                 }else{
-                    startPreview(image, help.FORMAT_BMP); // 1 = .png and .bmp too
+                    startPreview(image, help.FORMAT_BMP);
                 }
 
             } catch (IOException e) {
@@ -173,11 +150,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
-        menu.getItem(0).setVisible(false); //home
-        menu.getItem(2).setVisible(false); //export_image
+        menu.getItem(0).setVisible(false);
+        menu.getItem(2).setVisible(false);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) { //due to finishAffinity(); supported from API 16
-            menu.getItem(4).setVisible(false);  //exit app
+            menu.getItem(4).setVisible(false);
         }
 
         return true;
@@ -199,15 +176,8 @@ public class MainActivity extends AppCompatActivity {
         }
         byte[] byteArray = stream.toByteArray();
 
-
-        //docasne kym je tlacidlo test potom len Preview.class
         Intent i;
-        if(format == 2) { // test
-            i = new Intent(this, MaxMin.class);
-        }else{
-            i = new Intent(this, Preview.class);
-        }
-
+        i = new Intent(this, Preview.class);
         i.putExtra(help.BITMAP_IMAGE, byteArray);
         startActivity(i);
         overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
@@ -220,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.setTitle(getResources().getString(R.string.exit_question_title));
 
         alertDialogBuilder
-                //.setMessage("Click yes to exit!")
                 .setCancelable(false)
                 .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

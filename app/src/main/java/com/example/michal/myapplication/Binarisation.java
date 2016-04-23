@@ -1,6 +1,5 @@
 package com.example.michal.myapplication;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,20 +13,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-
 import java.io.ByteArrayOutputStream;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -81,8 +74,6 @@ public class Binarisation extends AppCompatActivity {
             mBinarisationImage.setImageBitmap(imageBitmap);
 
             if( type.equals(help.AUTOMATIC) ) {
-                //BINARISATION_BLOCK = 10; dorobit vypocet automaticky
-
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -94,14 +85,6 @@ public class Binarisation extends AppCompatActivity {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-// zakomentovane zatial nepotrebne ziadne manualne nastavenia pre binarizaciu
-//                mSettings.setVisibility(View.VISIBLE);
-//                mSettings.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        settingsDialog();
-//                    }
-//                });
             }
         }else{
             mBinarisationImage.setImageResource(R.drawable.ic_menu_report_image);
@@ -164,26 +147,6 @@ public class Binarisation extends AppCompatActivity {
         return Math.round( actualTreshold/((endX-startX) * (endY-startY)) );
     }
 
-    public boolean convertImage(Mat image){
-        double[] black = new double[1];
-        black[0] = 0;
-        double[] white = new double[1];
-        white[0] = 255;
-
-
-        for(int i = 0; i < image.height(); i++){
-            for(int j = 0; j < image.width(); j++){
-                if(image.get(i, j)[0] > 100){
-                    image.put(i, j, black);
-                }else{
-                    image.put(i, j, white);
-                }
-
-            }
-        }
-        return true;
-    }
-
     class AsyncTaskSegmentation extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
@@ -214,8 +177,6 @@ public class Binarisation extends AppCompatActivity {
                         for (int k = i * BLOCK_SIZE; k < i * BLOCK_SIZE + BLOCK_SIZE; k++) {
                             for (int l = j * BLOCK_SIZE; l < j * BLOCK_SIZE + BLOCK_SIZE; l++) {
 
-                                //for(int i = 0; i < image.rows(); i++){
-                                //for(int j = 0; j < image.cols(); j++) {
                                 data = image.get(k, l);
                                 if (data[0] < treshold) {
                                     data[0] = 0;
@@ -233,23 +194,7 @@ public class Binarisation extends AppCompatActivity {
                 }
                 publishProgress( progress );
             }
-            /*
-            gaussianFilter(image);
 
-            for(int i = 0; i < image.rows(); i++){
-                for(int j = 0; j < image.cols(); j++) {
-                    data = image.get(i, j);
-                    if(data[0] < treshold){
-                        data[0] = 0;
-                        image.put(i, j, data);
-                    }else{
-                        data[0] = 255;
-                        image.put(i, j, data);
-                    }
-                }
-            }*/
-
-            //convertImage(image);
             Utils.matToBitmap(image, imageAftefBinarisation);
 
             return "binarisation_finished";
@@ -282,38 +227,4 @@ public class Binarisation extends AppCompatActivity {
         }
 
     }
-
-
-    public void settingsDialog(){
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.popup_settings);
-        dialog.setTitle(R.string.settings);
-
-        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
-        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
-        final EditText mBinarisationBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
-
-        mSettingTitleText.setText(R.string.binarisation_settings_title);
-        mEdittextTitle.setText(R.string.binarisation_block);
-        mBinarisationBlock.setText(String.valueOf(BLOCK_SIZE));
-
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if( !mBinarisationBlock.getText().toString().isEmpty() )
-                    BLOCK_SIZE = Integer.valueOf(mBinarisationBlock.getText().toString());
-
-                if( BLOCK_SIZE > 0 && BLOCK_SIZE < 100 ){
-                    dialog.dismiss();
-
-                    mProgresBarLayout.setVisibility(View.VISIBLE);
-                    new AsyncTaskSegmentation().execute();
-                }
-
-            }
-        });
-        dialog.show();
-    }
-
 }

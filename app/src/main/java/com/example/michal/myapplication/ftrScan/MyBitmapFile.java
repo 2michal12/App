@@ -34,7 +34,6 @@ public class MyBitmapFile
         TempData = m_infoBitmap.bmiColors.GetGRBTableByteData();
         System.arraycopy(TempData, 0, m_BmpData, offset, TempData.length);
         offset += TempData.length;
-        //rotate image
         byte[] pRotateImage = new byte[nWidth * nHeight];
         int nImgOffset = 0;
         for (int iCyc = 0; iCyc < nHeight; iCyc++)
@@ -43,8 +42,6 @@ public class MyBitmapFile
             nImgOffset += nWidth;
         }       
         System.arraycopy(pRotateImage, 0, m_BmpData, offset, nWidth * nHeight);
-        pRotateImage = null;
-        TempData = null;
     }
 
     public byte[] toBytes()
@@ -90,9 +87,6 @@ public class MyBitmapFile
 
     public class RGBQUAD
     {
-        public byte rgbBlue;
-        public byte rgbGreen;
-        public byte rgbRed;
         public byte rgbReserved;
 
         public RGBQUAD()

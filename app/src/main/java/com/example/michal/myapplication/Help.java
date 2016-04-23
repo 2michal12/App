@@ -75,13 +75,16 @@ public class Help{
 
     public int ISLANDS_LENGTH_FILTER = 4; //constant for filtering false islands
     public int SIZE_BETWEEN_MINUTIE = 15; //length between minutie.. minutie in this area will be delete
-    public int SIZE_OF_FRAGMENTS_MIN = 20;
-    public int SIZE_OF_FRAGMENTS_MAX = 50;
+    public int SIZE_OF_FRAGMENTS_MIN = 20; //minimal size of fragments
+    public int SIZE_OF_FRAGMENTS_MAX = 50; //maximal size of fragments
 
     public String ENDING_FILE = "endingsXYT";
     public String BIFURCATION_FILE = "bifurcationsXYT";
 
-    Help(){}
+    //shared images
+    public static Mat original, original_image_bifurcations, original_image_endings, original_image_fragment;
+    public static int maskWidth, maskHeight;
+    public static double[][] orientation_map;
 
     Help(Activity context){
         this.context = context;
@@ -107,7 +110,6 @@ public class Help{
             out.flush();
             out.close();
 
-            // Tell the media scanner about the new file so that it is immediately available to the user.
             MediaScannerConnection.scanFile(context, new String[]{file.toString()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
                         public void onScanCompleted(String path, Uri uri) {
@@ -139,7 +141,6 @@ public class Help{
             osw.flush();
             osw.close();
 
-            // Tell the media scanner about the new file so that it is immediately available to the user.
             MediaScannerConnection.scanFile(context, new String[]{file.toString()}, null,
                     new MediaScannerConnection.OnScanCompletedListener() {
                         public void onScanCompleted(String path, Uri uri) {
@@ -247,6 +248,33 @@ public class Help{
                 break;
         }
 
+    }
+
+    public static void setImage(Mat image){
+        original = image.clone();
+    }
+
+
+    public static void restoreImages(){
+        original_image_bifurcations = original.clone();
+        original_image_endings = original.clone();
+        original_image_fragment = original.clone();
+    }
+
+    public static double[][] getInstanceOrientationMap() {
+        return orientation_map;
+    }
+
+    public static Mat getImageBifurcation(){
+        return original_image_bifurcations;
+    }
+
+    public static Mat getImageEndings(){
+        return original_image_endings;
+    }
+
+    public static Mat getImageFragment(){
+        return original_image_fragment;
     }
 
 }

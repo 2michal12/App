@@ -83,7 +83,6 @@ public class Normalisation extends AppCompatActivity {
             mNormalisationImage.setImageBitmap(imageBitmap);
 
             if( type.equals(help.AUTOMATIC) ) {
-                //NORMALISATION_CONTRAST = 1; dorobit vypocet automatickeho zvysenia
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
@@ -162,7 +161,7 @@ public class Normalisation extends AppCompatActivity {
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
             double variance_local = help.VARIANCE + (help.VARIANCE * NORMALISATION_CONTRAST);
 
-            double[] data = new double[1];
+            double[] data;
             double[] data_zero = new double[1];
             data_zero[0] = 0;
             double[] data_full = new double[1];

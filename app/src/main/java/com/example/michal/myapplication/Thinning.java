@@ -1,6 +1,5 @@
 package com.example.michal.myapplication;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -23,15 +21,9 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -106,14 +98,6 @@ public class Thinning extends AppCompatActivity {
                 mSettings.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
-// zakomentovane zatial nepotrebne ziadne manualne nastavenia pre binarizaciu
-//                mSettings.setVisibility(View.VISIBLE);
-//                mSettings.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        settingsDialog();
-//                    }
-//                });
             }
         } else {
             mThinningImage.setImageResource(R.drawable.ic_menu_report_image);
@@ -219,8 +203,6 @@ public class Thinning extends AppCompatActivity {
                                 marker.put(k, l, data_input);
                             }
                             A = 0;
-                            //spadne ked sa dostane na posledny pixel prveho riadku ! (musel som v for cykloch dat -1 na stlpce a -1 na riadky) - upravene minus jeden block
-
                         }
                     }
             }
@@ -228,14 +210,6 @@ public class Thinning extends AppCompatActivity {
 
         Core.bitwise_not(marker, marker);
         Core.bitwise_and(image, marker, image);
-    }
-
-    private int ivt(int x) {
-        if (x == 1) {
-            return 0;
-        } else {
-            return 1;
-        }
     }
 
     public void removeSinglePoint(Mat image) {
@@ -345,7 +319,7 @@ public class Thinning extends AppCompatActivity {
     protected boolean testMaskEdge(int j, int i){
         int WHITE = 1;
         int BLACK = 0;
-
+        //tu niekde chyba !
         if(mask[j][i] == WHITE && (mask[j-1][i]==BLACK || mask[j-1][i+1]==BLACK || mask[j][i+1]==BLACK || mask[j+1][i+1]==BLACK || mask[j+1][i]==BLACK || mask[j+1][i-1]==BLACK || mask[j][i-1]==BLACK || mask[j-1][i-1]==BLACK ) ){
             return false;
         }
@@ -391,7 +365,6 @@ public class Thinning extends AppCompatActivity {
             }while(Core.countNonZero(diff) > 0);
             Core.multiply(image, Scalar.all(255.0), image);
 
-            //repare skeleton
             for(int i = 0; i < help.ISLANDS_LENGTH_FILTER; i++)
                 removeIslands(image);
 
@@ -427,9 +400,6 @@ public class Thinning extends AppCompatActivity {
                     startExtraction(imageAftefThinning);
                 }
             });
-
-            //if( type.equals(AUTOMATIC_FULL) )
-            //    startPreprocessing(imageAftefThinning);
         }
 
     }
@@ -439,7 +409,6 @@ public class Thinning extends AppCompatActivity {
         black[0] = 0;
         double[] white = new double[1];
         white[0] = 255;
-
 
         for(int i = 0; i < image.height(); i++){
             for(int j = 0; j < image.width(); j++){
@@ -452,38 +421,5 @@ public class Thinning extends AppCompatActivity {
             }
         }
         return image;
-    }
-
-    public void settingsDialog(){
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.popup_settings);
-        dialog.setTitle(R.string.settings);
-
-        Button dialogButton = (Button) dialog.findViewById(R.id.popUpOK);
-        TextView mSettingTitleText = (TextView) dialog.findViewById(R.id.popUpSettingTextTitle);
-        TextView mEdittextTitle = (TextView) dialog.findViewById(R.id.textForEdittext);
-
-        mSettingTitleText.setText(R.string.thinning_settings_title);
-        mEdittextTitle.setText(R.string.thinning_block);
-        final EditText mThinningBlock = (EditText) dialog.findViewById(R.id.settingsEdittext);
-        mThinningBlock.setText(String.valueOf(BLOCK_SIZE));
-
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if( !mThinningBlock.getText().toString().isEmpty() )
-                    BLOCK_SIZE = Integer.valueOf(mThinningBlock.getText().toString());
-
-                if( BLOCK_SIZE > 0 && BLOCK_SIZE < 100 ){
-                    dialog.dismiss();
-
-                    mProgresBarLayout.setVisibility(View.VISIBLE);
-                    new AsyncTaskSegmentation().execute();
-                }
-
-            }
-        });
-
-        dialog.show();
     }
 }

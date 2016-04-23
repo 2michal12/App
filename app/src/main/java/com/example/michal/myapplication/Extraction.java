@@ -1,7 +1,6 @@
 package com.example.michal.myapplication;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -22,20 +21,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.SocketHandler;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -66,8 +59,6 @@ public class Extraction extends AppCompatActivity {
     private static StringBuilder BIFURCATIONS_TXT = new StringBuilder("");
     private static boolean isSetOrigImage = false;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,19 +81,14 @@ public class Extraction extends AppCompatActivity {
                 mask[i] = (int[]) objectArray[i];
             }
         }
-        orientation_map = SharedData.orientation_map;
+        orientation_map = Help.orientation_map;
 
         byte[] byteArray = getIntent().getByteArrayExtra(help.BITMAP_IMAGE);
         if (byteArray != null) {
-
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefExtraction = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             imageAftefExtractionOrig = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mExtractionImage.setImageBitmap(imageBitmap);
-
-            //mSettings.setVisibility(View.GONE);
-            //mProgresBarLayout.setVisibility(View.VISIBLE);
-            //new AsyncTaskSegmentation().execute();
             mSettings.setVisibility(View.VISIBLE);
             mSettings.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,7 +96,6 @@ public class Extraction extends AppCompatActivity {
                     settingsDialog();
                 }
             });
-
         } else {
             mExtractionImage.setImageResource(R.drawable.ic_menu_report_image);
         }
@@ -146,17 +131,6 @@ public class Extraction extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void startPreprocessing(Bitmap image) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-
-        Intent i = new Intent(this, Extraction.class);
-        i.putExtra(help.BITMAP_IMAGE, byteArray);
-        startActivity(i);
-        overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
-    }
-
     public void onCheckBoxTxt(View view) {
         boolean checked = ((CheckBox) view).isChecked();
 
@@ -182,17 +156,13 @@ public class Extraction extends AppCompatActivity {
             Mat image = help.bitmap2mat(imageBitmap);
             Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
-
-
             double[] data = new double[1];
             data[0] = 0;
-            int progress = 0;
-            int cn = 0;
+            int progress = 0, cn;
             int[][] endings = new int[2][image.rows()*image.cols()];
             int[][] bifurcation = new int[2][image.rows()*image.cols()];
             int countBifurcation = 0;
             int countEndings = 0;
-
             int blocksWidth = (int)Math.floor(image.width()/BLOCK_SIZE);
             int blocksHeight = (int)Math.floor(image.height()/BLOCK_SIZE);
             int mod = 100/(blocksHeight-1) ;
@@ -232,28 +202,13 @@ public class Extraction extends AppCompatActivity {
                 publishProgress(progress+mod);
             }
 
-            //findFragments(image);
-
-            //zmenene kvoli tomu ze ukoncenie v kostre je rozdvojenie v original odtlacku a naopak
-            /*if(params[0].equals(getResources().getString(R.string.minutie_ending) )) {
-                params[0] = getResources().getString(R.string.minutie_bifurcation);
-            }else if(params[0].equals(getResources().getString(R.string.minutie_fragment))){
-                params[0] = getResources().getString(R.string.minutie_fragment);
-            }else{
-                params[0] = getResources().getString(R.string.minutie_ending);
-            }*/
-
-            //print minutie
             int SIZE = help.SIZE_BETWEEN_MINUTIE;
             int fix_val_x, fix_val_y;
 
-            SharedData.restoreImages();
-            //create color image from original grayscale
+            Help.restoreImages();
             Mat color_image = help.copyImageToRGB(image, 1);
 
             if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
-
-                //cistenie blizkych markantov
                 for(int j = 0; j < countEndings; j++) {
                     fix_val_x = endings[1][j];
                     fix_val_y = endings[0][j];
@@ -268,19 +223,16 @@ public class Extraction extends AppCompatActivity {
                         }
                     }
                 }
-
                 for(int i = 0; i < countEndings; i++){
                     if(endings[1][i] != 0 && endings[0][i] != 0) {
                         Point core = new Point(endings[1][i], endings[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
-                        Imgproc.circle(SharedData.getImageEndings(), core, 8, new Scalar(251, 18, 34), 1);
-                        ENDINGS_TXT.append(endings[1][i] + " " + endings[0][i] + " " + (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) + " Q\n");
+                        Imgproc.circle(Help.getImageEndings(), core, 8, new Scalar(251, 18, 34), 1);
+                        ENDINGS_TXT.append(endings[1][i] +";"+ endings[0][i] +";"+ (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) +";Q\n");
                     }
                 }
-                Utils.matToBitmap(SharedData.getImageEndings(), imageAftefExtractionOrig);
+                Utils.matToBitmap(Help.getImageEndings(), imageAftefExtractionOrig);
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
-
-                //cistenie blizkych markantov
                 for(int j = 0; j < countBifurcation; j++) {
                     fix_val_x = bifurcation[1][j];
                     fix_val_y = bifurcation[0][j];
@@ -300,14 +252,14 @@ public class Extraction extends AppCompatActivity {
                     if(bifurcation[1][i] != 0 && bifurcation[0][i] != 0) {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
-                        Imgproc.circle(SharedData.getImageBifurcation(), core, 8, new Scalar(102, 255, 51), 1);
-                        BIFURCATIONS_TXT.append(bifurcation[1][i] + "  " + bifurcation[0][i] + "  " + (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) + " Q\n");
+                        Imgproc.circle(Help.getImageBifurcation(), core, 8, new Scalar(102, 255, 51), 1);
+                        BIFURCATIONS_TXT.append(bifurcation[1][i] +";"+ bifurcation[0][i] +";"+ (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) +";Q\n");
                     }
                 }
-                Utils.matToBitmap(SharedData.getImageBifurcation(), imageAftefExtractionOrig);
+                Utils.matToBitmap(Help.getImageBifurcation(), imageAftefExtractionOrig);
             }else if(params[0].equals( getResources().getString(R.string.minutie_fragment) ) ) {
                 Utils.matToBitmap(fragments(image,color_image), imageAftefExtraction);
-                Utils.matToBitmap(SharedData.getImageFragment(), imageAftefExtractionOrig);
+                Utils.matToBitmap(Help.getImageFragment(), imageAftefExtractionOrig);
             }
 
             Utils.matToBitmap(color_image, imageAftefExtraction);
@@ -337,9 +289,7 @@ public class Extraction extends AppCompatActivity {
 
             mProgressBarText.setText(R.string.thinning_finished);
             mExtractionImage.setImageBitmap(imageAftefExtraction);
-
             mProgresBarLayout.setVisibility(View.GONE);
-
             mChangeImage.setEnabled(true);
             mChangeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -374,55 +324,6 @@ public class Extraction extends AppCompatActivity {
         Imgproc.drawContours(color, fragments, -1, new Scalar(255,255,0));
 
         return color;
-    }
-
-    int[] testOneNeighbourOfPoint(Mat image, int row, int col){
-        int count = 0;
-        int[] neighbour = new int[3];
-
-        if(image.get(row-1,col-1)[0] == 255){
-            neighbour[0] = row-1;
-            neighbour[1] = col-1;
-            count++;
-        }
-        if(image.get(row-1,col)[0] == 255){
-            neighbour[0] = row-1;
-            neighbour[1] = col;
-            count++;
-        }
-        if(image.get(row-1,col+1)[0] == 255){
-            neighbour[0] = row-1;
-            neighbour[1] = col+1;
-            count++;
-        }
-        if(image.get(row,col-1)[0] == 255){
-            neighbour[0] = row;
-            neighbour[1] = col-1;
-            count++;
-        }
-        if(image.get(row,col+1)[0] == 255){
-            neighbour[0] = row;
-            neighbour[1] = col+1;
-            count++;
-        }
-        if(image.get(row+1,col-1)[0] == 255){
-            neighbour[0] = row+1;
-            neighbour[1] = col-1;
-            count++;
-        }
-        if(image.get(row+1,col)[0] == 255){
-            neighbour[0] = row+1;
-            neighbour[1] = col;
-            count++;
-        }
-        if(image.get(row+1,col+1)[0] == 255){
-            neighbour[0] = row+1;
-            neighbour[1] = col+1;
-            count++;
-        }
-
-        neighbour[2] = count; // last parameter set how much neighbours has current central point
-        return neighbour;
     }
 
     protected boolean testMaskEdge(int j, int i){
@@ -481,7 +382,6 @@ public class Extraction extends AppCompatActivity {
                                         }
 
         );
-
         dialog.show();
         }
 
