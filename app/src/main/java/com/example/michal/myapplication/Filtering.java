@@ -42,7 +42,7 @@ public class Filtering extends AppCompatActivity {
 
     private static Help help;
     private static Bitmap imageBitmap;
-    private static Bitmap imageAftefFiltering;
+    private static Bitmap imageAftefFiltering, imageDirectionMap;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -52,6 +52,8 @@ public class Filtering extends AppCompatActivity {
     ImageView mFilteringImage;
     @Bind(R.id.next)
     Button mNextProcess;
+    @Bind(R.id.map)
+    Button mMap;
     @Bind(R.id.settings)
     Button mSettings;
     @Bind(R.id.progress_bar_text)
@@ -61,8 +63,9 @@ public class Filtering extends AppCompatActivity {
 
     private static int BLOCK_SIZE = 0;
     private static int[][] mask = null;
-    private static Mat orientation_angle, orientation_gui;
+    private static Mat orientation_angle, orientation_gui, dest;
     private static String type;
+    private static boolean isMapShow = true;
 
     //variables use when direction map is printing
     private double x1, y1, x2, y2; //points of line
@@ -99,6 +102,7 @@ public class Filtering extends AppCompatActivity {
 
             imageBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAftefFiltering = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            imageDirectionMap = Bitmap.createBitmap(imageBitmap.getWidth(), imageBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             mFilteringImage.setImageBitmap(imageBitmap);
 
             if (type.equals(help.AUTOMATIC)) {
@@ -107,6 +111,7 @@ public class Filtering extends AppCompatActivity {
                 new AsyncTaskSegmentation().execute();
             } else if (type.equals(help.AUTOMATIC_FULL)) {
                 mSettings.setVisibility(View.GONE);
+                mMap.setVisibility(View.GONE);
                 mProgresBarLayout.setVisibility(View.VISIBLE);
                 new AsyncTaskSegmentation().execute();
             } else {
@@ -213,15 +218,15 @@ public class Filtering extends AppCompatActivity {
         mapExtermination(block);
 
         //Turn on only when we want to show orientation map "orientation_gui"
-        /*for (int i = 0; i<orientation_gui.rows() / block; i++){
+        block = 15;
+        for (int i = 0; i<orientation_gui.rows() / block; i++){
             for (int j = 0; j<orientation_gui.cols() / block; j++){
                 data_input = orientation_angle.get(i*block+block/2, j*block+block/2); //angle
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
-        }*/
+        }
 
         Help.orientation_map = orientation_map;
-
         return orientation_map;
     }
 
@@ -271,7 +276,7 @@ public class Filtering extends AppCompatActivity {
         static_point = new Point(x1, y1);
         sc = new Scalar(255, 255, 255);
 
-        Imgproc.line(image, static_point, calculate_point, sc, 2, 4, 0); //color of line, thickness, type, shift
+        Imgproc.line(image, static_point, calculate_point, sc, 1, 4, 0); //color of line, thickness, type, shift
     }
 
     private void clearPadding(Mat image, int padding_x, int padding_y){
@@ -324,7 +329,7 @@ public class Filtering extends AppCompatActivity {
 
             double[][] orientation_map = orientationMap(image, help.ORIENTATION_MAP_BLOCK); //calculating of fingerprint orientation map
 
-            Mat dest = new Mat(image.rows(), image.cols(), image.type());
+            dest = new Mat(image.rows(), image.cols(), image.type());
             Mat kernel;
             Size dim = new Size(help.GABOR_KERNEL_SIZE, help.GABOR_KERNEL_SIZE);
             double final_value = 0.0;
@@ -365,9 +370,7 @@ public class Filtering extends AppCompatActivity {
             int padding_y = image.height() - (((int)Math.floor(image.height()/BLOCK_SIZE))*BLOCK_SIZE);
             clearPadding(dest, padding_x, padding_y);
 
-            //if we want to show orientation map we need to change first parameter to "orientation_gui" and uncomment code at the end of orientationMap() function
             Utils.matToBitmap(dest, imageAftefFiltering);
-
             return "filtering_finished";
         }
 
@@ -381,20 +384,42 @@ public class Filtering extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             mProgressBarText.setText(R.string.filtering_finished);
-            mFilteringImage.setImageBitmap(imageAftefFiltering);
+            mMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(isMapShow){
+                        isMapShow = false;
+                        Utils.matToBitmap(orientation_gui, imageDirectionMap);
+                        mFilteringImage.setImageBitmap(imageDirectionMap);
+                    }else{
+                        isMapShow = true;
+                        Utils.matToBitmap(dest, imageAftefFiltering);
+                        mFilteringImage.setImageBitmap(imageAftefFiltering);
+                    }
+                }
+            });
 
+            if(isMapShow){
+                Utils.matToBitmap(dest, imageAftefFiltering);
+                mFilteringImage.setImageBitmap(imageAftefFiltering);
+            }
+
+            mFilteringImage.setImageBitmap(imageAftefFiltering);
             mProgresBarLayout.setVisibility(View.GONE);
 
             mNextProcess.setEnabled(true);
             mNextProcess.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Utils.matToBitmap(dest, imageAftefFiltering);
                     startPreprocessing(imageAftefFiltering);
                 }
             });
 
-            if (type.equals(help.AUTOMATIC_FULL))
+            if (type.equals(help.AUTOMATIC_FULL)) {
+                Utils.matToBitmap(dest, imageAftefFiltering);
                 startPreprocessing(imageAftefFiltering);
+            }
         }
 
     }
