@@ -27,6 +27,8 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import butterknife.Bind;
@@ -57,6 +59,8 @@ public class Extraction extends AppCompatActivity {
     private static boolean createTxt = false;
     private static StringBuilder ENDINGS_TXT = new StringBuilder("");
     private static StringBuilder BIFURCATIONS_TXT = new StringBuilder("");
+    private static List<String> ENDINGS_LIST = new ArrayList<String>();
+    private static List<String> BIFURCATION_LIST = new ArrayList<String>();
     private static boolean isSetOrigImage = false;
 
     @Override
@@ -207,6 +211,9 @@ public class Extraction extends AppCompatActivity {
 
             Help.restoreImages();
             Mat color_image = help.copyImageToRGB(image, 1);
+            String line = "";
+            BIFURCATION_LIST.add(line);
+            ENDINGS_LIST.add(line);
 
             if( params[0].equals( getResources().getString(R.string.minutie_ending) ) ){
                 for(int j = 0; j < countEndings; j++) {
@@ -228,8 +235,14 @@ public class Extraction extends AppCompatActivity {
                         Point core = new Point(endings[1][i], endings[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(251, 18, 34), 2);
                         Imgproc.circle(Help.getImageEndings(), core, 8, new Scalar(251, 18, 34), 1);
-                        ENDINGS_TXT.append(endings[1][i] +";"+ endings[0][i] +";"+ (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) +";Q\n");
+                        line = endings[1][i] +";"+ endings[0][i] +";"+ (int)Math.toDegrees(orientation_map[endings[0][i]][endings[1][i]]) +";Q\n";
+                        if(!ENDINGS_LIST.contains(line)){
+                            ENDINGS_LIST.add(line);
+                        }
                     }
+                }
+                for (String tempLine : ENDINGS_LIST) {
+                    ENDINGS_TXT.append(tempLine);
                 }
                 Utils.matToBitmap(Help.getImageEndings(), imageAftefExtractionOrig);
             }else if(params[0].equals( getResources().getString(R.string.minutie_bifurcation) ) ){
@@ -253,8 +266,14 @@ public class Extraction extends AppCompatActivity {
                         Point core = new Point(bifurcation[1][i], bifurcation[0][i]);
                         Imgproc.circle(color_image, core, 8, new Scalar(102, 255, 51), 2);
                         Imgproc.circle(Help.getImageBifurcation(), core, 8, new Scalar(102, 255, 51), 1);
-                        BIFURCATIONS_TXT.append(bifurcation[1][i] +";"+ bifurcation[0][i] +";"+ (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) +";Q\n");
+                        line = bifurcation[1][i] +";"+ bifurcation[0][i] +";"+ (int)Math.toDegrees(orientation_map[bifurcation[0][i]][bifurcation[1][i]]) +";Q\n";
+                        if(!BIFURCATION_LIST.contains(line)){
+                            BIFURCATION_LIST.add(line);
+                        }
                     }
+                }
+                for (String tempLine : BIFURCATION_LIST) {
+                    BIFURCATIONS_TXT.append(tempLine);
                 }
                 Utils.matToBitmap(Help.getImageBifurcation(), imageAftefExtractionOrig);
             }else if(params[0].equals( getResources().getString(R.string.minutie_fragment) ) ) {
@@ -279,13 +298,15 @@ public class Extraction extends AppCompatActivity {
             if(createTxt) {
                 if (!ENDINGS_TXT.toString().equals("")) {
                     help.saveTxtToExternalStorage(ENDINGS_TXT, help.ENDING_FILE);
-                    ENDINGS_TXT.append("");
                 }
                 if (!BIFURCATIONS_TXT.toString().equals("")) {
                     help.saveTxtToExternalStorage(BIFURCATIONS_TXT, help.BIFURCATION_FILE);
-                    BIFURCATIONS_TXT.append("");
                 }
             }
+            ENDINGS_TXT.delete(0, ENDINGS_TXT.length());
+            BIFURCATIONS_TXT.delete(0, BIFURCATIONS_TXT.length());
+            ENDINGS_LIST.removeAll(ENDINGS_LIST);
+            BIFURCATION_LIST.removeAll(BIFURCATION_LIST);
 
             mProgressBarText.setText(R.string.thinning_finished);
             mExtractionImage.setImageBitmap(imageAftefExtraction);
