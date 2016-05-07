@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -196,6 +197,7 @@ public class Extraction extends AppCompatActivity {
                                         bifurcation[1][countBifurcation] = l;
                                         countBifurcation++;
                                     }
+                                    //possibility add another else if statement for new typ of minutiae
                                 }
 
                             }
@@ -280,6 +282,7 @@ public class Extraction extends AppCompatActivity {
                 Utils.matToBitmap(fragments(image,color_image), imageAftefExtraction);
                 Utils.matToBitmap(Help.getImageFragment(), imageAftefExtractionOrig);
             }
+            //possibility add another else if statement for new typ of minutiae
 
             Utils.matToBitmap(color_image, imageAftefExtraction);
 

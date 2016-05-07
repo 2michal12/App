@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Thesis 2016</string>
-    <string name="app_version">Vesrion %1$s</string>
+    <string name="app_version_text">Copyright \u00a9 2016 Version %1$s </string>
 
     <string name="home">Home</string>
     <string name="preview">Preview</string>
@@ -14,7 +14,7 @@
     <string name="automatic_preprocessing_full">Automatic</string>
     <string name="manual_preprocessing">Manual preprocessing</string>
     <string name="information">Information</string>
-    <string name="info_text">Aplikacia Diplomovka (v.%1$s) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Application Diplomovka (v.%1$s) is used to extract the complex minutiae of fingerprints using the method Crossing Number. Fingerprints required for this extraction can be scanned directly from this app when you connect the fingerprint scanner Futronic FS80</string>
     <string name="settings">Settings</string>
     <string name="error">Error !</string>
     <string name="sdcard_unmounted">File is able to save only to SD card !</string>
@@ -71,6 +71,15 @@
     <string name="minutie_ending">Endings</string>
     <string name="minutie_bifurcation">Bifuractions</string>
     <string name="minutie_fragment">Fragment</string>
+    <string name="minutie_dot">Dot</string>
+    <string name="minutie_lake">Lake</string>
+    <string name="minutie_break">Break</string>
+    <string name="minutie_crossbar">Crossbar</string>
+    <string name="minutie_bridge">Bridge</string>
+    <string name="minutie_oposed_bifurcation">Opposed Bifurcation</string>
+    <string name="minutie_trifurcation">Trifurcation</string>
+    <string name="minutie_anchorage">Anchorage</string>
+    <string name="minutie_hook">Hook</string>
 
     <string name="start_process">Start</string>
     <string name="next_process">Next</string>
@@ -83,7 +92,7 @@
     <string name="title_activity_thinning">Thinning</string>
     <string name="title_activity_binarisation">Binarisation</string>
 
-    <string name="size_between_minutie">Min. distance between minutiie: </string>
+    <string name="size_between_minutie">Minimal distance between minutiie: </string>
     <string name="size_of_fragments">Length of fragments (from - to): </string>
     <string name="create_txt_file">Create .txt file with minutiae</string>
 

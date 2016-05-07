@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Diplomová práca 2016</string>
-    <string name="app_version_text">Verzia %1$s</string>
+    <string name="app_version_text">Copyright \u00a9 2016 Verzia %1$s</string>
 
     <string name="home">Domov</string>
     <string name="preview">Náhľad</string>
@@ -74,6 +74,15 @@
     <string name="minutie_ending">Ukončenia</string>
     <string name="minutie_bifurcation">Rozdvojenia</string>
     <string name="minutie_fragment">Fragment</string>
+    <string name="minutie_dot">Bod</string>
+    <string name="minutie_lake">Jazero</string>
+    <string name="minutie_break">Prerušenie</string>
+    <string name="minutie_crossbar">Prekríženie</string>
+    <string name="minutie_bridge">Premostenie</string>
+    <string name="minutie_oposed_bifurcation">Protiľahlé vidlice</string>
+    <string name="minutie_trifurcation">Trifurkácia</string>
+    <string name="minutie_anchorage">Ukotvenie</string>
+    <string name="minutie_hook">Hák</string>
 
     <string name="start_process">Štart</string>
     <string name="next_process">Ďalej</string>
@@ -87,7 +96,7 @@
     <string name="title_activity_binarisation">Binarisation</string>
     <string name="title_activity_extraction">Extraction</string>
     
-    <string name="size_between_minutie">Min. vzdialenosť medzi markantmi: </string>
+    <string name="size_between_minutie">Minimálna vzdialenosť medzi markantmi: </string>
     <string name="size_of_fragments">Veľkosť fragmentov (od - do): </string>
     <string name="create_txt_file">Vytvoriť .txt súbor s markantmi</string>
 
