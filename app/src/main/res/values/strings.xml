@@ -14,7 +14,7 @@
     <string name="automatic_preprocessing_full">Automaticky</string>
     <string name="manual_preprocessing">Manuálne predspracovanie</string>
     <string name="information">Informácie</string>
-    <string name="info_text">Aplikacia Diplomovka (v.%1$s) slúži na extrakciu komplexných markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení externého skenera odtlačkov Futronic FS80.</string>
+    <string name="info_text">Aplikacia Diplomovka (v.%1$s) slúži na extrakciu markantov z odtlačkov prstov pomocou metódy Crossing Number. Odtlačky prstov potrebné na túto extrakciu je možné skenovať priamo pomocou tejto aplikácie po pripojení externého snímača odtlačkov prstov Futronic FS80.</string>
     <string name="settings">Nastavenia</string>
     <string name="error">Chyba !</string>
     <string name="sdcard_unmounted">Súbor je možné uložiť len na SD kartu !</string>

@@ -128,10 +128,10 @@ public class Help{
 
     public void saveTxtToExternalStorage(StringBuilder text ,String name){
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        File myDir = new File(root + "/DIPLOMOVKA/Output");
+        File myDir = new File(root);
         myDir.mkdirs();
 
-        File file = new File(myDir, name+".txt");
+        File file = new File(myDir + "/DIPLOMOVKA/Output", name+".txt");
         if (file.exists())
             file.delete();
         try {

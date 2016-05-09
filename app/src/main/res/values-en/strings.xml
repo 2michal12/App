@@ -14,7 +14,7 @@
     <string name="automatic_preprocessing_full">Automatic</string>
     <string name="manual_preprocessing">Manual preprocessing</string>
     <string name="information">Information</string>
-    <string name="info_text">Application Diplomovka (v.%1$s) is used to extract the complex minutiae of fingerprints using the method Crossing Number. Fingerprints required for this extraction can be scanned directly from this app when you connect the fingerprint scanner Futronic FS80</string>
+    <string name="info_text">Application Diplomovka (v.%1$s) is used to extract the minutiae of fingerprints using the method Crossing Number. Fingerprints required for this extraction can be scanned directly from this app when you connect the fingerprint scanner Futronic FS80.</string>
     <string name="settings">Settings</string>
     <string name="error">Error !</string>
     <string name="sdcard_unmounted">File is able to save only to SD card !</string>
