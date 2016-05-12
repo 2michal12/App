@@ -47,6 +47,9 @@
     <string name="filtering_running">Running filtering …</string>
     <string name="filtering_finished">Filtering finished</string>
     <string name="filtering_settings_title">Input parameters for normalisation</string>
+    <string name="direction_map">Direction map</string>
+    <string name="frequence_map">Frequence map</string>
+    <string name="gabor_filter">Gabor filter</string>
 
     <!-- Binarisation -->
     <string name="binarisation">Binarisation</string>
@@ -91,6 +94,7 @@
     <string name="title_activity_filtering">Filtering</string>
     <string name="title_activity_thinning">Thinning</string>
     <string name="title_activity_binarisation">Binarisation</string>
+    <string name="title_activity_extraction">Extraction</string>
 
     <string name="size_between_minutie">Minimal distance between minutiie: </string>
     <string name="size_of_fragments">Length of fragments (from - to): </string>
