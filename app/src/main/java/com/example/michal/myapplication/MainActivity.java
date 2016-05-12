@@ -102,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 2){        //for testing of extraction
-            requestCode = SELECT_PICTURE;
-            help.FORMAT_BMP = 2;
-            help.FORMAT_JPEG = 2;
-        }
-
         if( data != null && data.getData() == null ) { //condition for loading image directly from scanning process
             Uri uriCreated = Uri.fromFile(new File(data.getStringExtra("fileName")));
             try {

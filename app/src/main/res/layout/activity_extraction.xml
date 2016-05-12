@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:text="Vymeniť obrázok"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
 
     </LinearLayout>

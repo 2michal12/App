@@ -19,17 +19,17 @@
 
         <EditText
             android:id="@+id/editFileName"
-            android:background="@drawable/edittext_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:padding="10dp"
-            android:layout_centerVertical="true"
+            android:background="@drawable/edittext_style"
             android:ellipsize="start"
             android:gravity="center"
             android:hint="@string/file_name"
             android:inputType="text"
+            android:padding="10dp"
             android:textSize="14sp">
 
             <requestFocus />
@@ -43,9 +43,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="5dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="5dp">
 
         <Button
             android:id="@+id/btnSaveScanAndRun"
@@ -53,7 +53,7 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            android:text="@string/save_and_run"/>
+            android:text="@string/save_and_run" />
 
         <Button
             android:id="@+id/btnSaveScan"
@@ -61,7 +61,7 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            android:text="@string/save"/>
+            android:text="@string/save" />
 
     </LinearLayout>
 

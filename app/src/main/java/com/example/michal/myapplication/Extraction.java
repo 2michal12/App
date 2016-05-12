@@ -197,7 +197,7 @@ public class Extraction extends AppCompatActivity {
                                         bifurcation[1][countBifurcation] = l;
                                         countBifurcation++;
                                     }
-                                    //possibility add another else if statement for new typ of minutiae
+                                    //possibility add another elseif statement for new typ of minutiae
                                 }
 
                             }
@@ -282,7 +282,7 @@ public class Extraction extends AppCompatActivity {
                 Utils.matToBitmap(fragments(image,color_image), imageAftefExtraction);
                 Utils.matToBitmap(Help.getImageFragment(), imageAftefExtractionOrig);
             }
-            //possibility add another else if statement for new typ of minutiae
+            //possibility add another elseif statement for new typ of minutiae
 
             Utils.matToBitmap(color_image, imageAftefExtraction);
 

@@ -8,17 +8,16 @@
         style="@style/PopUpText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp"
         android:gravity="left"
-        />
+        android:padding="15dp" />
 
     <Button
         android:id="@+id/popUpOK"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/popUpText"
+        android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:text="@string/ok"/>
+        android:text="@string/ok" />
 
 </RelativeLayout>

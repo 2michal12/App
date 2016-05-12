@@ -8,9 +8,9 @@
         style="@style/PopUpTextTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/filtering_settings_title"
         android:gravity="center"
-        android:padding="16dp" />
+        android:padding="16dp"
+        android:text="@string/filtering_settings_title" />
 
     <LinearLayout
         android:id="@+id/popup_settings"
@@ -26,15 +26,15 @@
             android:id="@+id/edittext1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/textForEdittext"
                 style="@style/SettingsItem"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:text="@string/filtering_block"/>
+                android:text="@string/filtering_block" />
 
 
             <EditText
@@ -56,8 +56,8 @@
             android:id="@+id/edittext2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:gravity="center"
+            android:padding="10dp"
             android:visibility="visible">
 
             <TextView
@@ -65,7 +65,7 @@
                 style="@style/SettingsItem"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:text="@string/filtering_frequency"/>
+                android:text="@string/filtering_frequency" />
 
 
             <EditText
@@ -87,8 +87,8 @@
             android:id="@+id/edittext3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:gravity="center"
+            android:padding="10dp"
             android:visibility="visible">
 
             <TextView
@@ -96,7 +96,7 @@
                 style="@style/SettingsItem"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:text="@string/filtering_strength"/>
+                android:text="@string/filtering_strength" />
 
 
             <EditText
@@ -118,8 +118,8 @@
             android:id="@+id/edittext4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:gravity="center"
+            android:padding="10dp"
             android:visibility="visible">
 
             <TextView
@@ -127,7 +127,7 @@
                 style="@style/SettingsItem"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:text="@string/filtering_gamma"/>
+                android:text="@string/filtering_gamma" />
 
 
             <EditText
@@ -149,8 +149,8 @@
             android:id="@+id/edittext5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:gravity="center"
+            android:padding="10dp"
             android:visibility="visible">
 
             <TextView
@@ -158,7 +158,7 @@
                 style="@style/SettingsItem"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
-                android:text="@string/filtering_psi"/>
+                android:text="@string/filtering_psi" />
 
 
             <EditText

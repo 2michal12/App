@@ -2,29 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/home"
-        android:visible="true"
+    <item
+        android:id="@+id/home"
         android:title="@string/home"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/load_image_menu"
         android:visible="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/load_image_menu"
         android:title="@string/load_image"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/export_image"
         android:visible="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/export_image"
         android:title="@string/export_image"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/information"
         android:visible="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/information"
         android:title="@string/information"
-        app:showAsAction="never"/>
-
-    <item android:id="@+id/exit"
         android:visible="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/exit"
         android:title="@string/exit"
-        app:showAsAction="never"/>
+        android:visible="true"
+        app:showAsAction="never" />
 
 </menu>

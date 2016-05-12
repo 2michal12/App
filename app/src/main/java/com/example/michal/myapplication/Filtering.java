@@ -217,11 +217,10 @@ public class Filtering extends AppCompatActivity {
 
         mapExtermination(block);
 
-        //Turn on only when we want to show orientation map "orientation_gui"
         block = 15;
         for (int i = 0; i<orientation_gui.rows() / block; i++){
             for (int j = 0; j<orientation_gui.cols() / block; j++){
-                data_input = orientation_angle.get(i*block+block/2, j*block+block/2); //angle
+                data_input = orientation_angle.get(i*block+block/2, j*block+block/2);
                 printLine(orientation_gui, block, j, i, data_input[0]);
             }
         }

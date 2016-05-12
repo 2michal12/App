@@ -169,7 +169,7 @@ public class Help{
         white3[1] = 255;
         white3[2] = 255;
 
-        if( color == 2){ //green
+        if( color == 2){
             white3[0] = 251;
             white3[1] = 18;
             white3[2] = 34;
